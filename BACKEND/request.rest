@@ -1,0 +1,82 @@
+### SIGN UP
+POST http://localhost:3000/accounts/signup
+Content-Type: application/json
+
+{
+     "fullname" : "sahil joshi",
+     "username" : "sahil_8",
+     "email" : "sahiljoshi324@gmail.com",
+     "password" : "1234"
+
+}
+
+### LOGIN
+POST http://localhost:3000/accounts/login
+Content-Type: application/json
+
+{
+      "email" : "varunjoshi1590@gmail.com",
+      "password" : "itsmine@4545"
+}
+
+
+
+### generate otp
+POST http://localhost:3000/accounts/sendOtp 
+Content-Type:  application/json
+
+{
+       "email" : "",
+       "username" : "varun__19__"
+}
+
+
+### profile 
+GET http://localhost:3000/accounts/profileImage/6766beb180b6cfe21932c5d2
+
+
+### fetch all accounts
+
+POST http://localhost:3000/accounts/allAccounts 
+Content-Type: application/json
+
+{
+       "email" : "varunjoshi1590@gmail.com"
+}
+
+
+####
+
+GET http://localhost:3000/messages/generate-chatId/189231298
+
+
+
+
+### 
+
+POST http://localhost:3000/uploadPost/allPosts/676bbeddb54233853c2170fc
+
+
+
+####
+
+
+GET http://localhost:3000/uploadPost/postImage/676e9847cdf312a85af910b1
+
+
+
+####
+
+
+POST http://localhost:3000/uploadPost/fetch-comments/676ee0f42897db2259cf767a
+
+
+
+###
+
+POST http://localhost:3000/accounts/fetchProfileDetails/676bc26d8cccd2da14b3e705
+
+
+###
+
+POST http://localhost:3000/accounts/add-commid/677168d2b9bb706ce0192971

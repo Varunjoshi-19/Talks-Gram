@@ -1,0 +1,36 @@
+.reelsContainer {
+     
+    border : 1px solid white;
+    width: 80%;
+    position: relative;
+    left : 20%;
+    height : 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.reelsLayout {
+    border: 1px solid red;
+    height: 100vh; 
+    width: 450px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: scroll; 
+    scroll-snap-type: y mandatory; 
+}
+
+.reelsLayout::-webkit-scrollbar {
+    display: none;
+  }
+
+.eachReels {
+    border: 1px solid blue;
+    width: 85%; 
+    height: 98vh;
+    scroll-snap-align: start; 
+    flex-shrink: 0;
+    margin-top: 20px;
+}

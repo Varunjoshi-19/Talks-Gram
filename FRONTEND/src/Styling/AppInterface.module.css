@@ -1,0 +1,304 @@
+
+/* right side */
+
+
+.rightOptions {
+     
+    display: flex;
+   height : 100vh;
+   flex-wrap: nowrap;
+    margin-left: 20%;
+    gap :15%;
+    z-index: 0;
+
+  
+}
+
+.rightOptions .PostAndStories { 
+
+    display: flex;  
+      z-index: 0;
+    flex-direction: column;
+    width: 100%;
+
+
+
+}
+
+.rightOptions .PostAndStories .Posts #Stories{ 
+
+    display: flex;
+    width: 100%;
+    padding : 5px 5px;
+    text-decoration: none;
+    list-style-type: none;
+    gap : 30px;
+    margin-left : 0px;
+    margin-top: 0px;
+}
+
+.rightOptions .PostAndStories #Stories li { 
+
+ 
+    display: flex;
+    border : 1px solid white;
+    align-items: center;
+    overflow: hidden;
+    justify-content: center;
+    height : 60px;
+    width: 60px;
+    border-radius: 50%;
+
+}
+
+.rightOptions .PostAndStories .Posts {
+    display: flex;
+
+    flex-direction: column;
+    align-items: center;
+    height: 100vh; 
+    margin-top: 20px;
+    gap : 50px;
+    overflow-y: scroll; 
+    position: relative;
+    scroll-behavior: smooth;
+}
+
+
+.rightOptions .PostAndStories .Posts::-webkit-scrollbar {
+    width: 8px;
+}
+
+.rightOptions .PostAndStories .Posts::-webkit-scrollbar-thumb {
+    background-color: rgba(128, 128, 128, 0.5); 
+    border-radius: 10px;
+}
+
+
+
+.rightOptions .profileAndSuggestions { 
+
+    width: 42%;
+    
+}
+
+
+/*  post styling */
+
+.rightOptions .PostAndStories .Posts #eachPosts {
+
+    height: 900px; 
+    width: 468px;
+    display: flex;
+    gap : 10px;
+    flex-direction: column;
+    border-bottom : 1px solid rgba(44, 44, 44, 0.747);
+    position: relative;
+    transition: transform 0.3s ease-in-out; 
+}
+
+
+
+.Posts #eachPosts #header { 
+    display: flex;
+    gap : 10px;
+    align-items: center;
+    padding : 10px 10px;
+}
+
+.Posts #eachPosts #header #profile {
+    border : 1px solid white;   
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    justify-content: center;
+    height : 40px;
+    width: 40px;
+    border-radius: 50%;
+     
+}
+
+
+.Posts #eachPosts #PostImage {
+     
+     height : 585px;
+     width: 468px; 
+     border-radius: 5px;
+  
+}
+
+.Posts #eachPosts #description {
+ 
+    display: flex;
+    margin-top : 5px;
+    gap : 10px;
+    font-size : 1.5rem;
+    
+
+}
+
+.Posts #eachPosts #description span {
+     transition: transform 200ms;
+}
+
+
+.Posts #eachPosts #description span:hover {
+     transform: scale(1.2);
+}
+
+
+.profileAndSuggestions  { 
+    display: flex;
+    flex-direction: column;
+    gap : 20px;
+    
+}
+
+.profileAndSuggestions .UserProfile {
+
+    margin-top: 30px;
+     display: flex;
+     gap : 10px;
+     margin-left: 20px;
+}
+
+.profileAndSuggestions .UserProfile .userImage {
+
+  
+    display: flex;
+    border : 1px solid white;
+    align-items: center;
+    overflow: hidden;
+    justify-content: center;
+    height : 40px;
+    width: 40px;
+    border-radius: 50%;
+}
+
+.profileAndSuggestions .suggestions { 
+  
+    display: flex;
+    flex-direction: column;
+    gap : 20px;
+     justify-content: "space-between";
+    margin-left: 20px;
+}
+
+.profileAndSuggestions .suggestions .suggestedAccount {
+     display: flex;
+     gap  : 20px;
+     cursor: pointer;
+    
+}
+
+.profileAndSuggestions .suggestions .suggestedAccount #suggestedProfile{ 
+
+ border : 1px solid white;   
+ display: flex;
+ align-items: center;
+ overflow: hidden;
+ justify-content: center;
+ height : 40px;
+ width: 40px;
+ border-radius: 50%;
+
+
+}
+
+
+.topLogos {
+    display: none;
+  }
+  
+
+.searchBar #inputBox {
+    width: 90%;
+    outline : none;
+    border : none;
+    background-color: rgb(43, 43, 43);
+    font-size : 15px;
+    color : white;
+}
+
+.searchBar #inputBox:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px rgba(43, 43, 43) inset !important; 
+    -webkit-text-fill-color: white !important; 
+    border: none !important;
+    outline: none !important;
+    background-color: rgb(43, 43, 43) !important;
+  }
+
+
+@media (max-width : 1134px) {
+   
+.profileAndSuggestions {
+     display: none;
+}
+  
+.rightOptions {
+   
+     width: 100%;
+     padding : 0;
+     margin: 0;
+
+}
+
+.rightOptions .PostAndStories {
+     width: 100%;
+}
+
+}
+
+
+
+@media (max-width : 1237px) {
+     
+.rightOptions {
+     margin-left: 5%;
+     width: 80%;
+}
+
+
+
+.rightOptions .PostAndStories #Stories li{
+     
+    width: 55px;
+    height : 55px;
+}
+
+}
+
+@media (max-width : 764px) { 
+
+    .rightOptions .PostAndStories #Stories{ 
+        margin-left: 0px;
+        
+    }
+
+
+    .topLogos {
+        display: flex;
+        position: relative;
+        border-bottom: 1px solid gray;
+        padding: 5px 5px;
+        justify-content: space-between;
+        gap: 20px;
+        align-items: center;
+    
+      }
+    
+      .topLogos .searchBar {
+        display: flex;
+      
+        gap: 20px;
+        width: 40%;
+        margin-left: 10px;
+        padding: 10px 10px;
+        align-items: center;
+        border-radius: 10px;
+        color: whitesmoke;
+        font-weight: bold;
+        background-color: rgb(43, 43, 43);
+      }
+
+}

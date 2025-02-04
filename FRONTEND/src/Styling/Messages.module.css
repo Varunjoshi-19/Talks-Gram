@@ -1,0 +1,327 @@
+.allMessages {
+
+    display: flex;
+    margin-left: 20%;
+    flex-direction: column;
+    border-right: 1px solid gray;
+    width: 30%;
+    height: 100vh;
+}
+
+
+.allMessages .usernameAndIcon {
+
+    display: flex;
+    justify-content: space-around;
+    padding: 20px 20px;
+    font-size: 1.25rem;
+}
+
+.allMessages .notes {
+
+    display: flex;
+    gap: "20px";
+    padding: 20px 20px;
+
+}
+
+.allMessages .notes #addNewNote {
+
+    border: 1px solid white;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    justify-content: center;
+    height: 70px;
+    width: 70px;
+    border-radius: 50%;
+
+}
+
+.allMessages .MessagesContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    gap: 20px;
+    padding: 10px 10px;
+    overflow-y: scroll;
+    position: relative;
+    scroll-behavior: smooth;
+}
+
+
+
+
+.allMessages .MessagesContainer::-webkit-scrollbar {
+    width: 8px;
+}
+
+.allMessages .MessagesContainer::-webkit-scrollbar-thumb {
+    background-color: rgba(128, 128, 128, 0.5);
+    border-radius: 10px;
+}
+
+
+
+.MessagesContainer #userMessage {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    cursor: pointer;
+}
+
+.MessagesContainer #userMessage #userIcon {
+    border: 1px solid white;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    justify-content: center;
+
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+}
+
+
+.sendMessage {
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    right: 8%;
+    top: 40%;
+
+}
+
+.sendMessage #messageIcon {
+
+    border: 1px solid white;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    justify-content: center;
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+}
+
+
+.chatMessage {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    left: 50%;
+    top: 0%;
+    padding: 15px 15px;
+    width: 50%;
+    border-bottom: 1px solid rgba(124, 121, 121, 0.534);
+
+}
+
+#profileIcon {
+
+    border: 1px solid white;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    justify-content: center;
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+
+}
+
+.ChatMessageContainer {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    gap: 20px;
+    width: 50%;
+    left: 50%;
+    top: 12.5%;
+    height: 78%;
+
+}
+
+.ChatMessageContainer::-webkit-scrollbar {
+    width: 8px;
+}
+
+.ChatMessageContainer::-webkit-scrollbar-thumb {
+    background-color: rgba(128, 128, 128, 0.5);
+    border-radius: 10px;
+}
+
+
+.ChatMessageContainer .messageInputBox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.336);
+    position: fixed;
+    gap : 5px;
+    width: 49%;
+    left: 50.5%;
+    top: 92%;
+    height: 6%;
+    border-radius: 10px;
+
+}
+
+.ChatMessageContainer .leftSideMessages {
+
+
+    border-radius: 10px;
+    display: flex;
+    color: white;
+    word-wrap: break-word;
+    justify-content: center;
+    flex-direction: column;
+    position: relative;
+    width: none;
+    margin-bottom:  10px;
+    margin-top: 10px;
+    bottom: -64%;
+    left: 10px;
+    height: 6%;
+}
+
+
+.ChatMessageContainer .rightSideMessages {
+
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    position: relative;
+    width: none;
+    margin-bottom:  10px;
+    word-wrap: break-word;
+    bottom: -64%;
+    right: 10px;
+    margin-top: 10px;
+    height: 6%;
+}
+
+#sendMessageButton { 
+    color : white;
+}
+
+#sendMessageButton:hover { 
+    color : rgb(0, 102, 255);
+}
+
+
+@media (max-width : 1250px) {
+    
+.allMessages {
+     margin-left: 4%;
+     width: 30%;
+}   
+
+.sendMessage {
+     width:65%;
+    right : 0%;
+
+}
+
+
+.sendMessage { 
+    width: 95%;
+   
+}
+
+.chatMessage { 
+
+    width : 65%;
+    left : 35%;
+    
+}
+
+.ChatMessageContainer{ 
+
+    width : 65%;
+    left : 35%;
+   
+}
+
+.ChatMessageContainer .messageInputBox {
+    width : 65%;
+    left : 35%;
+}
+
+}
+
+
+@media (max-width : 1242px) {
+
+
+.allMessages {
+    display: none;
+}
+
+.sendMessage { 
+    width: 95%;
+   
+}
+
+.chatMessage { 
+ 
+    width: 90%;
+    left : 7%;
+}
+
+.ChatMessageContainer{ 
+
+    width : 90%;
+    left : 7%;
+}
+
+.ChatMessageContainer .messageInputBox {
+
+width: 90%;
+left : 7%;
+}
+    
+}
+
+@media (max-width : 764px) {
+     
+    .allMessages {
+        display: none;
+    }
+    
+    .sendMessage { 
+        width: 95%;
+       
+    }
+    
+    .chatMessage { 
+     
+        width: 100%;
+        left : 0%;
+    }
+    
+    .ChatMessageContainer{ 
+    
+        width : 100%;
+        left : 0%;
+       
+        height : 72%;
+      
+    }
+    
+    .ChatMessageContainer .messageInputBox {
+    
+    width: 100%;
+    left : 0%;
+    top : 85%;
+    
+    }
+
+    
+}
