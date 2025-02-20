@@ -49,13 +49,11 @@ async function HandleNewPostUpload(req, res) {
     }
 
     catch (error) {
-
         res.status(505).json({ error: error.message });
     }
 
 
 }
-
 
 async function fetchAllPosts(req, res) {
 
@@ -130,6 +128,7 @@ async function fetchLikedPost(req, res) {
 }
 
 async function renderPostImage(req, res) {
+    
     const id = req.params.id;
     if (!id || id == "") return res.status(404).json({ error: "failed to render image" });
 
@@ -282,7 +281,6 @@ function shufflePosts(allPosts) {
     for (let i = allPosts.length - 1; i > 0; i--) {
 
         const randomIndex = Math.floor(Math.random() * (i + 1));
-
 
         [allPosts[i], allPosts[randomIndex]] = [allPosts[randomIndex], allPosts[i]];
 

@@ -136,7 +136,7 @@ const MenuOptions: React.FC<MenuOptionProps> = ({ profile }) => {
 
   function handleOpenReels() {
 
-    navigate("/reels/123");
+    navigate("/reels");
     
   }
 

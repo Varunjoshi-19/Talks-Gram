@@ -50,7 +50,7 @@ if(!user) {
           <Route path="/Personal-chat/:id" element={!user ? <Login /> : <Chatting />} />
           <Route path="/userProfile/:id" element={!user ? <Login /> : <UserProfile />} />
           <Route path="/Notification" element={<NotificationPage />} />
-          <Route path = "/reels/:id" element={<Reels/>} />
+          <Route path = "/reels" element={<Reels/>} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
 

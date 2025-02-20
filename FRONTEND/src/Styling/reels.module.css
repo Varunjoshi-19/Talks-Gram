@@ -1,10 +1,10 @@
 .reelsContainer {
-     
-    border : 1px solid white;
+
+    /* border: 1px solid white; */
     width: 80%;
     position: relative;
-    left : 20%;
-    height : 100vh;
+    left: 20%;
+    height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -12,25 +12,79 @@
 
 
 .reelsLayout {
-    border: 1px solid red;
-    height: 100vh; 
+    height: 100vh;
     width: 450px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    overflow-y: scroll; 
-    scroll-snap-type: y mandatory; 
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
 }
 
 .reelsLayout::-webkit-scrollbar {
     display: none;
-  }
+}
 
 .eachReels {
-    border: 1px solid blue;
-    width: 85%; 
+    position: relative;
+    width: 85%;
     height: 98vh;
-    scroll-snap-align: start; 
+    scroll-snap-align: start;
     flex-shrink: 0;
+    padding : 10px;
     margin-top: 20px;
+}
+
+
+.VideoController {
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.VideoController button {
+    display: flex;
+    border: none;
+    outline: none;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    width: 80px;
+    height: 80px;
+    background-color: rgba(10, 10, 10, 0.712);
+    font-size: 2rem;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+.reelInfoContainer {
+    position: absolute;
+    user-select: none;
+    font-size: 2rem;
+    display: flex;
+    gap : 40px;
+    flex-direction: column;
+    bottom: 100px;
+    right: 20px;
+}
+
+.reelInfoContainer #likeAndComment {
+     
+    display: flex;
+    gap : 5px;
+    flex-direction:  column;
+    align-items: center;
+
+}
+
+
+.reelUserInfo { 
+    position: absolute; 
+    display: flex;
+    flex-direction: column;
+    left : 4%;
+    bottom: 5px;
+    gap : 10px;
 }

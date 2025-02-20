@@ -165,7 +165,8 @@ function AppInterface() {
                 authorName: authorResponse.ok ? authorResult.userProfile.username : "Unknown",
                 likeStatus: likeResponse.ok && likeResponse.status == 200 ? likeResult.likeStatus : false,
               };
-            } catch (error) {
+            } 
+            catch (error) {
               console.error(`Error fetching details for post by ${post.author.userId}:`, error);
               return { ...post, authorName: "Unknown", likeStatus: false };
             }

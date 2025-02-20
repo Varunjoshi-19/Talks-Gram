@@ -80,3 +80,8 @@ POST http://localhost:3000/accounts/fetchProfileDetails/676bc26d8cccd2da14b3e705
 ###
 
 POST http://localhost:3000/accounts/add-commid/677168d2b9bb706ce0192971
+
+
+
+### 
+GET http://localhost:3000/uploadReel/render-reel/67b71c9d8ddaba1f3a5f4204

@@ -10,6 +10,7 @@ const bodyParser = require("body-parser");
 const UserRoute = require("./routes/user.js");
 const PersonalRoute = require("./routes/Personal-Chat.js");
 const PostRoute = require("./routes/Post.js");
+const ReelRoute = require("./routes/Reel.js");
 
 const PORT = process.env.PORT || 3000;
 const app = express();
@@ -18,18 +19,18 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: "*",
-    methods : ["GET" , "POST"],
+    methods: ["GET", "POST"],
     transports: ['websocket'],
-    credentials :true
-  
-  
+    credentials: true
+
+
   },
 });
 
 app.use(cors({
   origin: "*",
-  methods : ["GET" , "POST"],
-  credentials :true
+  methods: ["GET", "POST"],
+  credentials: true
 
 }));
 
@@ -63,6 +64,8 @@ io.on("connection", (socket) => {
 app.use("/accounts", UserRoute);
 app.use("/Personal-chat", PersonalRoute);
 app.use("/uploadPost", PostRoute);
+app.use("/uploadReel", ReelRoute);
+
 
 server.listen(PORT, async () => {
   try {

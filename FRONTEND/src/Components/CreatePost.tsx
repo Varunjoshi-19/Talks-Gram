@@ -13,36 +13,35 @@ interface CreatePostProps {
 const CreatePost: React.FC<CreatePostProps> = ({ s }) => {
 
     const fileInputRef = useRef<HTMLInputElement | null>(null);
-    const [selectedPostImage, setSelectedPostImage] = useState<string | null>(null);
-    const [postImage, setPostImage] = useState<File | any>(null);
+    const [selectedPostImage, setSelectedPostImage] = useState<string>("");
+    const [postFile, setPostFile] = useState<File | any>(null);
     const [error, setError] = useState<string | null>(null);
-    const [message , setMessage] = useState<string | null>(null); 
+    const [message, setMessage] = useState<string | null>(null);
     const [caption, setCaption] = useState<string>("");
     const [descriptionBar, setDescriptionBar] = useState<boolean>(false);
     const [imageWidth, setWidth] = useState<string>("100%");
-
-
-    const [validExtension, setValidExtension] = useState<string | null>(null);
+    const [currentExtensionType , setCurrentExtensionType] = useState<string>("");
+    const ImageExtensions : string[] = ["jpg", "png", "jpeg"];
+    const validExtension : string[]= ["jpg" , "jpeg" , "png" , "mp4"];
 
     function handleSelectFile(e: React.ChangeEvent<HTMLInputElement>) {
 
         const file = e?.target.files?.[0];
         if (file) {
 
-            if (file.name.includes(".")) {
+            if (file.name.includes(".")){
 
-                const extension = file.name.split(".");
-                if (extension[1] === "jpeg" || extension[1] === "jpg" || extension[1] === "png") {
+                const extension = file.name.split(".")[1];
 
-                    setValidExtension(extension[1]);
-
+                if (extension === "jpeg" || extension === "jpg"|| extension === "png" || extension == "mp4"){
+                    console.log(extension);
+                    setPostFile(file);
+                    const imageUrl = URL.createObjectURL(file);
+                    setCurrentExtensionType(extension);
+                    setSelectedPostImage(imageUrl);
                 }
             }
 
-            setPostImage(file);
-            const imageUrl = URL.createObjectURL(file);
-            setSelectedPostImage(imageUrl);
-        
         }
     }
 
@@ -53,19 +52,17 @@ const CreatePost: React.FC<CreatePostProps> = ({ s }) => {
         }
     }
 
-    async function handlePostImage() {
+    async function handlePostImage(profile : any) {
 
-
-        const profile = await fetchProfileDetails();
         if (!profile) {
             setError("Failed to Post");
             return;
         }
 
-        if (profile && postImage) {
+        if (profile && postFile) {
             const formData = new FormData();
             formData.append("profile", JSON.stringify(profile)); // Profile data
-            formData.append("postImage", postImage); // File data
+            formData.append("postImage", postFile); // File data
             formData.append("caption", caption); // set the description
 
             try {
@@ -78,9 +75,9 @@ const CreatePost: React.FC<CreatePostProps> = ({ s }) => {
 
                 if (response.ok) {
                     setMessage(result.message);
-                   setTimeout(() => { 
-                    s();
-                   } , 1500);
+                    setTimeout(() => {
+                        s();
+                    }, 1500);
                 } else {
                     setError(result.error);
                 }
@@ -91,6 +88,66 @@ const CreatePost: React.FC<CreatePostProps> = ({ s }) => {
         } else {
             setError("No image selected");
         }
+    }
+
+
+    async function handlePostReel(profile : any) {
+
+        
+        if (!profile) {
+            setError("Failed to Post");
+            return;
+        }
+
+        if (profile && postFile) {
+            
+            const formData = new FormData();
+            formData.append("profile", JSON.stringify(profile)); 
+            formData.append("postReel", postFile); 
+            formData.append("caption", caption); 
+
+            try {
+                const response = await fetch("http://localhost:3000/uploadReel/newReel", {
+                    method: "POST",
+                    body: formData, 
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    setMessage(result.message);
+                    setTimeout(() => {
+                        s();
+                    }, 1500);
+                } else {
+                    setError(result.error);
+                }
+            } catch (error) {
+                console.error("Error posting Video:", error);
+                setError("Failed to Post");
+            }
+        } else {
+            setError("No Video selected");
+        }
+
+    }
+
+
+    async function DecideReelOrPostUpload() { 
+
+        const profile = await fetchProfileDetails();
+
+      if(profile) { 
+        if(ImageExtensions.includes(currentExtensionType))  {
+            console.log("Image Posted bro"); 
+            handlePostImage(profile);
+            return ;
+        }
+        if(currentExtensionType == "mp4") { 
+               handlePostReel(profile);
+               return;
+        }
+      }
     }
 
 
@@ -105,20 +162,19 @@ const CreatePost: React.FC<CreatePostProps> = ({ s }) => {
             <div className={styles.UploadPostContainer} >
 
 
-            <button style={{
+                <button style={{
                     position: "absolute", right: "10px",
                     color: "white", fontSize: "2rem", backgroundColor: "transparent", border: "none",
                     cursor: "pointer"
                 }} onClick={s}>✖</button>
             </div>
 
-            <div id={styles.uploadPost}  >
-                {selectedPostImage ?
+            <div id={styles.uploadPost}>
 
-                    <div style={{
-                        width: "100%"
+                {currentExtensionType != "" ?
 
-                    }} >
+                    <div style={{width: "100%"}} >
+                        
                         <div style={{
                             display: "flex", opacity: "1",
                             height: "10%", width: "100%",
@@ -140,11 +196,27 @@ const CreatePost: React.FC<CreatePostProps> = ({ s }) => {
                         <div style={{
                             width: "100%", height: "90%", borderBottomRightRadius: "10px", borderBottomLeftRadius: "10px", display: "flex",
                             alignItems: "center"
-                        }} >
+                        }}>
 
-                            {validExtension ?
+                            {validExtension.includes(currentExtensionType) ?
+
                                 <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center" }} >
-                                    <img src={selectedPostImage} style={{ borderRight: "2px solid white" }} alt="_postImage" height="100%" width={imageWidth} />
+                                    
+                                    {ImageExtensions.includes(currentExtensionType) ?
+
+                                        <img src={selectedPostImage} alt=""
+                                            height="100%" width={imageWidth}
+                                            style={{ borderRight: "2px solid white" , objectFit :"contain" }} />
+
+
+                                        :
+
+                                     <video src={selectedPostImage} style={{ borderRight: "2px solid white" }}
+                                            autoPlay
+                                            loop={true}
+                                            height="100%" width={imageWidth} />
+
+                                    }
 
                                     {descriptionBar && <div style={{
                                         alignItems: "center", flexDirection: "column",
@@ -159,7 +231,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ s }) => {
                                         }} placeholder="about post...." />
 
 
-                                        <button onClick={handlePostImage} style={{
+                                        <button onClick={DecideReelOrPostUpload} style={{
                                             padding: "10px 10px", marginRight: "4px", border: "none",
                                             cursor: "pointer", fontWeight: "bolder", borderRadius: "5px",
                                             color: "white", backgroundColor: "#1877F2"
@@ -169,13 +241,14 @@ const CreatePost: React.FC<CreatePostProps> = ({ s }) => {
 
                                         </button>
 
-                                     <p style={{ color : "green" }}>{message}</p>
+                                        <p style={{ color: "green" }}>{message}</p>
                                     </div>
 
                                     }
 
 
                                 </div>
+                                
                                 :
 
                                 <div style={{
@@ -191,9 +264,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ s }) => {
 
                     </div>
 
-
                     :
-
 
                     <>
 
@@ -224,9 +295,11 @@ const CreatePost: React.FC<CreatePostProps> = ({ s }) => {
 
 
                             <input type="file"
+
                                 ref={fileInputRef}
                                 onChange={handleSelectFile}
                                 style={{ display: "none" }}
+                               
                             />
                         </div>
 
@@ -235,8 +308,6 @@ const CreatePost: React.FC<CreatePostProps> = ({ s }) => {
 
 
                 }
-
-
 
             </div>
 
