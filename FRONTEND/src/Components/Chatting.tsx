@@ -1,50 +1,21 @@
-
 import { useNavigate, useParams } from 'react-router-dom'
 import MenuOptions from './MenuOptions';
 import styles from "../Styling/Messages.module.css";
-import io from 'socket.io-client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { faEdit, faInfoCircle, faSmile, faMicrophone, faImage, faHeart } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faInfoCircle, faSmile, faPause, faMicrophone, faImage, faHeart, faImages, faPlay } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useRef, useState } from "react";
-import { fetchProfileDetails, GenerateId, fetchChattedUserDetails , fetchCommunicationID } from "../Scripts/FetchDetails.ts";
+import { fetchProfileDetails, GenerateId, fetchChattedUserDetails, fetchCommunicationID } from "../Scripts/FetchDetails.ts";
 import LoadingScreen from './LoadingScreen.tsx';
+import {
+    ProfileProps, InfoDataType, BufferedDataType, ChattedUserInfo, AdditionalDataType,
+    ShowFile, AudioData, Chat, socket, BACKEND_URL
+} from "../Scripts/GetData.ts";
+import { MAIN_BACKEND_URL } from '../Scripts/URL.ts';
 
-const BACKEND_URL = 'http://localhost:3000';
-const socket = io(BACKEND_URL, {
-    transports: ["websocket"],
-    withCredentials: true,
-  });
 
 
-interface ProfileProps {
 
-    _id: string | any,
-    fullname: string,
-    username: string,
-    followers: number,
-    following: number,
-    bio: string
-}
-
-export interface ChattedUserInfo {
-
-    chatId: string | any,
-    userId: string,
-    otherUserId: string,
-    username: string,
-    chat: string
-
-}
-
-interface Chat {
-    userId: string | any,
-    otherUserId: string | any,
-    chatId: string | any;
-    username: string;
-    initateTime: string;
-    chat: string;
-}
 
 
 function Chatting() {
@@ -52,20 +23,168 @@ function Chatting() {
     const { id } = useParams();
     const navigate = useNavigate();
 
+    const videoExtension = ["mp4", "video/mp4", "webm", "ogg"];
+    const imageExtension = ["jpg", "image/png", "image/jpg", "image/jpeg", "jpeg", "png", "gif", "webp"];
+    const audioExtension = ["mp3", "wav", "audio/wav", "ogg"];
+
+
     const [messageInputValue, setMessageInputValue] = useState<string>("");
     const [otherUserDetails, setUserDetails] = useState<ProfileProps | any>();
-    const [myProfileDetails, setMyProfileDetails] = useState<ProfileProps  | any>();
+    const [myProfileDetails, setMyProfileDetails] = useState<ProfileProps | any>();
     const [AllChattedUsers, setChattedUsers] = useState<ChattedUserInfo[]>([]);
     const [AllChats, setAllChats] = useState<Chat[]>([]);
     const [chatId, setChatId] = useState<string | any>("");
-    const [commId , setCommId] = useState<string | any>("");
+    const [commId, setCommId] = useState<string | any>("");
+    const inputMessageRef = useRef<HTMLInputElement>(null);
+    const sendMessageButtonRef = useRef<HTMLButtonElement>(null);
     const lastMessageRef = useRef<HTMLDivElement | null>(null);
 
 
-    const leftBackground = "rgba(124, 121, 121, 0.534)";
-    const rightBackground = "#1877F2";
+
+    // video and image stuff
+    const [showMultipleItems, setShowMultipleItems] = useState<ShowFile[]>([]);
+    const [multipleItemSelected, setMultipleItemsSelected] = useState<File[]>([]);
+    const fileRef = useRef<HTMLInputElement>(null);
+    const [bufferedData, setBufferedData] = useState<BufferedDataType[]>([]);
+    // video and image stuff
 
 
+
+    // recorder stuff
+    const maxTimeOfRecording = 3 * 60;
+    const [mediaRecoder, setMediaRecoder] = useState<MediaRecorder | null>(null);
+    const [recording, setRecording] = useState<boolean>(false);
+    const [audioUrl, setAudioUrl] = useState<any | null>(null);
+    const [audioFileBlob, setAudioFileBlob] = useState<Blob | null>(null);
+    const [runningTimer, setRunningTimer] = useState<number>(0);
+    const [audioDataInfo, setAudioDataInfo] = useState<AudioData | null>();
+    const recoderDivRef = useRef<HTMLDivElement>(null);
+    const [progress, setProgress] = useState(0);
+    const [playOrPause, setPlayOrPause] = useState<boolean>(false);
+    const recordedAudioRef = useRef<HTMLAudioElement>(null);
+    let audioChunks: Blob[] = [];
+    let stream;
+    let recorder;
+    let recoderIntervalId: any;
+    let recorderTimeout: any;
+    // recorder stuff
+
+
+    const chatContainerRef = useRef<HTMLDivElement>(null);
+
+
+    useEffect(() => {
+
+
+        if (lastMessageRef.current) {
+            
+            lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+
+
+        socket.emit('seen-chat', chatId, myProfileDetails?.username);
+
+        socket.on('chat-receive', (info) => {
+
+
+            const ChatInfo: Chat = {
+                userId: myProfileDetails?._id,
+                otherUserId: otherUserDetails?._id,
+                chatId: info.chatId,
+                username: info.username,
+                initateTime: Date.now().toString(),
+
+            }
+            if (info.chat) {
+                ChatInfo.chat = info.chat;
+            }
+
+            if (info.audioData && info.audioData.blobFile) {
+                const blob = new Blob([info.audioData.blobFile], { type: `audio/${info.audioData.extension}` });
+                const url = URL.createObjectURL(blob);
+
+                const tempData: ShowFile = {
+                    actualBlob: url,
+                    extensionName: info.audioData.extension
+                };
+
+                // Ensure `temporaryAddData` exists
+                ChatInfo.temporaryAddData = ChatInfo.temporaryAddData || [];
+                ChatInfo.temporaryAddData.push(tempData);
+            }
+
+
+            if (info.AdditionalInfoData) {
+
+
+                const tempData: ShowFile[] = info.AdditionalInfoData.map((each: BufferedDataType) => {
+                    const blob = new Blob([each.file], { type: each.extension })
+                    const url = URL.createObjectURL(blob);
+
+                    return {
+                        actualBlob: url,
+                        extensionName: each.extension
+                    }
+                })
+                ChatInfo.temporaryAddData = tempData;
+
+            }
+
+            setAllChats((prevChats) => [...prevChats, ChatInfo]);
+        });
+
+
+
+
+        return () => {
+            socket.off('chat-receive');
+        };
+    }, [chatId, myProfileDetails?.username, AllChats]);
+
+
+    useEffect(() => {
+
+        if (!mediaRecoder) return;
+
+        recoderIntervalId = setInterval(() => {
+            setRunningTimer((prev) => prev + 1);
+            setProgress((prev) => Math.min(prev + (100 / maxTimeOfRecording), 100));
+        }, 1000);
+
+
+        const recorderTimeout = setTimeout(() => {
+            clearInterval(recoderIntervalId);
+        }, maxTimeOfRecording * 1000);
+
+        mediaRecoder.ondataavailable = (event: BlobEvent) => {
+            audioChunks.push(event.data);
+        }
+
+        mediaRecoder.onstop = () => {
+
+            const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+            setAudioDataInfo({ blobFile: audioBlob, extension: "wav" });
+            const audioUrl = URL.createObjectURL(audioBlob);
+            console.log(audioChunks);
+            setAudioFileBlob(audioBlob);
+            setAudioUrl(audioUrl);
+            audioChunks = [];
+
+            if (recoderDivRef.current) recoderDivRef.current.style.transition = "none";
+            setRunningTimer(0);
+            setProgress(0);
+            clearInterval(recoderIntervalId);
+            clearTimeout(recorderTimeout);
+        }
+
+
+        return () => {
+            clearInterval(recoderIntervalId);
+            clearTimeout(recorderTimeout);
+        };
+
+
+    }, [mediaRecoder]);
 
 
     useEffect(() => {
@@ -73,7 +192,7 @@ function Chatting() {
             try {
                 const [myDetails, otherDetailsResponse] = await Promise.all([
                     fetchProfileDetails(),
-                    fetch(`http://localhost:3000/Personal-chat/fetchUser/${id}`)
+                    fetch(`${MAIN_BACKEND_URL}/Personal-chat/fetchUser/${id}`)
 
                 ]);
 
@@ -99,7 +218,7 @@ function Chatting() {
 
             } catch (error) {
                 console.error("Error fetching data:", error);
-                // navigate("/PageNotFound");
+
             }
         }
 
@@ -109,65 +228,28 @@ function Chatting() {
 
     useEffect(() => {
 
-
-
         async function fetchChatsFromDatabase() {
 
-            setAllChats([]);
-            const response = await fetch(`${BACKEND_URL}/personal-chat/fetch-all-personal-chats/${chatId}`, {
+            // setAllChats([]);
+            const response = await fetch(`${MAIN_BACKEND_URL}/personal-chat/fetch-all-personal-chats/${chatId}`, {
                 method: "POST",
             });
 
             const result = await response.json();
 
             if (response.ok) {
-              
                 setAllChats(result);
-
             }
 
         }
 
         fetchChatsFromDatabase();
 
-    }, [chatId]);
-
-
-
-    useEffect(() => {
-
         if (lastMessageRef.current) {
             lastMessageRef.current.scrollIntoView({ behavior: 'smooth' });
         }
 
-  
-        socket.on("connect" , () =>  {
-            console.log("connnected socket");
-        } )
-
-        socket.emit('seen-chat', chatId, myProfileDetails?.username);
-
-        socket.on('chat-receive', (info) => {
-
-            const ChatInfo: Chat = {
-                userId: myProfileDetails?._id,
-                otherUserId: otherUserDetails?._id,
-                chatId: info.chatId,
-                username: info.username,
-                initateTime: Date.now().toString(),
-                chat: info.chat
-
-            }
-            setAllChats((prevChats) => [...prevChats, ChatInfo]);
-        });
-
-
-
-
-        return () => {
-            socket.off('chat-receive');
-        };
-    }, [chatId, myProfileDetails?.username, AllChats]);
+    }, [chatId]);
 
 
     useEffect(() => {
@@ -182,21 +264,82 @@ function Chatting() {
     }, [myProfileDetails]);
 
 
-
-
-
-// ------ other functions -------
+    // ------ other handling functions -------  // 
 
     function handleSendMessage() {
 
-        if (messageInputValue.trim()) {
+        if (messageInputValue.length > 0) {
 
-            socket.emit('new-chat', {
-                chat: messageInputValue,
+            if (messageInputValue.trim()) {
+
+                // for others 
+                const InfoData: InfoDataType = {
+                    chat: messageInputValue,
+                    username: myProfileDetails?.username,
+                    chatId: chatId,
+                    commId: commId
+
+                }
+                // for local me 
+                const ChatInfo: Chat = {
+                    userId: myProfileDetails?._id,
+                    otherUserId: otherUserDetails?._id,
+                    chatId: chatId,
+                    username: myProfileDetails?.username || '',
+                    initateTime: Date.now().toString(),
+                    chat: messageInputValue,
+                };
+
+                socket.emit('new-chat', InfoData);
+                savedChatToDatabases(ChatInfo);
+
+
+
+                if (multipleItemSelected.length > 0) {
+
+                    const MInfoData: InfoDataType = {
+                        AdditionalInfoData: bufferedData,
+                        username: myProfileDetails?.username,
+                        chatId: chatId,
+                        commId: commId
+
+                    }
+
+                    const MChatInfo: Chat = {
+                        userId: myProfileDetails?._id,
+                        otherUserId: otherUserDetails?._id,
+                        chatId: chatId,
+                        username: myProfileDetails?.username || '',
+                        initateTime: Date.now().toString(),
+                        AdditionalData: multipleItemSelected
+                    };
+
+                    socket.emit('new-chat', MInfoData);
+                    saveAdditionalInfo(MChatInfo);
+                    console.log("Your message has been sent with additional data", ChatInfo);
+                }
+
+
+                setMessageInputValue('');
+                setMultipleItemsSelected([]);
+                setShowMultipleItems([]);
+                setBufferedData([]);
+                return;
+
+            }
+
+        }
+
+        if (multipleItemSelected.length > 0) {
+
+
+            const InfoData: InfoDataType = {
+                AdditionalInfoData: bufferedData,
                 username: myProfileDetails?.username,
                 chatId: chatId,
-                commId : commId
-            });
+                commId: commId
+
+            }
 
             const ChatInfo: Chat = {
                 userId: myProfileDetails?._id,
@@ -204,19 +347,60 @@ function Chatting() {
                 chatId: chatId,
                 username: myProfileDetails?.username || '',
                 initateTime: Date.now().toString(),
-                chat: messageInputValue
+                AdditionalData: multipleItemSelected
+            };
+
+            socket.emit('new-chat', InfoData);
+
+            saveAdditionalInfo(ChatInfo);
+            setMessageInputValue('');
+            setMultipleItemsSelected([]);
+            setShowMultipleItems([]);
+            setBufferedData([]);
+            return;
+
+
+        }
+
+        if (audioFileBlob) {
+            console.log("you have sended audioBlob file bro");
+            const InfoData: InfoDataType = {
+
+                audioData: audioDataInfo,
+                username: myProfileDetails?.username,
+                chatId: chatId,
+                commId: commId
+
+            }
+
+            const ChatInfo: Chat = {
+                userId: myProfileDetails?._id,
+                otherUserId: otherUserDetails?._id,
+                chatId: chatId,
+                username: myProfileDetails?.username || '',
+                initateTime: Date.now().toString(),
+                AdditionalData: audioDataInfo
             };
 
 
-            savedChatToDatabases(ChatInfo);
 
+
+            socket.emit('new-chat', InfoData);
+
+            saveAudioDataInfo(ChatInfo);
             setMessageInputValue('');
+            ResetEverythingOnDom();
+            setMultipleItemsSelected([]);
+            setShowMultipleItems([]);
+            setBufferedData([]);
+            return;
         }
+
     }
 
     async function savedChatToDatabases(chat: Chat) {
 
-      await fetch(`${BACKEND_URL}/personal-chat/save-personal-chats`, {
+        const response = await fetch(`${BACKEND_URL}/personal-chat/save-personal-chats`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -224,12 +408,56 @@ function Chatting() {
             body: JSON.stringify(chat),
         });
 
+        if (response.ok) console.log("Chat has been saved to the database");
 
+
+
+
+    }
+
+    async function saveAdditionalInfo(AdditionalInfo: Chat) {
+
+
+        const formData = new FormData();
+
+        formData.append("allData", JSON.stringify(AdditionalInfo));
+
+        AdditionalInfo.AdditionalData?.forEach((file: any) => {
+            formData.append("files", file);
+        })
+
+
+        const response = await fetch(`${BACKEND_URL}/personal-chat/additionalInfo-message`, {
+            method: "POST",
+            body: formData
+        });
+
+        if (response.ok) console.log("Chat has been saved to the database");
+    }
+
+    async function saveAudioDataInfo(ChatInfo: Chat) {
+
+        const audioFile = ChatInfo.AdditionalData.blobFile;
+        console.log("this is the ", audioFile);
+        const formData = new FormData();
+
+        formData.append("audioData", JSON.stringify(ChatInfo));
+        formData.append("audioFile", audioFile);
+
+        const response = await fetch(`${BACKEND_URL}/personal-chat/audioDataInfo-message`, {
+            method: "POST",
+            body: formData
+        });
+
+        if (response.ok) console.log("Chat has been saved to the database");
     }
 
     function handleEnableMessageTab(value: string) {
         const user = JSON.parse(value);
+        // reset everything
+        ResetEverythingOnDom();
         navigate(`/Personal-chat/${user.userId}`);
+
     }
 
     function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
@@ -239,13 +467,113 @@ function Chatting() {
         }
     }
 
+    function handleSelectedFile(e: React.ChangeEvent<HTMLInputElement>) {
 
+        const file = e.target.files?.[0];
+
+        if (file) {
+            const extension = file.name.split(".")[1];
+            console.log(extension);
+            if (extension == "mp4" || extension == "jpeg" || extension == "jpg" || extension == "png") {
+
+
+                const fileReader = new FileReader();
+
+                fileReader.onload = function (e) {
+                    const arrayBuffer = e.target?.result;
+                    console.log("Video Sent:", arrayBuffer);
+                    setBufferedData(prev => [...prev, { file: arrayBuffer, extension: extension }]);
+                }
+
+                fileReader.readAsArrayBuffer(file);
+
+                setMultipleItemsSelected(prev => [...prev, file]);
+                const showFile = URL.createObjectURL(file);
+                console.log("Look over here ", file.type, showFile);
+                setShowMultipleItems(prev => [...prev, { extensionName: extension, actualBlob: showFile }]);
+            }
+
+
+        }
+    }
+
+    function handleDiscardButton() {
+
+        ResetEverythingOnDom();
+    }
+
+    async function handleRecordAudio() {
+        setRecording(true);
+
+        if (sendMessageButtonRef.current) sendMessageButtonRef.current.disabled = true;
+
+
+        if (inputMessageRef.current) inputMessageRef.current.disabled = true;
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        audioChunks = [];
+        recorder = new MediaRecorder(stream);
+        setMediaRecoder(recorder);
+        recorder.start();
+
+
+    }
+
+    function handleStopRecording() {
+        if (sendMessageButtonRef.current) sendMessageButtonRef.current.hidden = false;
+        audioChunks = [];
+        setPlayOrPause(true);
+        mediaRecoder?.stop();
+        setMediaRecoder(null);
+    }
+
+    function PlayRecorderAudio() {
+
+        audioChunks = [];
+        if (recordedAudioRef.current && recordedAudioRef.current.paused) {
+            setPlayOrPause(false);
+            recordedAudioRef.current.play();
+        }
+        else {
+            setPlayOrPause(true);
+            recordedAudioRef.current?.pause();
+        }
+
+    }
+
+    function ResetEverythingOnDom() {
+
+
+        if (inputMessageRef.current) inputMessageRef.current.disabled = false;
+
+        if (sendMessageButtonRef.current) sendMessageButtonRef.current.hidden = false;
+
+        if (recordedAudioRef.current) {
+            recordedAudioRef.current.remove();
+        }
+
+        setMediaRecoder(null);
+        setAudioFileBlob(null);
+        setAudioDataInfo(null);
+        clearInterval(recoderIntervalId);
+        clearTimeout(recorderTimeout);
+        setMessageInputValue("");
+        setMultipleItemsSelected([]);
+        setShowMultipleItems([]);
+        audioChunks = [];
+        recorder = null;
+        stream = null;
+        setAudioUrl(null);
+        setRecording(false);
+        setPlayOrPause(false);
+        setRunningTimer(0);
+        setProgress(0);
+    }
 
     return (
         <>
             {!myProfileDetails && !otherUserDetails ? <LoadingScreen /> : <div>
 
-                <MenuOptions profile={myProfileDetails}/>
+                <MenuOptions profile={myProfileDetails} />
 
                 <div className={styles.allMessages} >
 
@@ -273,7 +601,7 @@ function Chatting() {
                             AllChattedUsers.map((user, index) => (
                                 <div key={index} onClick={() => handleEnableMessageTab(JSON.stringify(user))} style={{ gap: "20px" }} id={styles.userMessage}>
                                     <div id={styles.userIcon}>
-                                        <img src={`http://localhost:3000/accounts/profileImage/${user.userId}`} width="100%" height="100%" alt="_image" />
+                                        <img src={`${MAIN_BACKEND_URL}/accounts/profileImage/${user.userId}`} width="100%" height="100%" alt="_image" />
                                     </div>
 
                                     <div>
@@ -292,7 +620,8 @@ function Chatting() {
 
 
 
-                <>
+                <div className={styles.bothProfileAndMessages} >
+
                     <div style={{ gap: "10px" }} className={styles.chatMessage}>
 
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -300,7 +629,7 @@ function Chatting() {
                             <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
 
                                 <div id={styles.profileIcon}>
-                                    <img src={`http://localhost:3000/accounts/profileImage/${id}`} height="100%" width="100%" alt="profile" />
+                                    <img src={`${MAIN_BACKEND_URL}/accounts/profileImage/${id}`} height="100%" width="100%" alt="profile" />
                                 </div>
 
                                 <p>{otherUserDetails?.username}</p>
@@ -315,12 +644,12 @@ function Chatting() {
                     <div className={styles.ChatMessageContainer}>
 
                         <div style={{
-                            position: "relative", top: "10%",
+                            position: "relative", top: "0%" , padding : "10px",
                             display: "flex", flexDirection: "column", gap: "10px",
                             alignItems: "center"
                         }}>
                             <div id={styles.profileIcon} style={{ width: "90px", height: "90px" }} >
-                                <img src={`http://localhost:3000/accounts/profileImage/${id}`} height="100%" width="100%" alt="profile" />
+                                <img src={`${MAIN_BACKEND_URL}/accounts/profileImage/${id}`} height="100%" width="100%" alt="profile" />
                             </div>
                             <p>{otherUserDetails?.fullname}</p>
                             <button onClick={() => navigate(`/userProfile/${otherUserDetails?._id}`)} style={{
@@ -338,83 +667,268 @@ function Chatting() {
 
 
                         {AllChats &&
+
                             AllChats.map((chat, index) => (
-                                <div
+                                <div ref={chatContainerRef}
                                     key={index}
-                                    className={
-                                        chat.username === myProfileDetails?.username
-                                            ? styles.rightSideMessages
-                                            : styles.leftSideMessages
-                                    }
+                                    className={`${styles.message} ${chat.username === myProfileDetails?.username ? styles.me : styles.other
+                                        }`}
                                 >
-                                    <p
-                                        style={{
-                                            position: "relative",
-                                            padding: "10px 10px",
-                                            borderRadius: "15px",
 
-                                            backgroundColor:
-                                                chat.username === myProfileDetails?.username
-                                                    ? rightBackground
-                                                    : leftBackground,
-                                            alignSelf:
-                                                chat.username === myProfileDetails?.username ? "flex-end" : "flex-start",
-                                            color: "white", // Ensure consistent text color
-                                            maxWidth: "70%", // Adjust width to fit messages
-                                        }}
-                                    >
-                                        {chat.chat}
+                                    {/* This is the TEXT MESSAGE */}
+                                    {chat.chat &&
 
-                                    </p>
+                                        <>
+                                        <p
+                                            className={
+                                                chat.username === myProfileDetails?.username ? styles.myMessage : styles.otherMessage
+                                            }
+                                        >
+                                            {chat.chat}
+
+                                        </p>
+
+                                        
+
+                                        </>
+
+                                    }
+
+                                    {/* This is the TEMPORARY MESSAGE USING SOCKET DATA AT REAL TIME  */}
+
+                                    {chat.temporaryAddData &&
+
+
+                                        <div id={styles.AdditionalData}>
+                                            {chat.temporaryAddData?.map((each) => {
+                                                if (videoExtension.includes(each.extensionName)) {
+
+                                                    return (
+                                                        <video key={each.actualBlob} src={each.actualBlob} controls
+                                                            style={{ width: "200px", objectFit: "cover", objectPosition: "center" }}
+                                                            className={chat.username === myProfileDetails?.username ? styles.myMessage : styles.otherMessage}
+                                                        />
+                                                    );
+                                                } else if (audioExtension.includes(each.extensionName)) {
+
+                                                    return (
+                                                        <audio key={each.actualBlob} src={each.actualBlob} controls
+                                                            className={chat.username === myProfileDetails?.username ? styles.myMessage : styles.otherMessage}
+                                                        />
+                                                    );
+                                                } else if (imageExtension.includes(each.extensionName)) {
+
+                                                    return (
+                                                        <img key={each.actualBlob} src={each.actualBlob} alt="image"
+                                                            style={{ width: "200px", objectFit: "contain", objectPosition: "center" }}
+                                                            className={chat.username === myProfileDetails?.username ? styles.myMessage : styles.otherMessage}
+                                                        />
+                                                    );
+                                                }
+                                                return null;
+                                            })}
+                                        </div>
+
+
+
+
+
+                                    }
+
+                                    {/* This is the AUDIO , VIDEO AND IMAGE DATA RECEIVED FROM BACKEND WHEN USER FETCH  */}
+
+                                    {
+
+                                        chat.AdditionalData &&
+
+
+
+                                        <div id={styles.AdditionalData}>
+                                            {chat.AdditionalData?.map((each: AdditionalDataType) => {
+                                                if (videoExtension.includes(each.contentType)) {
+                                                    return (
+                                                        <video
+                                                            key={each._id}
+                                                            src={`${MAIN_BACKEND_URL}/Personal-chat/render-message-items/${chat._id}/${each._id}`}
+                                                            controls
+                                                            style={{ width: "200px", objectFit: "contain", objectPosition: "center" }}
+                                                            className={chat.username === myProfileDetails?.username ? styles.myMessage : styles.otherMessage}
+                                                        />
+                                                    );
+                                                } else if (audioExtension.includes(each.contentType)) {
+                                                    return (
+                                                        <audio
+                                                            key={each._id}
+                                                            src={`${MAIN_BACKEND_URL}/Personal-chat/render-message-items/${chat._id}/${each._id}`}
+                                                            controls
+                                                            style={{ width: "200px", objectFit: "contain", objectPosition: "center" }}
+                                                            className={chat.username === myProfileDetails?.username ? styles.myMessage : styles.otherMessage}
+                                                        />
+                                                    );
+                                                } else if (imageExtension.includes(each.contentType)) {
+                                                    return (
+                                                        <img
+                                                            key={each._id}
+                                                            src={`${MAIN_BACKEND_URL}/Personal-chat/render-message-items/${chat._id}/${each._id}`}
+                                                            alt="image"
+                                                            style={{ width: "200px", objectFit: "contain", objectPosition: "center" }}
+                                                            className={chat.username === myProfileDetails?.username ? styles.myMessage : styles.otherMessage}
+                                                        />
+                                                    );
+                                                }
+
+                                                return null;
+                                            })}
+                                        </div>
+
+
+
+
+
+                                    }
+                                   
+                                   
+                                   <div ref={lastMessageRef} ></div>
+                                   <div ref={lastMessageRef} ></div>
+
                                 </div>
 
 
                             ))}
 
-                        <div ref={lastMessageRef}></div>
-                        <div ref={lastMessageRef}></div>
-
 
 
                         <div className={styles.messageInputBox}>
 
-                            <FontAwesomeIcon icon={faSmile} style={{ fontSize: "1rem" }} />
 
-                            <input onKeyDown={handleKeyDown} placeholder="Message..." value={messageInputValue} onChange={(e) => setMessageInputValue(e.target.value)}
+                            {/* CURRENT WORKING AREA UNDER CONSTRUCTION */}
+
+
+                            {recording &&
+
+                                <div id="audioContainer" className={styles.AudioRecorder}>
+                                    <div ref={recoderDivRef}
+                                        style={{
+                                            position: "absolute",
+                                            left: "0px",
+                                            width: `${progress}%`,
+                                            height: "30px",
+                                            zIndex: "1",
+                                            backgroundColor: "red",
+                                            transition: "width 1s linear"
+                                        }}
+                                        id={styles.timerDiv}></div>
+                                    <span>
+                                        {String(Math.floor(runningTimer / 60)).padStart(2, "0")}:
+                                        {String(runningTimer % 60).padStart(2, "0")}
+                                    </span>
+                                    <button id={styles.playOrPauseButton} onClick={audioUrl ? PlayRecorderAudio : handleStopRecording} >
+                                        <FontAwesomeIcon icon={playOrPause ? faPlay : faPause} />
+                                    </button>
+                                    <audio src={audioUrl} ref={recordedAudioRef}
+                                        hidden={true}
+                                        controls ></audio>
+                                </div>
+
+                            }
+
+
+
+                            {multipleItemSelected.length > 0 &&
+
+                                <div className={styles.selectedItems}  >
+
+                                    <input type="file" ref={fileRef} onChange={handleSelectedFile} hidden={true} />
+                                    <div onClick={() => fileRef.current?.click()} id={styles.anotherFileSelection} >
+                                        <FontAwesomeIcon icon={faImages} />
+                                    </div>
+
+                                    <div style={{ display: "flex", gap: "10px" }} >
+                                        {showMultipleItems.map((each) => (
+                                            each.extensionName == "mp4"
+                                                ?
+                                                <video src={each.actualBlob} loop={true} controls autoPlay={true} muted
+                                                    style={{ border: "1px solid rgba(27, 27, 27, 0.926)", borderRadius: "5px", width: "200px", objectFit: "contain", flexShrink: "0" }} />
+                                                :
+                                                <img src={each.actualBlob} alt="" style={{
+                                                    border: "1px solid rgba(27, 27, 27, 0.926)",
+                                                    borderRadius: "10px",
+                                                    width: "200px", objectFit: "contain", flexShrink: "0"
+                                                }} />
+                                        ))}
+
+                                    </div>
+
+                                </div>
+
+                            }
+
+
+
+                            <FontAwesomeIcon icon={faSmile} id={styles.fontAwButtons} />
+
+                            <input ref={inputMessageRef} onKeyDown={handleKeyDown} placeholder="Message..." value={messageInputValue} onChange={(e) => setMessageInputValue(e.target.value)}
                                 type="text" style={{
-                                    width: "80%", position: "relative",
+                                    width: "78%", position: "relative",
                                     backgroundColor: "transparent", border: "none", outline: "none", color: "white", fontSize: "1.05rem"
-                                }} />
+                                }}/>
 
-                            {messageInputValue.length > 0 ?
+                            {messageInputValue.length > 0 || multipleItemSelected.length > 0 || recording ?
 
-                                <button onClick={handleSendMessage} id={styles.sendMessageButton} style={{
-                                    left: "10px", border: "none",
-                                    display: "flex", justifyContent: "right",
-                                    padding: "5px 17px", gap: "10px",
-                                    backgroundColor: "transparent",
-                                    fontWeight: "bolder", cursor: "pointer"
-                                }}
-                                >Send</button>
+                                <>
+
+                                    <button ref={sendMessageButtonRef} onClick={handleSendMessage} id={styles.sendMessageButton} style={{
+                                        left: "10px", border: "none",
+                                        display: "flex", justifyContent: "right",
+                                        padding: "5px 17px", gap: "10px",
+                                        backgroundColor: "transparent",width : "100px",
+                                        fontWeight: "bolder", cursor: "pointer"
+                                    }}
+                                    >Send</button>
+
+                                    {multipleItemSelected.length > 0 || recording ?
+                                        <button onClick={handleDiscardButton} id={styles.sendMessageButton} style={{
+                                            border: "none",
+                                            display: "flex", justifyContent: "right",
+                                            padding: "5px 17px", gap: "10px",
+                                            backgroundColor: "transparent",
+                                            fontWeight: "bolder", cursor: "pointer"
+                                        }} >Discard</button>
+
+                                        :
+                                        null
+
+                                    }
+
+                                </>
+
+
+
                                 :
                                 <div style={{
-                                    position: "relative", left: "10px", display: "flex",
+                                    position: "relative", left: "5px", display: "flex",
                                     alignItems: "center", justifyContent: "center",
-                                    gap: "5px", fontSize: "1rem"
+                                    gap: "5px", width : "100px"
                                 }} >
-                                    <FontAwesomeIcon icon={faMicrophone} />
-                                    <FontAwesomeIcon icon={faHeart} />
-                                    <FontAwesomeIcon icon={faImage} />
+
+                                    <FontAwesomeIcon onClick={handleRecordAudio} id={styles.fontAwButtons} icon={faMicrophone} />
+                                    <FontAwesomeIcon id={styles.fontAwButtons} icon={faHeart} />
+                                    <FontAwesomeIcon onClick={() => fileRef.current?.click()} id={styles.fontAwButtons} icon={faImage} />
+                                    <input type="file" hidden={true}
+                                        ref={fileRef}
+                                        onChange={handleSelectedFile}
+                                    />
                                 </div>
                             }
                         </div>
 
                     </div>
 
-                </>
+                </div>
 
 
-            </div>}
+            </div>
+            }
 
 
         </>

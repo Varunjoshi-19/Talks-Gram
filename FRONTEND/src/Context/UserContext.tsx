@@ -1,5 +1,6 @@
 import { createContext, Dispatch, ReactNode, useContext, useEffect, useReducer } from "react";
 
+
 interface AuthContextProviderProps {
     children: ReactNode;
 }
@@ -53,6 +54,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         const userToken = localStorage.getItem("user-token");
         try {
             if (userToken) {
+                 
                 const parsedUser = JSON.parse(userToken);
                 dispatch({ type: ACTIONS.SET_USER, payload: parsedUser });
             }

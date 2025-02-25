@@ -85,3 +85,9 @@ POST http://localhost:3000/accounts/add-commid/677168d2b9bb706ce0192971
 
 ### 
 GET http://localhost:3000/uploadReel/render-reel/67b71c9d8ddaba1f3a5f4204
+
+
+
+###
+
+GET http://localhost:3000/Personal-chat/render-message-items/67b8730876b9bfd74ddf0b98/67b8730876b9bfd74ddf0b99

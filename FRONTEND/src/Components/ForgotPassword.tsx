@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { MAIN_BACKEND_URL } from "../Scripts/URL";
 
 
 
@@ -47,7 +48,7 @@ const navigate = useNavigate();
             email: inputText
         }
 
-        const response = await fetch(`http://localhost:3000/accounts/sendOtp`, {
+        const response = await fetch(`${MAIN_BACKEND_URL}/accounts/sendOtp`, {
 
 
             method: "POST",
@@ -81,7 +82,7 @@ const navigate = useNavigate();
                 enteredOTP: Number(inputText),
             };
 
-            const response = await fetch("http://localhost:3000/accounts/verifyOTP", {
+            const response = await fetch(`${MAIN_BACKEND_URL}/accounts/verifyOTP`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

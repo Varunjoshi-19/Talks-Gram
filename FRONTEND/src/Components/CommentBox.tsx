@@ -5,6 +5,7 @@ import {
   faSmile
 } from "@fortawesome/free-solid-svg-icons";
 import { fetchOtherUserDetails, fetchProfileDetails } from "../Scripts/FetchDetails.ts";
+import { MAIN_BACKEND_URL } from '../Scripts/URL.ts';
 
 
 
@@ -48,12 +49,13 @@ const CommentBox: React.FC<PostIdProps> = ({ id, toogleBox, userInfoF }) => {
 
     if (id == "") return;
 
+
     async function fetchAllComments() {
 
       const info = userInfoF();
       setUserInfo(info);
 
-      const response = await fetch(`http://localhost:3000/uploadPost/fetch-comments/${id}`, { method: "POST" });
+      const response = await fetch(`${MAIN_BACKEND_URL}/uploadPost/fetch-comments/${id}`, { method: "POST" });
 
       const result = await response.json();
 
@@ -108,7 +110,7 @@ const CommentBox: React.FC<PostIdProps> = ({ id, toogleBox, userInfoF }) => {
         comment: newComment
       }
 
-      const response = await fetch("http://localhost:3000/uploadPost/add-comment", {
+      const response = await fetch(`${MAIN_BACKEND_URL}/uploadPost/add-comment`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -196,7 +198,7 @@ const CommentBox: React.FC<PostIdProps> = ({ id, toogleBox, userInfoF }) => {
       <div className={styles.commentBox}>
 
         <div className={styles.postImage}>
-          <img src={`http://localhost:3000/uploadPost/postImage/${id}`}
+          <img src={`${MAIN_BACKEND_URL}/uploadPost/postImage/${id}`}
             alt="" width="100%" height="100%"
             style={{ borderBottomLeftRadius: "10px", borderTopLeftRadius: "10px" }} />
         </div>
@@ -206,7 +208,7 @@ const CommentBox: React.FC<PostIdProps> = ({ id, toogleBox, userInfoF }) => {
           <div id={styles.postedUserInfo} >
 
             <div id={styles.profileImage}>
-              <img src={`http://localhost:3000/accounts/profileImage/${userInfo?.userId}`} alt="" />
+              <img src={`${MAIN_BACKEND_URL}/accounts/profileImage/${userInfo?.userId}`} alt="" />
             </div>
 
             <p>{userInfo?.username}</p>
@@ -225,7 +227,7 @@ const CommentBox: React.FC<PostIdProps> = ({ id, toogleBox, userInfoF }) => {
                 <div key={index} className={styles.eachComment}>
 
                   <div id={styles.imageIcon} >
-                    <img src={`http://localhost:3000/accounts/profileImage/${comment.userId}`}
+                    <img src={`${MAIN_BACKEND_URL}/accounts/profileImage/${comment.userId}`}
                       style={{ width: "40px", height: "40px", borderRadius: "50%" }}
                       alt="" />
                   </div>

@@ -1,154 +1,100 @@
-
-/* right side */
-
-
-.rightOptions {
-     
+.MainCenterContainer {
     display: flex;
-   height : 100vh;
-   flex-wrap: nowrap;
-    margin-left: 20%;
-    gap :15%;
-    z-index: 0;
-
-  
+    
+    position: absolute;
+    left: 20%;
+    width: 100vw;
+    height: 100vh;
 }
 
-.rightOptions .PostAndStories { 
-
-    display: flex;  
-      z-index: 0;
+.StoriesAndPostContainer {
+    display: flex;
     flex-direction: column;
-    width: 100%;
-
-
-
+    height: inherit;
+    width: 50%;
 }
 
-.rightOptions .PostAndStories .Posts #Stories{ 
 
+
+
+.storiesContainer {
+    
     display: flex;
-    width: 100%;
-    padding : 5px 5px;
-    text-decoration: none;
-    list-style-type: none;
-    gap : 30px;
-    margin-left : 0px;
-    margin-top: 0px;
+    padding : 20px;
+    height: auto;
+    gap: 10px;
 }
 
-.rightOptions .PostAndStories #Stories li { 
-
- 
-    display: flex;
-    border : 1px solid white;
-    align-items: center;
-    overflow: hidden;
-    justify-content: center;
-    height : 60px;
-    width: 60px;
+.storiesContainer #eachStories {
+    border: 1px solid white;
+    flex-shrink: 0;
+    height: 80px;
+    width: 80px;
     border-radius: 50%;
-
+    
 }
 
-.rightOptions .PostAndStories .Posts {
+
+
+.postsContainer {
     display: flex;
-
     flex-direction: column;
+    overflow-y: auto;
+    gap: 20px;
     align-items: center;
-    height: 100vh; 
     margin-top: 20px;
-    gap : 50px;
-    overflow-y: scroll; 
-    position: relative;
-    scroll-behavior: smooth;
+    overflow-x: hidden;
+    height: inherit;
+}
+
+#eachPostContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex-shrink: 0;
+    height: 900px;
+    width: 70%;
 }
 
 
-.rightOptions .PostAndStories .Posts::-webkit-scrollbar {
+#eachPostContainer #mainPostImage { 
+    border-radius: 4px;
+    width: 100%;
+    height: 70%;
+    object-fit: contain;
+    border: 1px solid rgba(128, 128, 128, 0.562);
+}
+
+
+#eachPostContainer #headerInfo {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    height: 60px;
+}
+
+
+#description {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+
+
+.postsContainer::-webkit-scrollbar {
     width: 8px;
 }
 
-.rightOptions .PostAndStories .Posts::-webkit-scrollbar-thumb {
-    background-color: rgba(128, 128, 128, 0.5); 
+.postsContainer::-webkit-scrollbar-thumb {
+    background-color: rgba(128, 128, 128, 0.5);
     border-radius: 10px;
 }
 
-
-
-.rightOptions .profileAndSuggestions { 
-
-    width: 42%;
-    
-}
-
-
-/*  post styling */
-
-.rightOptions .PostAndStories .Posts #eachPosts {
-
-    height: 900px; 
-    width: 468px;
-    display: flex;
-    gap : 10px;
-    flex-direction: column;
-    border-bottom : 1px solid rgba(44, 44, 44, 0.747);
-    position: relative;
-    transition: transform 0.3s ease-in-out; 
-}
-
-
-
-.Posts #eachPosts #header { 
-    display: flex;
-    gap : 10px;
-    align-items: center;
-    padding : 10px 10px;
-}
-
-.Posts #eachPosts #header #profile {
-    border : 1px solid white;   
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-    justify-content: center;
-    height : 40px;
-    width: 40px;
-    border-radius: 50%;
-     
-}
-
-
-.Posts #eachPosts #PostImage {
-     
-     height : 585px;
-     width: 468px; 
-     border-radius: 5px;
-  
-}
-
-.Posts #eachPosts #description {
- 
-    display: flex;
-    margin-top : 5px;
-    gap : 10px;
-    font-size : 1.5rem;
-    
-
-}
-
-.Posts #eachPosts #description span {
-     transition: transform 200ms;
-}
-
-
-.Posts #eachPosts #description span:hover {
-     transform: scale(1.2);
-}
-
-
 .profileAndSuggestions  { 
     display: flex;
+    width: 400px;
     flex-direction: column;
     gap : 20px;
     
@@ -166,7 +112,6 @@
 
   
     display: flex;
-    border : 1px solid white;
     align-items: center;
     overflow: hidden;
     justify-content: center;
@@ -206,74 +151,138 @@
 }
 
 
+
+
+
+
+
 .topLogos {
     display: none;
-  }
-  
+}
+
 
 .searchBar #inputBox {
     width: 90%;
-    outline : none;
-    border : none;
+    outline: none;
+    border: none;
     background-color: rgb(43, 43, 43);
-    font-size : 15px;
-    color : white;
+    font-size: 15px;
+    color: white;
 }
 
 .searchBar #inputBox:-webkit-autofill {
-    -webkit-box-shadow: 0 0 0px 1000px rgba(43, 43, 43) inset !important; 
-    -webkit-text-fill-color: white !important; 
+    -webkit-box-shadow: 0 0 0px 1000px rgba(43, 43, 43) inset !important;
+    -webkit-text-fill-color: white !important;
     border: none !important;
     outline: none !important;
     background-color: rgb(43, 43, 43) !important;
-  }
-
-
-@media (max-width : 1134px) {
-   
-.profileAndSuggestions {
-     display: none;
-}
-  
-.rightOptions {
-   
-     width: 100%;
-     padding : 0;
-     margin: 0;
-
-}
-
-.rightOptions .PostAndStories {
-     width: 100%;
-}
-
 }
 
 
 
-@media (max-width : 1237px) {
-     
-.rightOptions {
-     margin-left: 5%;
-     width: 80%;
+
+
+
+@media (max-width : 1330px) {
+
+    .MainCenterContainer {
+
+        left: 25%;
+        display: flex;
+        position: absolute;
+
+        width: 100vw;
+        height: 100vw;
+
+    }
+
 }
 
+@media (max-width : 1247px) {
+    .MainCenterContainer {
+      left : 10%;
+
+    }
+
+    .postsContainer { 
+        gap : 10px;
+        width: 100vw;
+        height: 100vh;
+    }
+
+    .profileAndSuggestions  { 
+        display: none;
+    }
+
+    #eachPostContainer  { 
+        width: 70%;
+        height : 750px;
+        padding : 5px;
+    }
+
+    #eachPostContainer #mainPostImage { 
+        border-radius: 4px;
+        width: 80%;
+        height: 80%;
+        object-fit: contain;
+        border: 1px solid rgba(128, 128, 128, 0.562);
+    }
 
 
-.rightOptions .PostAndStories #Stories li{
-     
-    width: 55px;
-    height : 55px;
+
 }
 
-}
+@media (max-width : 764px) {
 
-@media (max-width : 764px) { 
+    .MainCenterContainer {
+        display: flex;
+        padding : 2px;
+        overflow-x: hidden;
+        position: absolute;
+        left: 0%;
+        width: 100vw;
+        height: 1100px;
+    }
 
-    .rightOptions .PostAndStories #Stories{ 
-        margin-left: 0px;
+    .storiesContainer { 
+        padding :10px;
+    }
+
+    .storiesContainer #eachStories {
+        border: 1px solid white;
+        flex-shrink: 0;
+        height: 60px;
+        width: 60px;
+        border-radius: 50%;
         
     }
+    
+
+    .profileAndSuggestions  { 
+        display: none;
+    }
+
+    .postsContainer { 
+        gap : 10px;
+
+        width: 100vw;
+        height: 100vh;
+    }
+
+    #eachPostContainer  { 
+        width: 95%;
+        height : 750px;
+        padding : 5px;
+    }
+
+    #eachPostContainer #mainPostImage { 
+        border-radius: 4px;
+        width: 100%;
+        height: 80%;
+        object-fit: contain;
+        border: 1px solid rgba(128, 128, 128, 0.562);
+    }
+
 
 
     .topLogos {
@@ -284,12 +293,12 @@
         justify-content: space-between;
         gap: 20px;
         align-items: center;
-    
-      }
-    
-      .topLogos .searchBar {
+
+    }
+
+    .topLogos .searchBar {
         display: flex;
-      
+
         gap: 20px;
         width: 40%;
         margin-left: 10px;
@@ -299,6 +308,7 @@
         color: whitesmoke;
         font-weight: bold;
         background-color: rgb(43, 43, 43);
-      }
+    }
 
 }
+

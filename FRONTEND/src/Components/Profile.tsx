@@ -1,12 +1,13 @@
 import MenuOptions from "./MenuOptions";
 import styles from '../Styling/Profile.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCog, faCamera ,  faThumbsUp, faComment } from '@fortawesome/free-solid-svg-icons';
+import { faCog, faCamera, faThumbsUp, faComment } from '@fortawesome/free-solid-svg-icons';
 import CreatePost from "./CreatePost";
 import { useEffect, useState } from "react";
 import EditProfile from "./EditProfile";
 import LoadingScreen from "./LoadingScreen";
 import CommentBox from "./CommentBox";
+import { MAIN_BACKEND_URL } from "../Scripts/URL";
 
 
 export interface ProfileInfo {
@@ -41,7 +42,7 @@ function Profile() {
     const [saved, setSaved] = useState<string>("none");
     const [tagged, setTagged] = useState<string>("none");
     const [allPosts, setAllPosts] = useState<AllPostsProps[]>([]);
-    const [profileInfo, setProfileInfo] = useState<ProfileInfo >();
+    const [profileInfo, setProfileInfo] = useState<ProfileInfo>();
     const [enableEditProfile, setEnableEditProfile] = useState<boolean>(false);
     const [postId, setPostId] = useState<string>("");
     const [userId, setUserId] = useState<string>("");
@@ -82,6 +83,7 @@ function Profile() {
     function handleOpenCommentBox(id: string, username: string, userId: string) {
 
         setPostId(id);
+        document.body.style.overflow = "hidden";
         setSelectedPostUsername(username);
         setUserId(userId);
         setCommentBox(true);
@@ -99,6 +101,9 @@ function Profile() {
 
     function closeCommentInfoBox() {
         setCommentBox(false);
+        document.body.style.overflow = "visible";
+        document.body.style.overflowX = "hidden";
+
         setPostId("");
     }
 
@@ -114,12 +119,12 @@ function Profile() {
 
         async function fetchProfileInformation() {
 
-           if(id == "" || !id) {
-             return;
-           } 
+            if (id == "" || !id) {
+                return;
+            }
 
 
-            const response = await fetch(`http://localhost:3000/accounts/fetchProfileDetails/${id}`, {
+            const response = await fetch(`${MAIN_BACKEND_URL}/accounts/fetchProfileDetails/${id}`, {
                 method: "POST"
             })
 
@@ -146,15 +151,14 @@ function Profile() {
 
 
 
-
         async function fetchAllPosts() {
 
-            if(!profileInfo?._id || profileInfo?._id  == "") {
-                return ;
+            if (!profileInfo?._id || profileInfo?._id == "") {
+                return;
             }
-       
 
-            const response = await fetch(`http://localhost:3000/uploadPost/allPosts/${profileInfo?._id}`, { method: "POST" });
+
+            const response = await fetch(`${MAIN_BACKEND_URL}/uploadPost/allPosts/${profileInfo?._id}`, { method: "POST" });
 
             const result = await response.json();
             if (response.ok) {
@@ -179,10 +183,10 @@ function Profile() {
     return (
         <>
             {uploadPostPopUp && <CreatePost s={UploadNewPostOption} />}
-            {enableEditProfile && <EditProfile profileInfo={profileInfo} s={handleEditProfile} />}
-
 
             {profileInfo != null && <MenuOptions profile={profileInfo} />}
+
+            {enableEditProfile && <EditProfile profileInfo={profileInfo} s={handleEditProfile} />}
             {toogleCommentBox && <CommentBox id={postId} toogleBox={closeCommentInfoBox} userInfoF={ProvideInfoToCommentBox} />}
 
             <div className={styles.profileContainer} >
@@ -190,7 +194,7 @@ function Profile() {
                 <div className={styles.profileInformation}>
 
                     <div className={styles.profileImage} >
-                        <img src={`http://localhost:3000/accounts/profileImage/${profileInfo?._id}`} alt="_profileImage" width="100%" height="100%" />
+                        <img src={`${MAIN_BACKEND_URL}/accounts/profileImage/${profileInfo?._id}`} alt="_profileImage" width="100%" height="100%" />
                     </div>
 
                     <div className={styles.profileInfo} >
@@ -262,23 +266,23 @@ function Profile() {
 
                                 {allPosts.map((post, index) => (
 
-                                    
 
-                                        <div onClick={() => handleOpenCommentBox(post._id, profileInfo.username, post.author.userId)} key={index} className={styles.eachPost}>
 
-                                            <img src={`http://localhost:3000/uploadPost/postImage/${post?._id}`}
-                                            
+                                    <div onClick={() => handleOpenCommentBox(post._id, profileInfo.username, post.author.userId)} key={index} className={styles.eachPost}>
+
+                                        <img src={`${MAIN_BACKEND_URL}/uploadPost/postImage/${post?._id}`}
+
                                             height="100%" width="100%" alt="image" />
 
-                                      <div id={styles.likeAndComment} >
-                                      <p style={{ display : "flex" , gap :"5px" }} >{post.postLike}<FontAwesomeIcon icon={faThumbsUp} /> </p>
-                                      <p style={{ display : "flex" , gap :"5px" }} >{post.postComment}<FontAwesomeIcon icon={faComment} /> </p>
-                                      </div>
+                                        <div id={styles.likeAndComment} >
+                                            <p style={{ display: "flex", gap: "5px" }} >{post.postLike}<FontAwesomeIcon icon={faThumbsUp} /> </p>
+                                            <p style={{ display: "flex", gap: "5px" }} >{post.postComment}<FontAwesomeIcon icon={faComment} /> </p>
                                         </div>
+                                    </div>
 
-                                        
 
-                                    
+
+
 
 
                                 ))}

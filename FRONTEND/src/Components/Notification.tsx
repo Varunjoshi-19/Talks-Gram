@@ -1,5 +1,6 @@
 import { useState  , useEffect} from "react";
 import styles from "../Styling/Notification.module.css";
+import { MAIN_BACKEND_URL } from "../Scripts/URL";
 
 
 interface NotificationProps {
@@ -46,7 +47,7 @@ clearUi();
 
         const parsedItem  = JSON.parse(item);
 
-      const response = await fetch("http://localhost:3000/Personal-chat/AcceptedRequest", {
+      const response = await fetch(`${MAIN_BACKEND_URL}/Personal-chat/AcceptedRequest`, {
             method: "POST",
              headers: {
                 "Content-Type": "application/json"
@@ -77,7 +78,7 @@ clearUi();
      
         const parsedItem  = JSON.parse(item);
 
-     const response = await fetch("http://localhost:3000/Personal-chat/removeFromRequested", {
+     const response = await fetch(`${MAIN_BACKEND_URL}/Personal-chat/removeFromRequested`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -120,7 +121,7 @@ clearUi();
                         <div key={index} className={styles.eachNotification}>
 
                             <div id={styles.profileImage}>
-                                <img src={`http://localhost:3000/accounts/profileImage/${item.userIdOf}`} width="100%" height="100%" alt="" />
+                                <img src={`${MAIN_BACKEND_URL}/accounts/profileImage/${item.userIdOf}`} width="100%" height="100%" alt="" />
                             </div>
 
                             <p>

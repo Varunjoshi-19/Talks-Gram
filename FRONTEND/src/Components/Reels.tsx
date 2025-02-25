@@ -6,6 +6,7 @@ import styles from "../Styling/reels.module.css";
 import { ProfileInfo } from './AppInterface';
 import LoadingScreen from './LoadingScreen';
 import { useNavigate } from 'react-router-dom';
+import { MAIN_BACKEND_URL } from '../Scripts/URL';
 
 
 type RecievedReelType = {
@@ -67,7 +68,7 @@ function Reels() {
                 const parsedProfile = JSON.parse(profile);
                 const id = parsedProfile.id;
 
-                const response = await fetch(`http://localhost:3000/accounts/fetchProfileDetails/${id}`, { method: "POST" });
+                const response = await fetch(`${MAIN_BACKEND_URL}/accounts/fetchProfileDetails/${id}`, { method: "POST" });
                 const result = await response.json();
 
                 if (response.ok) {
@@ -85,7 +86,7 @@ function Reels() {
 
             try {
 
-                const response = await fetch(`http://localhost:3000/uploadReel/fetch-reels/?skip=0`, { method: "POST" })
+                const response = await fetch(`${MAIN_BACKEND_URL}/uploadReel/fetch-reels/?skip=0`, { method: "POST" })
                 const result = await response.json();
 
                 if (response.ok) {
@@ -104,8 +105,8 @@ function Reels() {
                                 }
 
                                 const [authorResponse, likedResponse] = await Promise.all([
-                                    fetch(`http://localhost:3000/accounts/fetchOtherUser/${each.author.userId}`, { method: "POST" }),
-                                    fetch(`http://localhost:3000/uploadPost/fetchLikePost`, {
+                                    fetch(`${MAIN_BACKEND_URL}/accounts/fetchOtherUser/${each.author.userId}`, { method: "POST" }),
+                                    fetch(`${MAIN_BACKEND_URL}/uploadPost/fetchLikePost`, {
 
                                         method: "POST",
                                         headers: {
@@ -251,7 +252,7 @@ function Reels() {
 
 
 
-            await fetch("http://localhost:3000/uploadReel/remove-likePost", {
+            await fetch(`${MAIN_BACKEND_URL}/uploadReel/remove-likePost`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -275,7 +276,7 @@ function Reels() {
                     : each
             ));
 
-            await fetch("http://localhost:3000/uploadReel/add-likePost", {
+            await fetch(`${MAIN_BACKEND_URL}/uploadReel/add-likePost`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -312,14 +313,13 @@ if(!AllReels || !profileInfo || !videoRefs  || !reelContainer) {
                            
                             top: "0", left: "0", position: "absolute", width: "80%", height: "85%" }} > </div>
 
-                            <video style={{ userSelect: "none", objectFit: "cover", marginTop: "10px", borderRadius: "5px " }}
+                            <video id={styles.eachReelVideo}
                                 ref={video.videoRef}
                                 autoPlay={false}
                                 loop={true}
                                 // muted
-                                src={`http://localhost:3000/uploadReel/render-reel/${video._id}`}
-                                width="100%"
-                                height="100%"
+                                src={`${MAIN_BACKEND_URL}/uploadReel/render-reel/${video._id}`}
+                               
                             ></video>
 
                             {PlayAndPauseButton &&
@@ -353,7 +353,7 @@ if(!AllReels || !profileInfo || !videoRefs  || !reelContainer) {
                             <div className={styles.reelUserInfo} >
                                 <div style={{ display: "flex", gap: "10px", alignItems: "center" }} >
                                     <img  onClick={() => navigate(`/userProfile/${video.author.userId}`)}
-                                    src={`http://localhost:3000/accounts/profileImage/${video.author.userId}`} alt="" style={{
+                                    src={`${MAIN_BACKEND_URL}/accounts/profileImage/${video.author.userId}`} alt="" style={{
                                         width: "40px", height: "40px",
                                         borderRadius: "50%",
                                         objectFit: "cover"

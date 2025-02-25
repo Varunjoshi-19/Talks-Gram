@@ -15,6 +15,7 @@ import CreatePost from "./CreatePost";
 import { useUserAuthContext } from "../Context/UserContext";
 import { useToogle } from "../Context/ToogleContext";
 import LoadingScreen from "./LoadingScreen";
+import { MAIN_BACKEND_URL } from "../Scripts/URL";
 
 
 interface MenuOptionProps {
@@ -66,7 +67,7 @@ const MenuOptions: React.FC<MenuOptionProps> = ({ profile }) => {
      }
 
 
-      const response = await fetch(`http://localhost:3000/Personal-chat/fetchRequests/${profile?._id}`, { method: "POST" });
+      const response = await fetch(`${MAIN_BACKEND_URL}/Personal-chat/fetchRequests/${profile?._id}`, { method: "POST" });
 
       const result = await response.json();
 

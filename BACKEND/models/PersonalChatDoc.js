@@ -33,9 +33,12 @@ const MessageSchema = mongoose.Schema({
 
     chat: {
         type: String,
-        required: true
+    },
 
-    }
+    AdditionalData: [{
+        data: Buffer,
+        contentType: String
+    }]
 
 }, { timestamps: true });
 

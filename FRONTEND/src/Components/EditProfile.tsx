@@ -1,3 +1,4 @@
+import { MAIN_BACKEND_URL } from "../Scripts/URL";
 import styles from "../Styling/EditProfile.module.css";
 import { useRef, useState, useEffect } from "react";
 
@@ -27,7 +28,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ profileInfo, s }) => {
     const [message, setMessage] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
 
-    const url = "http://localhost:3000/accounts";
+    const url = MAIN_BACKEND_URL;
 
     function handleSelectFile(e: React.ChangeEvent<HTMLInputElement>) {
 
@@ -121,7 +122,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ profileInfo, s }) => {
             setUsername(profileInfo?.username);
             setFullname(profileInfo?.fullname);
             setBio(profileInfo?.bio);
-            setProfileImage(`http://localhost:3000/accounts/profileImage/${profileInfo?._id}`);
+            setProfileImage(`${MAIN_BACKEND_URL}/accounts/profileImage/${profileInfo?._id}`);
         }
 
 

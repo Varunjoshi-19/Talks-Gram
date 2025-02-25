@@ -4,6 +4,7 @@ const crypto = require("node:crypto");
 const FollowRequestDoc = require("../models/FollowRequest.js");
 const FollowerDoc = require("../models/FollowersDoc.js");
 const FollowingDoc = require("../models/FollowingDoc.js");
+const PostDoc = require("../models/PostDoc.js");
 
 async function fetchSingleUserProfile(req, res) {
     let query = {};
@@ -64,10 +65,10 @@ async function FetchAllPersonalChats(req, res) {
 
             let filteredData = [];
 
-            for(let i = chats.length -1 ; i>=0;i--) {
+            for (let i = chats.length - 1; i >= 0; i--) {
 
-                let { chatId, username, initateTime, chat } = chats[i];
-                filteredData.push({ chatId, username, initateTime, chat });
+                let { _id, chatId, username, initateTime, chat, AdditionalData } = chats[i];
+                filteredData.push({ _id, chatId, username, initateTime, chat, AdditionalData });
             }
 
 
@@ -84,6 +85,7 @@ async function FetchAllPersonalChats(req, res) {
 async function SavePersonalChats(req, res) {
 
     const chat = req.body;
+    console.log(chat);
     try {
         const savedChat = await PersonalChatDoc.create(chat);
         res.status(200).json({ msg: "chat saved", savedChat });
@@ -173,7 +175,6 @@ async function checkExistsInFollower(req, res) {
 
     try {
         const user = await FollowerDoc.find(query);
-        console.log(user);
         if (!user || user == "") return res.status(204).json({ status: "Follow" })
 
         if (user) res.status(202).json({ status: "Following" });
@@ -261,7 +262,7 @@ async function fetchAllRequests(req, res) {
 async function HandleAcceptedRequest(req, res) {
     const { userId, userIdOf, usernameOf } = req.body;
 
-    
+
 
     try {
 
@@ -273,7 +274,7 @@ async function HandleAcceptedRequest(req, res) {
         };
 
         const acceptedRequest = await FollowRequestDoc.findOneAndDelete(query);
-        if(!acceptedRequest || acceptedRequest == "") return res.status(404).json({ error : "failed !" });
+        if (!acceptedRequest || acceptedRequest == "") return res.status(404).json({ error: "failed !" });
 
         await FollowerDoc.create({
             userId: userId,
@@ -313,7 +314,7 @@ async function HandleAcceptedRequest(req, res) {
 async function HandleRemoveFollower(req, res) {
 
     const { userId, userIdOf } = req.body;
-    console.log(userId , userIdOf);
+    console.log(userId, userIdOf);
 
     const query = {
         $and: [
@@ -333,7 +334,7 @@ async function HandleRemoveFollower(req, res) {
     try {
 
         const removedFollower = await FollowerDoc.findOneAndDelete(query);
-       const removedFollowing = await FollowingDoc.findOneAndDelete(query1);
+        const removedFollowing = await FollowingDoc.findOneAndDelete(query1);
         if (removedFollower == "" || removedFollowing == "") return res.status(404).json({ status: "Following" });
 
         await ProfileDoc.findOneAndUpdate(
@@ -344,9 +345,9 @@ async function HandleRemoveFollower(req, res) {
         );
 
         await ProfileDoc.findOneAndUpdate(
-            { _id : userIdOf },
-            { $inc : { following : -1 } },
-            { new : true }
+            { _id: userIdOf },
+            { $inc: { following: -1 } },
+            { new: true }
         );
 
         res.status(202).json({ status: "Follow" });
@@ -357,6 +358,138 @@ async function HandleRemoveFollower(req, res) {
 
 }
 
+async function handlePutAdditionalData(req, res) {
+
+    const { allData } = req.body;
+
+    const parsedData = JSON.parse(allData);
+    const files = req.files;
+
+
+    const AdditionalData = [];
+
+    const DataItems = {
+
+        userId: parsedData.userId,
+        otherUserId: parsedData.otherUserId,
+        chatId: parsedData.chatId,
+        username: parsedData.username,
+        initateTime: parsedData.initateTime,
+
+    }
+
+    files.forEach(file => {
+
+        const item = {
+            data: file.buffer,
+            contentType: file.mimetype
+        }
+        AdditionalData.push(item);
+
+    });
+
+    DataItems.AdditionalData = AdditionalData;
+
+
+    try {
+        const savedData = await PersonalChatDoc.create(DataItems);
+        if (savedData == null || savedData == "") return res.status(404).json({ error: "Failed to save your message" });
+
+        return res.status(200).json({ message: "message has been saved" });
+    }
+    catch (error) {
+        res.status(505).json({ message: `Server internal error ${error.messages}` });
+    }
+
+
+
+
+}
+
+
+async function handlePutAudioDataInfo(req, res) {
+
+    const { audioData } = req.body;
+    const audiofile = req.file;
+    const parsedData = JSON.parse(audioData);
+
+    const AdditionalData = [];
+    const fileData = {};
+
+    if (!audiofile) return res.status(404).json({ error: "audio file missing" });
+
+    fileData.data = audiofile.buffer;
+    fileData.contentType = "wav";
+
+    const DataItems = {
+
+        userId: parsedData.userId,
+        otherUserId: parsedData.otherUserId,
+        chatId: parsedData.chatId,
+        username: parsedData.username,
+        initateTime: parsedData.initateTime,
+
+    }
+
+    AdditionalData.push(fileData);
+    DataItems.AdditionalData = AdditionalData;
+
+
+    try {
+        const savedData = await PersonalChatDoc.create(DataItems);
+        if (savedData == null || savedData == "") return res.status(404).json({ error: "Failed to save your message" });
+
+        return res.status(200).json({ message: "message has been saved" });
+    }
+    catch (error) {
+        res.status(505).json({ message: `Server internal error ${error.messages}` });
+    }
+
+
+
+
+}
+
+async function renderMessageItems(req, res) {
+
+    const { id1, id2 } = req.params;
+
+    console.log(id1.trim(), id2.trim());
+
+    if (!id1 || !id2) {
+        return res.status(400).json({ error: "Invalid ID provided" });
+    }
+
+    const query = {
+        _id: id1,
+        "AdditionalData._id": id2 // Search inside AdditionalData array
+    };
+
+    const projection = {
+        "AdditionalData.$": 1 // Returns only the matching object inside AdditionalData
+    };
+
+
+
+
+    try {
+        const post = await PersonalChatDoc.findOne(query, projection);
+
+        const { AdditionalData: [{ data, contentType }] } = post;
+
+
+        if (!data) {
+            return res.status(404).json({ error: "Not found" });
+        }
+
+        res.contentType(contentType);
+        res.send(data);
+    } catch (error) {
+        console.error("Error fetching :", error);
+        res.status(500).json({ error: "Server error while fetching " });
+    }
+
+}
 
 module.exports = {
 
@@ -373,6 +506,9 @@ module.exports = {
     HandleRemoveRequested,
     HandleAcceptedRequest,
     HandleRemoveFollower,
+    handlePutAdditionalData,
+    handlePutAudioDataInfo,
+    renderMessageItems,
     fetchAllRequests
 
 }

@@ -12,6 +12,7 @@ import {  fetchOtherUserDetails, fetchProfileDetails } from "../Scripts/FetchDet
 
 import { ProfileInfo } from "../Components/Profile";
 import LoadingScreen from './LoadingScreen';
+import { MAIN_BACKEND_URL } from '../Scripts/URL';
 
 
 
@@ -67,7 +68,7 @@ function UserProfile() {
 
         async function fetchAllPosts() {
 
-            const response = await fetch(`http://localhost:3000/uploadPost/allPosts/${id}`, { method: "POST" });
+            const response = await fetch(`${MAIN_BACKEND_URL}/uploadPost/allPosts/${id}`, { method: "POST" });
 
             const result = await response.json();
             if (response.ok) {
@@ -99,7 +100,7 @@ function UserProfile() {
     
             try {
                 // Check requested status
-                const response = await fetch("http://localhost:3000/Personal-chat/checkRequested", {
+                const response = await fetch(`${MAIN_BACKEND_URL}/Personal-chat/checkRequested`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -122,7 +123,7 @@ function UserProfile() {
     
                 // If not requested, check followed status
                 if (response.status === 204) {
-                    const rs = await fetch("http://localhost:3000/Personal-chat/checkFollowed", {
+                    const rs = await fetch(`${MAIN_BACKEND_URL}/Personal-chat/checkFollowed`, {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json"
@@ -169,7 +170,7 @@ function UserProfile() {
 
         if (showStatus == "Requested") {
             
-            const response = await fetch("http://localhost:3000/Personal-chat/removeFromRequested", {
+            const response = await fetch(`${MAIN_BACKEND_URL}/Personal-chat/removeFromRequested`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -188,7 +189,7 @@ function UserProfile() {
         if (showStatus == "Follow") {
 
  
-            const response = await fetch("http://localhost:3000/Personal-chat/SendFollowRequest", {
+            const response = await fetch(`${MAIN_BACKEND_URL}/Personal-chat/SendFollowRequest`, {
 
                 method: "POST",
                 headers: {
@@ -213,7 +214,7 @@ function UserProfile() {
 
         if (showStatus == "Following") {
 
-            const response = await fetch("http://localhost:3000/Personal-chat/removeFollower", {
+            const response = await fetch(`${MAIN_BACKEND_URL}/Personal-chat/removeFollower`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -256,7 +257,7 @@ function UserProfile() {
                 <div className={styles.profileInformation}>
 
                     <div className={styles.profileImage} >
-                        <img src={`http://localhost:3000/accounts/profileImage/${profileInfo?._id}`} alt="_profileImage" width="100%" height="100%" />
+                        <img src={`${MAIN_BACKEND_URL}/accounts/profileImage/${profileInfo?._id}`} alt="_profileImage" width="100%" height="100%" />
                     </div>
 
                     <div className={styles.profileInfo} >
@@ -323,7 +324,7 @@ function UserProfile() {
 
                                 <div key={index} className={styles.eachPost}>
 
-                                    <img src={`http://localhost:3000/uploadPost/postImage/${post?._id}`} height="100%" width="100%" alt="image" />
+                                    <img src={`${MAIN_BACKEND_URL}/uploadPost/postImage/${post?._id}`} height="100%" width="100%" alt="image" />
 
                                 </div>
                             ))}

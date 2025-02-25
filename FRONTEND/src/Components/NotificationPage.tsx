@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import styles from "../Styling/NotificationPage.module.css";
 import { fetchProfileDetails } from "../Scripts/FetchDetails.js";
+import { MAIN_BACKEND_URL } from "../Scripts/URL.js";
 
 interface NotificationProps {
 
@@ -11,8 +12,9 @@ interface NotificationProps {
 
 function NotificationPage() {
 
-     const [AllNotifications, setAllNotifications] = useState<NotificationProps[]>([]);
-     const[message ,setMessage] = useState<string | null>(null);
+    const [AllNotifications, setAllNotifications] = useState<NotificationProps[]>([]);
+    const [message, setMessage] = useState<string | null>(null);
+
 
     useEffect(() => {
 
@@ -21,14 +23,14 @@ function NotificationPage() {
             const profile = await fetchProfileDetails();
             const id = profile._id;
 
-            const response = await fetch(`http://localhost:3000/Personal-chat/fetchRequests/${id}`, { method: "POST" });
+            const response = await fetch(`${MAIN_BACKEND_URL}/Personal-chat/fetchRequests/${id}`, { method: "POST" });
 
             const result = await response.json();
 
             if (response.ok) {
                 setAllNotifications(result.requests);
             }
-         
+
         }
 
 
@@ -38,57 +40,55 @@ function NotificationPage() {
 
     }, []);
 
+    useEffect(() => {
 
 
-useEffect(() => {
-     
+        function clearUi() {
 
-function clearUi() {
-    
-    setTimeout(() => {
-         
-        setMessage(null);
+            setTimeout(() => {
 
-    } , 1500); 
+                setMessage(null);
 
-}
-clearUi();
+            }, 1500);
 
-} , [message]);
+        }
+        clearUi();
+
+    }, [message]);
 
 
     async function handleAcceptRequest(item: string) {
-       const parsedItem = JSON.parse(item);
+        const parsedItem = JSON.parse(item);
 
-        const response = await fetch("http://localhost:3000/Personal-chat/AcceptedRequest", {
+        const response = await fetch(`${MAIN_BACKEND_URL}/Personal-chat/AcceptedRequest`, {
             method: "POST",
-             headers: {
+            headers: {
                 "Content-Type": "application/json"
             },
             body: item
         });
 
         const result = await response.json();
-        if(response.ok) {
+        if (response.ok) {
             setMessage(`${result.message} of ${parsedItem.usernameOf}`);
             setAllNotifications(
 
-             (notification) => notification.filter((each ) => {
-                 
-                return each.userId != parsedItem.userId;
-             }))
+                (notification) => notification.filter((each) => {
+
+                    return each.userId != parsedItem.userId;
+                }))
         }
-        if(!response.ok) {
-             setMessage(result.error);
+        if (!response.ok) {
+            setMessage(result.error);
         }
 
     }
 
     async function handleRejectRequest(item: string) {
-     
-      const parsedItem = JSON.parse(item);
 
-        const response = await fetch("http://localhost:3000/Personal-chat/removeFromRequested", {
+        const parsedItem = JSON.parse(item);
+
+        const response = await fetch(`${MAIN_BACKEND_URL}/Personal-chat/removeFromRequested`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -97,15 +97,15 @@ clearUi();
             body: item
 
         });
-         const result = await response.json();
-          if(response.ok) {
+        const result = await response.json();
+        if (response.ok) {
             setMessage(`Request ${result.message} of ${parsedItem.usernameOf}`);
             setAllNotifications(
 
-             (notification) => notification.filter((each ) => {
-                 
-                return each.userId != parsedItem.userId;
-             }))
+                (notification) => notification.filter((each) => {
+
+                    return each.userId != parsedItem.userId;
+                }))
         }
 
     }
@@ -128,10 +128,10 @@ clearUi();
                         <div key={index} className={styles.eachNotific}>
 
                             <div id={styles.profileImage}>
-                                <img src={`http://localhost:3000/accounts/profileImage/${item.userIdOf}`} width="100%" height="100%" alt="" />
+                                <img src={`${MAIN_BACKEND_URL}/accounts/profileImage/${item.userIdOf}`} width="100%" height="100%" alt="" />
                             </div>
 
-                            <p style={{ color : "white" , fontWeight :"bolder" }}>
+                            <p style={{ color: "white", fontWeight: "bolder" }}>
                                 {item.usernameOf}
                             </p>
 
@@ -158,9 +158,9 @@ clearUi();
 
                     <div>No notification</div>
                 }
-                
+
                 {message && <div className={styles.message} >
-                <p style={{ fontSize : "15px" }} >{message}</p>
+                    <p style={{ fontSize: "15px" }} >{message}</p>
                 </div>}
             </div>
 

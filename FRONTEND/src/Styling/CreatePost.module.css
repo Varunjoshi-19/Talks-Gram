@@ -29,6 +29,14 @@
 
 }
 
+
+@media (max-width : 800px) {
+    #uploadPost {
+        width: 400px;
+    }
+}
+
+
 @keyframes moveToleft {
 
     0% {

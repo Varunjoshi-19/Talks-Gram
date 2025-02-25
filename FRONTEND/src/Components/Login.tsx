@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import styles from "../Styling/Login.module.css";
 import { useNavigate } from "react-router-dom";
 import { useUserAuthContext } from "../Context/UserContext"
- 
+import { MAIN_BACKEND_URL } from "../Scripts/URL.ts";
 
 interface Info {
 
@@ -26,7 +26,7 @@ function Login() {
 
 
 
-    const URL = 'http://localhost:3000/accounts/login';
+    const URL = `${MAIN_BACKEND_URL}/accounts/login`;
     const navigate = useNavigate();
     const { dispatch }  = useUserAuthContext();
 
@@ -150,20 +150,7 @@ function Login() {
                     </p>
                 </div>
 
-                {/* Links to App Store and Play Store */}
-                <div className={styles.linkToDownload}>
-                    <p>Get the app.</p>
-                    <div className={styles.downloadLinks}>
-                        <img
-
-                            alt="Download from App Store"
-                        />
-                        <img
-
-                            alt="Download from Google Play"
-                        />
-                    </div>
-                </div>
+               
 
                 {/* Footer */}
                 <div className={styles.footer}>

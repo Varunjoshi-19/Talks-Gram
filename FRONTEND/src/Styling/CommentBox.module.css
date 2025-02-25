@@ -1,8 +1,9 @@
 .CommentBoxContainer {
     position: fixed;
-    height: 100%;
-    width: 100%;
-    overflow-x: hidden;
+    border: 1px solid red;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
     z-index: 5;
     background-color: black;
     opacity: 0.6;
@@ -29,35 +30,35 @@
 }
 
 .commentBox .postImage {
-     
-    height:  100%;
+
+    height: 100%;
     width: 50%;
     border-bottom-left-radius: 10px;
     border-top-left-radius: 10px;
 }
 
 .commentBox .comments {
- 
-width: 50%;
+
+    width: 50%;
 
 
 }
 
 .commentBox .comments #postedUserInfo {
-     
+
     display: flex;
     align-items: center;
-    gap : 20px;
-    border-bottom : 1px solid rgba(252, 252, 252, 0.425);
-    padding :10px 10px;
-    width: 100%;   
+    gap: 20px;
+    border-bottom: 1px solid rgba(252, 252, 252, 0.425);
+    padding: 10px 10px;
+    width: 100%;
 }
 
 .commentBox .comments #postedUserInfo #profileImage {
     width: 53px;
     height: 53px;
     border-radius: 50%;
-     padding : 3px;
+    padding: 3px;
     background: linear-gradient(45deg, #fdf497, #fd5949, #d6249f, #285aeb);
     display: flex;
     align-items: center;
@@ -65,8 +66,8 @@ width: 50%;
 }
 
 
-#postedUserInfo #profileImage img { 
-    
+#postedUserInfo #profileImage img {
+
     width: 100%;
     height: 100%;
     border-radius: 50%;
@@ -75,12 +76,12 @@ width: 50%;
 
 
 .commentBox .allComments {
-    
+
     display: flex;
     flex-direction: column;
-    gap : 20px;
-    border-bottom : 1px solid rgba(252, 252, 252, 0.425);
-    height :80%;
+    gap: 20px;
+    border-bottom: 1px solid rgba(252, 252, 252, 0.425);
+    height: 80%;
     overflow-y: scroll;
     position: relative;
     scroll-behavior: smooth;
@@ -97,61 +98,62 @@ width: 50%;
 }
 
 
-.commentBox .allComments #noComments { 
+.commentBox .allComments #noComments {
 
-display: flex;
-flex-direction: column;
-align-items: center;
-height: 100%;
-justify-content: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    justify-content: center;
 
 }
 
 .comments #postComment {
-     
-    height : 7.5%;
+
+    height: 7.5%;
     display: flex;
     align-items: center;
-    padding : 5px;
+    padding: 5px;
     justify-content: space-between;
 }
 
 .comments #postComment input {
-     width: 80%;
-     border : none;
-     outline  : none;
-     background-color: transparent;
-     color : white;
-     font-size: 15px;
+    width: 80%;
+    border: none;
+    outline: none;
+    background-color: transparent;
+    color: white;
+    font-size: 15px;
 }
 
 
-.comments #postComment button { 
-    border : none;
+.comments #postComment button {
+    border: none;
     background-color: transparent;
-    color :#1877F2;
+    color: #1877F2;
     font-weight: bolder;
-    padding : 5px;
+    padding: 5px;
     cursor: pointer;
 }
 
 .comments #postComment button:hover {
 
-  color : white;
+    color: white;
 }
- 
+
 .comments #postComment button:disabled {
-     color : #1877F2;
-     cursor: default;
-    
+    color: #1877F2;
+    cursor: default;
+
 }
 
 
 
 .commentBox .allComments .eachComment {
-     
+
     display: flex;
-    align-items: flex-start; /* Align items at the top */
+    align-items: flex-start;
+    /* Align items at the top */
     gap: 10px;
     word-break: break-all;
 
@@ -160,27 +162,72 @@ justify-content: center;
 
 
 .eachComment #imageIcon {
-     
+
     width: 40px;
     flex: 0 0 auto;
     height: inherit;
-    padding : 1px;
+    padding: 1px;
     align-items: center;
     justify-content: center;
 }
 
 
 .eachComment #usernameAndTime {
-    flex: 0 0 auto; /* Prevents resizing */
+    flex: 0 0 auto;
+    /* Prevents resizing */
     display: flex;
     flex-direction: column;
     align-items: center;
-    
-  
+
+
 }
 
-.eachComment #userComment  {
-    padding : 0px 10px;
-    flex: 1; /* Allow this div to grow and shrink */
+.eachComment #userComment {
+    padding: 0px 10px;
+    flex: 1;
+    /* Allow this div to grow and shrink */
     word-wrap: break-all;
+}
+
+
+
+
+@media (max-width : 520px) {
+
+
+    .CommentBoxContainer {
+        height: 100%;
+    }
+
+    .commentBox {
+
+        display: flex;
+        border-radius: 10px;
+        position: absolute;
+        width: 350px;
+        height: 600px;
+        top: 70%;
+        left: 50%;
+        z-index: 5;
+        opacity: 1;
+        background-color: rgb(0, 0, 0);
+        transform: translate(-50%, -50%);
+        animation: moveToleft 200ms forwards ease-in;
+
+
+    }
+
+
+    .commentBox .comments {
+        border: 1px solid rgba(78, 78, 78, 0.986);
+        border-radius: 10px;
+        width: 100%;
+    }
+
+
+    .commentBox .postImage {
+
+        display: none;
+    }
+
 }

@@ -1,4 +1,7 @@
-const URL = "http://localhost:3000/accounts/fetchProfileDetails";
+import { BACKEND_URL } from "./GetData";
+import { MAIN_BACKEND_URL } from "./URL";
+
+const URL = `${MAIN_BACKEND_URL}/accounts/fetchProfileDetails`;
 
 export async function fetchProfileDetails(id = "" ) { 
 
@@ -37,7 +40,7 @@ if(!response.ok) {
 
 export async function fetchOtherUserDetails(id : string) {
      
-    const response = await fetch(`http://localhost:3000/accounts/fetchOtherUser/${id}` , { method : "POST" });
+    const response = await fetch(`${BACKEND_URL}/accounts/fetchOtherUser/${id}` , { method : "POST" });
     const result  = await response.json();
     
     if(response.ok) { 
@@ -52,7 +55,7 @@ export async function fetchOtherUserDetails(id : string) {
 
 export async function GenerateId(combinedString : string) { 
 
-    const response = await fetch(`http://localhost:3000/Personal-chat/generate-chatId/${combinedString}`);
+    const response = await fetch(`${MAIN_BACKEND_URL}/Personal-chat/generate-chatId/${combinedString}`);
     const result = await response.json();
 
     if(response.ok) { 
@@ -69,7 +72,7 @@ export async function GenerateId(combinedString : string) {
 
 export async function fetchChattedUserDetails(id : string) {
      
-    const response = await fetch(`http://localhost:3000/Personal-chat/fetch-chatted-users/${id}` , { method  : "POST" });
+    const response = await fetch(`${MAIN_BACKEND_URL}/Personal-chat/fetch-chatted-users/${id}` , { method  : "POST" });
 
     const result = await response.json();
 
@@ -87,7 +90,7 @@ export async function fetchChattedUserDetails(id : string) {
 
 export async function fetchSearchUser(searchValue : string) { 
 
-    const response = await fetch(`http://localhost:3000/accounts/searchUser/?username=${searchValue}`, {
+    const response = await fetch(`${MAIN_BACKEND_URL}/accounts/searchUser/?username=${searchValue}`, {
         method: "POST"
     });
 
@@ -113,7 +116,7 @@ export async function fetchCommunicationID(userId : string) {
     if(userId == "") return;
 
 
-    const response  = await fetch(`http://localhost:3000/accounts/communication-id/${userId}` , {method : "POST"});
+    const response  = await fetch(`${MAIN_BACKEND_URL}/accounts/communication-id/${userId}` , {method : "POST"});
 
     const result = await response.json();
 

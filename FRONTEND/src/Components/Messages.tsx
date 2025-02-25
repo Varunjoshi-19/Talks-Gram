@@ -10,7 +10,8 @@ import { fetchProfileDetails, fetchChattedUserDetails } from "../Scripts/FetchDe
 
 
 import { ProfileInfo } from "../Components/Profile.tsx";
-import { ChattedUserInfo } from "../Components/Chatting.tsx";
+import { ChattedUserInfo } from "../Scripts/GetData.ts";
+import { MAIN_BACKEND_URL } from "../Scripts/URL.ts";
 
 
 
@@ -99,7 +100,7 @@ function Messages() {
                   AllChattedUsers.map((user, index) => (
                      <div key={index}  onClick={() => handleEnableMessageTab(JSON.stringify(user))} style={{ gap: "20px" }} id={styles.userMessage}>
                         <div id={styles.userIcon}>
-                           <img src={`http://localhost:3000/accounts/profileImage/${user.userId}`} width="100%" height="100%" alt="_image" />
+                           <img src={`${MAIN_BACKEND_URL}/accounts/profileImage/${user.userId}`} width="100%" height="100%" alt="_image" />
                         </div>
 
                         <div>
@@ -120,7 +121,7 @@ function Messages() {
          </div>
 
 
-         <div style={{ gap: "10px" }} className={styles.sendMessage}>
+         <div  className={styles.sendMessage}>
 
             <div id={styles.messageIcon} >
                <FontAwesomeIcon icon={faPaperPlane} size="2x" />

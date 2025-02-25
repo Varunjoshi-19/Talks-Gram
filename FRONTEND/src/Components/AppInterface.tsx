@@ -8,11 +8,12 @@ import {
 
 import { useEffect, useState } from "react";
 import LoadingScreen from "./LoadingScreen";
-import { useNavigate  } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useToogle } from "../Context/ToogleContext"
 import CommentBox from "./CommentBox";
+import { MAIN_BACKEND_URL } from "../Scripts/URL.ts";
 
- export  interface ProfileInfo {
+export interface ProfileInfo {
   _id: string,
   username: string,
   fullname: string,
@@ -42,17 +43,19 @@ function AppInterface() {
   const [profileInfo, setProfileInfo] = useState<ProfileInfo | null>(null);
   const [allAccounts, setAllAccounts] = useState<ProfileInfo[]>([]);
   const [uploadedPosts, setUploadedPosts] = useState<AllPostsProps[]>([]);
-  const [postId , setPostId] = useState<string>("");
-  const [userId , setUserId] = useState<string>("");
-  const[currentPostCount, setCurrentPostCount]  = useState<number>(0);
-  const [selectedPostUsername, setSelectedPostUsername]  = useState<string>("");
+  const [postId, setPostId] = useState<string>("");
+  const [userId, setUserId] = useState<string>("");
+  const [currentPostCount, setCurrentPostCount] = useState<number>(0);
+  const [selectedPostUsername, setSelectedPostUsername] = useState<string>("");
   const [searchInputClicked, setSearchInputClicked] = useState<boolean>(false);
-  const [toogleCommentBox , setCommentBox] = useState<boolean>(false);
-  const [noMorePost , setNoMorePost]  =useState<boolean>(false); 
- 
+  const [toogleCommentBox, setCommentBox] = useState<boolean>(false);
+  const [noMorePost, setNoMorePost] = useState<boolean>(false);
+
+  const stories = [1, 2, 3, 4, 5, 6];
+
   const navigate = useNavigate();
 
- 
+
   const { toogleVisiblility, setSearchInput, searchInput } = useToogle();
 
   useEffect(() => {
@@ -63,13 +66,13 @@ function AppInterface() {
         const parsedProfile = JSON.parse(profile);
         const id = parsedProfile.id;
 
-        const response = await fetch(`http://localhost:3000/accounts/fetchProfileDetails/${id}`, { method: "POST" });
+        const response = await fetch(`${MAIN_BACKEND_URL}/accounts/fetchProfileDetails/${id}`, { method: "POST" });
         const result = await response.json();
 
         if (response.ok) {
           setProfileInfo(result.userProfile);
         } else {
-          
+
         }
       }
     }
@@ -80,11 +83,11 @@ function AppInterface() {
       const user = localStorage.getItem("user-token");
       if (user) {
         parsedUser = JSON.parse(user);
-       
+
       }
 
 
-      const response = await fetch("http://localhost:3000/accounts/allAccounts", {
+      const response = await fetch(`${MAIN_BACKEND_URL}/accounts/allAccounts`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -96,7 +99,7 @@ function AppInterface() {
       const result = await response.json();
 
       if (response.ok) {
-       
+
         setAllAccounts(result.allAccounts);
       }
 
@@ -116,7 +119,7 @@ function AppInterface() {
     if (!profileInfo || profileInfo?._id == "") {
       return;
     }
-    
+
     else {
 
       fetchAllPosts();
@@ -127,7 +130,7 @@ function AppInterface() {
 
   async function fetchAllPosts() {
     try {
-      const response = await fetch(`http://localhost:3000/uploadPost/fetchPosts/?skip=${currentPostCount}`, { method: "POST" });
+      const response = await fetch(`${MAIN_BACKEND_URL}/uploadPost/fetchPosts/?skip=${currentPostCount}`, { method: "POST" });
       const postsResult = await response.json();
 
       if (response.ok && response.status == 202) {
@@ -142,8 +145,8 @@ function AppInterface() {
               }
 
               const [authorResponse, likeResponse] = await Promise.all([
-                fetch(`http://localhost:3000/accounts/fetchOtherUser/${post.author.userId}`, { method: "POST" }),
-                fetch(`http://localhost:3000/uploadPost/fetchLikePost`, {
+                fetch(`${MAIN_BACKEND_URL}/accounts/fetchOtherUser/${post.author.userId}`, { method: "POST" }),
+                fetch(`${MAIN_BACKEND_URL}/uploadPost/fetchLikePost`, {
 
                   method: "POST",
                   headers: {
@@ -165,7 +168,7 @@ function AppInterface() {
                 authorName: authorResponse.ok ? authorResult.userProfile.username : "Unknown",
                 likeStatus: likeResponse.ok && likeResponse.status == 200 ? likeResult.likeStatus : false,
               };
-            } 
+            }
             catch (error) {
               console.error(`Error fetching details for post by ${post.author.userId}:`, error);
               return { ...post, authorName: "Unknown", likeStatus: false };
@@ -173,13 +176,13 @@ function AppInterface() {
           })
         );
 
-        setUploadedPosts([...uploadedPosts,  ...postsWithDetails]);
-      } 
-      if(response.ok && response.status == 201)  {
-         setNoMorePost(true);
-         
+        setUploadedPosts([...uploadedPosts, ...postsWithDetails]);
       }
-  
+      if (response.ok && response.status == 201) {
+        setNoMorePost(true);
+
+      }
+
     } catch (error) {
       console.error("Error fetching all posts:", error);
       setUploadedPosts([]);
@@ -207,7 +210,7 @@ function AppInterface() {
 
   async function handleClickLike(id: string, likeStatus: boolean) {
 
-   
+
 
     const idInfo = {
       postId: id,
@@ -229,7 +232,7 @@ function AppInterface() {
       );
 
 
-      await fetch("http://localhost:3000/uploadPost/remove-likePost", {
+      await fetch(`${MAIN_BACKEND_URL}/uploadPost/remove-likePost`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -256,7 +259,7 @@ function AppInterface() {
       );
 
 
-      await fetch("http://localhost:3000/uploadPost/add-likePost", {
+      await fetch(`${MAIN_BACKEND_URL}/uploadPost/add-likePost"`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -270,28 +273,28 @@ function AppInterface() {
   }
 
 
-  function handleOpenCommentBox(id : string , username : string , userId : string) {
-      
+  function handleOpenCommentBox(id: string, username: string, userId: string) {
+
     setPostId(id);
     setSelectedPostUsername(username);
     setUserId(userId);
     setCommentBox(true);
-  
+
   }
 
-  function closeCommentInfoBox(){ 
-     setCommentBox(false);
-     setPostId("");
+  function closeCommentInfoBox() {
+    setCommentBox(false);
+    setPostId("");
   }
 
- function ProvideInfoToCommentBox() {
-   const info = {
-    userId : userId,
-    username : selectedPostUsername 
-   }
+  function ProvideInfoToCommentBox() {
+    const info = {
+      userId: userId,
+      username: selectedPostUsername
+    }
 
-   return info;
- }
+    return info;
+  }
 
 
 
@@ -355,96 +358,96 @@ function AppInterface() {
 
       {/* left side options  */}
 
-      <MenuOptions  profile = {profileInfo} />
-   
-     { toogleCommentBox &&  <CommentBox id = {postId} toogleBox = {closeCommentInfoBox} userInfoF = {ProvideInfoToCommentBox}/>}
-     
+      <MenuOptions profile={profileInfo} />
 
-      {/* left side options  */}
-
-      {/* center part account and stories  / profile and account suggestions */}
-      <div className={styles.rightOptions}>
-
-        <div className={styles.PostAndStories}>
+      {toogleCommentBox && <CommentBox id={postId} toogleBox={closeCommentInfoBox} userInfoF={ProvideInfoToCommentBox} />}
 
 
-          <div className={styles.Posts}>
-            <ul id={styles.Stories}>
-              <li>user</li>
-              <li>user</li>
-              <li>user</li>
-              <li>user</li>
-            </ul>
+      <div className={styles.MainCenterContainer} >
+
+        <div className={styles.StoriesAndPostContainer} >
+
+          <div className={styles.storiesContainer}>
+
+            {stories.map((each, index) => (
+
+              <div key={index} id={styles.eachStories} ></div>
+
+            ))}
+
+          </div>
 
 
+          {uploadedPosts.length > 0 ?
 
-            {uploadedPosts.length > 0 ?
+            <div className={styles.postsContainer} >
 
-              uploadedPosts.map((post, index) => (
+              {uploadedPosts.map((post, index) => (
+                <div key={index} id={styles.eachPostContainer} >
 
-                <div key={index} id={styles.eachPosts} >
-                  <div id={styles.header}>
-                    <div id={styles.profile}>
-                      <img width="100%" height="100%" src={`http://localhost:3000/accounts/profileImage/${post?.author.userId}`} alt="" />
-                    </div>
+                  <div id={styles.headerInfo}>
 
+                    <img style={{ width: "50px", height: "50px", borderRadius: "50%" }} src={`${MAIN_BACKEND_URL}/accounts/profileImage/${post?.author.userId}`} alt="" />
                     <p>{post?.authorName}</p>
+
                   </div>
 
-                  <div id={styles.PostImage}>
-                    <img width="100%" height="100%" style={{ borderRadius: "4px", border: "1px solid rgba(128, 128, 128, 0.562)" }} src={`http://localhost:3000/uploadPost/postImage/${post?._id}`} alt="" />
-                  </div>
+                  <img id={styles.mainPostImage}
+                    src={`${MAIN_BACKEND_URL}/uploadPost/postImage/${post?._id}`} alt="" />
 
                   <div style={{ cursor: "pointer" }} id={styles.description}>
 
-                    <span><FontAwesomeIcon onClick={() => handleClickLike(post?._id, post?.likeStatus)} icon={faThumbsUp}
-                      style={{ color: `${post?.likeStatus ? "BD0553" : "white"}` }} /></span>
+                    <div style={{ display: "flex", gap: "10px", fontSize: "1.5rem" }} >
+                      <span><FontAwesomeIcon onClick={() => handleClickLike(post?._id, post?.likeStatus)} icon={faThumbsUp}
+                        style={{ color: `${post?.likeStatus ? "BD0553" : "white"}` }} /></span>
+                      <span><FontAwesomeIcon icon={faComment} onClick={() => handleOpenCommentBox(post?._id, post?.authorName, post?.author.userId)} /></span>
+                      <span><FontAwesomeIcon icon={faShareAlt} /></span>
+                    </div>
 
-
-                    <span><FontAwesomeIcon icon={faComment} onClick={() => handleOpenCommentBox(post?._id , post?.authorName , post?.author.userId)} /></span>
-
-
-                    <span><FontAwesomeIcon icon={faShareAlt} />
-                    </span>
+                    <div style={{ display: "flex", flexDirection: "column" }} >
+                      <p style={{ fontWeight: "bolder" }}>{post?.postLike} {post.postLike > 1 ? "likes" : "like"}</p>
+                      <p style={{ marginBottom: "10px" }}>{post?.postDescription}</p>
+                    </div>
 
                   </div>
-                  <p style={{ fontWeight: "bolder" }}>{post?.postLike} {post.postLike > 1 ? "likes" : "like"}</p>
-                  <p style={{ marginBottom: "10px" }}>{post?.postDescription}</p>
 
-                 
+
+
                 </div>
 
 
-              ))
+              ))}
+
+              {uploadedPosts.length > 0 &&
+                <button style={{
+                  border: '1px solid white', display: `${noMorePost ? "none" : "flex"}`, alignItems: "center", justifyContent: "center",
+                  color: "white",
+                  bottom: "47px", padding: "10px", backgroundColor: "transparent", fontWeight: "bolder",
+                  fontSize: "2rem", cursor: "pointer",
+                  position: "relative", width: "25px", height: "25px", borderRadius: "50%"
+                }}
+
+                  onClick={fetchAllPosts}>+</button>}
+
+            </div>
+
+            :
+
+            <LoadingScreen />
+
+          }
 
 
-              :
 
-              <LoadingScreen />
-
-
-
-            }
-
- 
-             { uploadedPosts.length > 0 && 
-             <button style={{  border : '1px solid white', display :`${noMorePost ? "none" : "flex" }` , alignItems : "center", justifyContent : "center", 
-              color :"white", 
-              bottom : "47px", padding : "10px", backgroundColor : "transparent", fontWeight :"bolder",
-              fontSize : "2rem", cursor :"pointer",
-                position : "relative",  width : "25px" , height : "25px", borderRadius : "50%" }}  
-              
-             onClick={fetchAllPosts}>+</button> }
-          </div>
 
         </div>
 
 
-        <div className={styles.profileAndSuggestions}>
+        <div className={styles.profileAndSuggestions} >
 
           <div className={styles.UserProfile}>
             <div className={styles.userImage}>
-              <img src={`http://localhost:3000/accounts/profileImage/${profileInfo?._id}`} width="100%" height="100%" alt="_pic" />
+              <img src={`${MAIN_BACKEND_URL}/accounts/profileImage/${profileInfo?._id}`} width="100%" height="100%" alt="_pic" />
             </div>
 
             <div>
@@ -453,8 +456,8 @@ function AppInterface() {
             </div>
           </div>
 
-          <p>Suggested for you   </p>
           <div className={styles.suggestions}>
+            <p>Suggested for you </p>
 
             {allAccounts ?
 
@@ -463,7 +466,7 @@ function AppInterface() {
                 <div onClick={() => VisitProfile(item._id)} key={index} className={styles.suggestedAccount}>
 
                   <div id={styles.suggestedProfile}>
-                    <img src={`http://localhost:3000/accounts/profileImage/${item._id}`} width="100%" height="100%" alt="_user" />
+                    <img src={`${MAIN_BACKEND_URL}/accounts/profileImage/${item._id}`} width="100%" height="100%" alt="_user" />
                   </div>
 
                   <div>
@@ -484,28 +487,13 @@ function AppInterface() {
 
             }
 
-
-          </div>
-
-
-          <div style={{ marginLeft: "20px" }} >
-            <span style={{ marginTop: "20px", fontWeight: "100", fontSize: "15px" }}>About,
-              Help,
-              Press,
-              API,
-              Jobs,
-              Privacy,
-              Terms,
-              Locations,
-              Language
-            </span>
-            <p style={{ marginTop: "20px", fontWeight: "100", fontSize: "12px" }}>@2024 TALKSGRAM BY VARUN JOSHI</p>
           </div>
 
         </div>
 
 
       </div>
+
 
     </>
   )

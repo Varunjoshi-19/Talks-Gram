@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { MAIN_BACKEND_URL } from "../Scripts/URL";
 
 
 
@@ -13,7 +14,7 @@ function ResetPassword() {
 
     const navigate = useNavigate();
     const { id1, id2 } = useParams<{ id1: string; id2: string }>();
-    const URL = "http://localhost:3000/accounts";
+    const URL = MAIN_BACKEND_URL;
 
 
 
@@ -24,7 +25,7 @@ function ResetPassword() {
 
         async function checkValidParams() {
 
-            const response = await fetch(`http://localhost:3000/accounts/valid-password-reset/${id1}/${id2}`, { method: "POST" })
+            const response = await fetch(`${MAIN_BACKEND_URL}/accounts/valid-password-reset/${id1}/${id2}`, { method: "POST" })
 
             if (!response.ok) {
                 navigate("/err");

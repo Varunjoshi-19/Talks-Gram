@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-solid-svg-icons";
 import { useRef, useState } from "react";
 import { fetchProfileDetails } from "../Scripts/FetchDetails";
+import { MAIN_BACKEND_URL } from "../Scripts/URL";
 
 interface CreatePostProps {
     s: () => void; // Define the prop type
@@ -66,7 +67,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ s }) => {
             formData.append("caption", caption); // set the description
 
             try {
-                const response = await fetch("http://localhost:3000/uploadPost/newPost", {
+                const response = await fetch(`${MAIN_BACKEND_URL}/uploadPost/newPost`, {
                     method: "POST",
                     body: formData, // Directly pass FormData; do not set headers manually
                 });
@@ -107,7 +108,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ s }) => {
             formData.append("caption", caption); 
 
             try {
-                const response = await fetch("http://localhost:3000/uploadReel/newReel", {
+                const response = await fetch(`${MAIN_BACKEND_URL}/uploadReel/newReel`, {
                     method: "POST",
                     body: formData, 
                 });
@@ -268,7 +269,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ s }) => {
 
                     <>
 
-                        <div style={{
+                        <div   style={{
                             display: "flex", opacity: "1", position: "relative",
                             height: "10%", width: "100%",
                             borderTopLeftRadius: "10px", borderTopRightRadius: "10px", backgroundColor: "black",
@@ -279,14 +280,14 @@ const CreatePost: React.FC<CreatePostProps> = ({ s }) => {
                         </div>
 
 
-                        <div style={{
-                            display: "flex", flexDirection: 'column',
+                        <div style={{ 
+                            display: "flex", flexDirection: 'column', width :"300px",
                             alignItems: "center", justifyContent: "center", position: "absolute",
-                            gap: "10px", top: "40%", left: "23%"
+                            gap: "10px", top: "50%", left: "50%" , transform :"translate(-50% ,-50%)"
                         }} >
 
                             <FontAwesomeIcon icon={faImage} size="3x" />
-                            <p style={{ fontSize: "1.25rem" }}>Drag photos and videos here</p>
+                            <span style={{ fontSize: "1.25rem" }}>Drag photos and videos here</span>
                             <button onClick={handleButtonClick} style={{
                                 padding: "7px 7px", fontWeight: "bolder"
                                 , backgroundColor: "#1877F2", border: "none",
