@@ -3,6 +3,7 @@ const ProfileDoc = require("../models/ProfileDoc.js");
 const CommDoc = require("../models/CommunicationId.js");
 const { SaveAuthentication } = require("../authentication/userAuth.js");
 const crypto = require("crypto");
+const actualPath = require("../public/path.js");
 const fs = require("node:fs");
 const path = require("node:path");
 const multer = require("multer");
@@ -551,7 +552,7 @@ function HashedPasswordAndSalting(password) {
 
 function getDefaultImage() {
 
-  const actualPath = "/home/varun/Personal-data/FULL STACK DEVLOPMENT/GIT-HUB/TalksGram/BACKEND/public/default.jpg";
+ 
 
   const imagePath = path.resolve(actualPath);
   const imageBuffer = fs.readFileSync(imagePath);
