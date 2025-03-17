@@ -181,7 +181,7 @@ function Profile() {
     }
 
     return (
-        <>
+        <div>
             {uploadPostPopUp && <CreatePost s={UploadNewPostOption} />}
 
             {profileInfo != null && <MenuOptions profile={profileInfo} />}
@@ -270,9 +270,9 @@ function Profile() {
 
                                     <div onClick={() => handleOpenCommentBox(post._id, profileInfo.username, post.author.userId)} key={index} className={styles.eachPost}>
 
-                                        <img src={`${MAIN_BACKEND_URL}/uploadPost/postImage/${post?._id}`}
-
-                                            height="100%" width="100%" alt="image" />
+                                        <img src={`${MAIN_BACKEND_URL}/uploadPost/postImage/${post?._id}`} 
+                                         style={{ width : "100%" , height : "100%", objectFit: "contain" }}
+                                        alt="image" />
 
                                         <div id={styles.likeAndComment} >
                                             <p style={{ display: "flex", gap: "5px" }} >{post.postLike}<FontAwesomeIcon icon={faThumbsUp} /> </p>
@@ -368,7 +368,7 @@ function Profile() {
             </div>
 
 
-        </>
+        </div>
     )
 }
 

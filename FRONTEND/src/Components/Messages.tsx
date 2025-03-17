@@ -44,7 +44,7 @@ function Messages() {
 
    }, [profileDetails]);
 
-   async function redirectToChattingPage(otherUserInfo: string) { // stringify data from to message file
+   async function redirectToChattingPage(otherUserInfo: string){ // stringify data from to message file
 
       // generate chat id and redirect them to the page
 

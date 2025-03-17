@@ -6,6 +6,8 @@ const cors = require("cors");
 const http = require("http");
 const { Server } = require("socket.io");
 const bodyParser = require("body-parser");
+const redisClient = require("./database/redis.js");
+
 
 const UserRoute = require("./routes/user.js");
 const PersonalRoute = require("./routes/Personal-Chat.js");
@@ -16,7 +18,9 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 const server = http.createServer(app);
 
-  
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(bodyParser.json());
 
 const io = new Server(server, {
   cors: {
@@ -37,17 +41,12 @@ app.use(
   })
 );
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-app.use(bodyParser.json());
-
 app.use("/socket.io", (req, res, next) => {
   res.set("Cache-Control", "no-store");
   next();
 });
 
 io.on("connection", (socket) => {
-  console.log("A user connected: ", socket.id);
 
   socket.on("seen-chat", (chatId) => {
     socket.join(chatId);
@@ -62,7 +61,6 @@ io.on("connection", (socket) => {
     if (message.chat) info.chat = message.chat;
 
     if (message.AdditionalInfoData) {
-      console.log(message.AdditionalInfoData);
       info.AdditionalInfoData = message.AdditionalInfoData;
     }
 
@@ -84,8 +82,12 @@ app.use("/uploadReel", ReelRoute);
 server.listen(PORT, "0.0.0.0", async () => {
   try {
     await mongoose.connect("mongodb://127.0.0.1:27017/TalksGram");
-    console.log(`MongoDB Connected and Server running at http://0.0.0.0:${PORT}`);
+    await redisClient.connect();
+    console.log(`MongoDB and REDIS Connected and Server running at http://0.0.0.0:${PORT}`);
   } catch (error) {
     console.error("Database connection error:", error);
   }
 });
+
+
+module.exports = redisClient;

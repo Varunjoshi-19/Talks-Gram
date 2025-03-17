@@ -20,6 +20,7 @@
 .storiesContainer {
     
     display: flex;
+    overflow: hidden;
     padding : 20px;
     height: auto;
     gap: 10px;
@@ -246,13 +247,15 @@
 
     .storiesContainer { 
         padding :10px;
+        width: 100vw;
+      overflow-x: scroll;
     }
 
     .storiesContainer #eachStories {
         border: 1px solid white;
         flex-shrink: 0;
-        height: 60px;
-        width: 60px;
+        height: 65px;
+        width: 65px;
         border-radius: 50%;
         
     }

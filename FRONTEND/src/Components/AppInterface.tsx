@@ -51,7 +51,7 @@ function AppInterface() {
   const [toogleCommentBox, setCommentBox] = useState<boolean>(false);
   const [noMorePost, setNoMorePost] = useState<boolean>(false);
 
-  const stories = [1, 2, 3, 4, 5, 6];
+  const stories = [1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1, 11,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,,1,1,1,1,1,1];
 
   const navigate = useNavigate();
 

@@ -5,6 +5,7 @@ const FollowRequestDoc = require("../models/FollowRequest.js");
 const FollowerDoc = require("../models/FollowersDoc.js");
 const FollowingDoc = require("../models/FollowingDoc.js");
 const PostDoc = require("../models/PostDoc.js");
+const redisClient = require("../database/redis.js");
 
 async function fetchSingleUserProfile(req, res) {
     let query = {};
@@ -39,44 +40,28 @@ async function fetchSingleUserProfile(req, res) {
 function GenerateChatId(req, res) {
 
     const MixedId = req.params.id;
-
-
     const chatId = crypto.createHmac("sha256", process.env.CHAT_KEY).update(MixedId).digest("hex");
-
     res.status(202).json({ chatId });
 }
 
 async function FetchAllPersonalChats(req, res) {
 
-
     try {
-        const chats = await PersonalChatDoc.find({ chatId: req.params.id }).sort({ initateTime: -1 })
+        let chats;
+        const chatSkip = Number(req.query.chatSkip);
+        const limit = 10;
 
-        if (!chats || chats == "") return res.status(404).json({ error: "no chats" });
+        chats = await PersonalChatDoc.find({ chatId: req.params.id }).sort({ initateTime: -1 }).skip(chatSkip).limit(limit).lean();
+        chats = chats.reverse();
 
-        if (chats && chats != null) {
-
-            // let filteredData = [];
-
-            // chats.map(entry => {
-            //     let { chatId, username, initateTime, chat } = entry;
-            //     filteredData.push({ chatId, username, initateTime, chat });
-            // });
-
-            let filteredData = [];
-
-            for (let i = chats.length - 1; i >= 0; i--) {
-
-                let { _id, chatId, username, initateTime, chat, AdditionalData } = chats[i];
-                filteredData.push({ _id, chatId, username, initateTime, chat, AdditionalData });
-            }
-
-
-            res.status(200).json(filteredData);
+        if (!chats || chats == "") {
+            return res.status(202).json({ messageAvaliable: false });
         }
+
+        return res.status(200).json(chats);
+
     }
     catch (error) {
-        console.log(error);
         res.status(404).json({ error: "error in fetching chats" })
     }
 

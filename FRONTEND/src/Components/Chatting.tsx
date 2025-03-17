@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { faEdit, faInfoCircle, faSmile, faPause, faMicrophone, faImage, faHeart, faImages, faPlay } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useRef, useState } from "react";
-import { fetchProfileDetails, GenerateId, fetchChattedUserDetails, fetchCommunicationID } from "../Scripts/FetchDetails.ts";
+import { fetchProfileDetails, GenerateId, fetchChattedUserDetails } from "../Scripts/FetchDetails.ts";
 import LoadingScreen from './LoadingScreen.tsx';
 import {
     ProfileProps, InfoDataType, BufferedDataType, ChattedUserInfo, AdditionalDataType,
@@ -34,7 +34,9 @@ function Chatting() {
     const [AllChattedUsers, setChattedUsers] = useState<ChattedUserInfo[]>([]);
     const [AllChats, setAllChats] = useState<Chat[]>([]);
     const [chatId, setChatId] = useState<string | any>("");
-    const [commId, setCommId] = useState<string | any>("");
+    const [chatLoaded, setChatLoaded] = useState<boolean>(false);
+    const [chatSkip, setChatSkip] = useState<number>(0);
+    const [disableFetchMess, setDisableFetchMessage] = useState<boolean>(false);
     const inputMessageRef = useRef<HTMLInputElement>(null);
     const sendMessageButtonRef = useRef<HTMLButtonElement>(null);
     const lastMessageRef = useRef<HTMLDivElement | null>(null);
@@ -77,7 +79,7 @@ function Chatting() {
 
 
         if (lastMessageRef.current) {
-            
+
             lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
         }
 
@@ -210,11 +212,9 @@ function Chatting() {
 
                 const otherProfileId = otherDetails.userProfile?._id;
                 const sortedUsers = [myDetails?._id, otherProfileId].sort();
-                const combinedString = `${sortedUsers[0]}_${sortedUsers[1]}`;
+                const combinedString = `${sortedUsers[0]}_${sortedUsers[1]}`
                 const generatedId = await GenerateId(combinedString);
-                const fetchId = await fetchCommunicationID(otherProfileId);
                 setChatId(generatedId);
-                setCommId(fetchId);
 
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -228,26 +228,11 @@ function Chatting() {
 
     useEffect(() => {
 
-        async function fetchChatsFromDatabase() {
-
-            // setAllChats([]);
-            const response = await fetch(`${MAIN_BACKEND_URL}/personal-chat/fetch-all-personal-chats/${chatId}`, {
-                method: "POST",
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                setAllChats(result);
-            }
-
-        }
-
         fetchChatsFromDatabase();
 
-        if (lastMessageRef.current) {
-            lastMessageRef.current.scrollIntoView({ behavior: 'smooth' });
-        }
+        // if (lastMessageRef.current) {
+        //     lastMessageRef.current.scrollIntoView({ behavior: 'smooth' });
+        // }
 
     }, [chatId]);
 
@@ -277,7 +262,7 @@ function Chatting() {
                     chat: messageInputValue,
                     username: myProfileDetails?.username,
                     chatId: chatId,
-                    commId: commId
+
 
                 }
                 // for local me 
@@ -301,7 +286,6 @@ function Chatting() {
                         AdditionalInfoData: bufferedData,
                         username: myProfileDetails?.username,
                         chatId: chatId,
-                        commId: commId
 
                     }
 
@@ -337,7 +321,6 @@ function Chatting() {
                 AdditionalInfoData: bufferedData,
                 username: myProfileDetails?.username,
                 chatId: chatId,
-                commId: commId
 
             }
 
@@ -369,7 +352,7 @@ function Chatting() {
                 audioData: audioDataInfo,
                 username: myProfileDetails?.username,
                 chatId: chatId,
-                commId: commId
+
 
             }
 
@@ -396,6 +379,46 @@ function Chatting() {
             return;
         }
 
+    }
+
+    async function fetchChatsFromDatabase() {
+
+        setChatLoaded(false);
+        const response = await fetch(`${MAIN_BACKEND_URL}/personal-chat/fetch-all-personal-chats/${chatId}?chatSkip=${chatSkip}`, {
+            method: "POST",
+        });
+
+        const result = await response.json();
+
+
+        if (response.ok && response.status == 202) {
+            if (!result.messageAvaliable) {
+                setDisableFetchMessage(true);
+                setChatLoaded(true);
+                return;
+            }
+        }
+
+        if (response.ok) {
+
+            if (chatSkip > 0) {
+
+                console.log("spread one exectuted");
+                setAllChats(prevChats => [...result, ...prevChats]);
+                setChatSkip(prev => prev + 10);
+
+            }
+            else {
+
+                console.log("single chat exectued");
+                setAllChats(result);
+                setChatSkip(prev => prev + 10);
+            }
+
+        }
+
+
+        setChatLoaded(true);
     }
 
     async function savedChatToDatabases(chat: Chat) {
@@ -569,6 +592,7 @@ function Chatting() {
         setProgress(0);
     }
 
+
     return (
         <>
             {!myProfileDetails && !otherUserDetails ? <LoadingScreen /> : <div>
@@ -641,10 +665,14 @@ function Chatting() {
 
                     </div>
 
+
+
                     <div className={styles.ChatMessageContainer}>
 
+
+                        {/*  OTHER USER PROFILE */}
                         <div style={{
-                            position: "relative", top: "0%" , padding : "10px",
+                            position: "relative", top: "0%", padding: "10px",
                             display: "flex", flexDirection: "column", gap: "10px",
                             alignItems: "center"
                         }}>
@@ -663,8 +691,30 @@ function Chatting() {
                         </div>
 
 
+                        {/*  LOAD MORE CHATS AND SPINNER */}
+                        <div style={{
+                            WebkitTapHighlightColor: "transparent",
+                            display: disableFetchMess ? "none" : "flex",
+                            alignItems: "center", justifyContent: "center", cursor: "pointer"
+                        }} >
 
 
+                            {
+                                chatLoaded ?
+
+                                    <span onClick={fetchChatsFromDatabase}
+                                        className={styles.NewMessageAdd}>+</span>
+                                    :
+
+                                    <div className={styles.MessageLoader}></div>
+                            }
+
+                        </div>
+
+
+
+
+                        {/*  ALL CHATS RENDERING */}
 
                         {AllChats &&
 
@@ -679,16 +729,16 @@ function Chatting() {
                                     {chat.chat &&
 
                                         <>
-                                        <p
-                                            className={
-                                                chat.username === myProfileDetails?.username ? styles.myMessage : styles.otherMessage
-                                            }
-                                        >
-                                            {chat.chat}
+                                            <p
+                                                className={
+                                                    chat.username === myProfileDetails?.username ? styles.myMessage : styles.otherMessage
+                                                }
+                                            >
+                                                {chat.chat}
 
-                                        </p>
+                                            </p>
 
-                                        
+
 
                                         </>
 
@@ -786,10 +836,10 @@ function Chatting() {
 
 
                                     }
-                                   
-                                   
-                                   <div ref={lastMessageRef} ></div>
-                                   <div ref={lastMessageRef} ></div>
+
+
+                                    <div ref={lastMessageRef} ></div>
+                                    <div ref={lastMessageRef} ></div>
 
                                 </div>
 
@@ -797,6 +847,7 @@ function Chatting() {
                             ))}
 
 
+                        {/* MESSAGE INPUT BOX   */}
 
                         <div className={styles.messageInputBox}>
 
@@ -871,7 +922,7 @@ function Chatting() {
                                 type="text" style={{
                                     width: "78%", position: "relative",
                                     backgroundColor: "transparent", border: "none", outline: "none", color: "white", fontSize: "1.05rem"
-                                }}/>
+                                }} />
 
                             {messageInputValue.length > 0 || multipleItemSelected.length > 0 || recording ?
 
@@ -881,7 +932,7 @@ function Chatting() {
                                         left: "10px", border: "none",
                                         display: "flex", justifyContent: "right",
                                         padding: "5px 17px", gap: "10px",
-                                        backgroundColor: "transparent",width : "100px",
+                                        backgroundColor: "transparent", width: "100px",
                                         fontWeight: "bolder", cursor: "pointer"
                                     }}
                                     >Send</button>
@@ -908,7 +959,7 @@ function Chatting() {
                                 <div style={{
                                     position: "relative", left: "5px", display: "flex",
                                     alignItems: "center", justifyContent: "center",
-                                    gap: "5px", width : "100px"
+                                    gap: "5px", width: "100px"
                                 }} >
 
                                     <FontAwesomeIcon onClick={handleRecordAudio} id={styles.fontAwButtons} icon={faMicrophone} />

@@ -97,7 +97,6 @@ export type InfoDataType = {
     chat?: string,
     username: string
     chatId: string,
-    commId: string
     audioData? : AudioData | null;
     AdditionalInfoData?: BufferedDataType[];
 
