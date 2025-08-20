@@ -37,7 +37,7 @@
     user-select: none;
 }
 
-.storiesContainer .Stories:active { 
+.storiesContainer .Stories:active {
     transform: scale(0.9);
 }
 
@@ -202,7 +202,12 @@
 
 
 
-
+.loadingContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60vh;
+}
 
 @media (max-width : 1330px) {
 
@@ -215,6 +220,14 @@
         width: 100vw;
         height: 100vw;
 
+    }
+
+    .loadingContainer {
+        display: flex;
+        width: 100vw;
+        justify-content: center;
+        align-items: center;
+        height: 60vh;
     }
 
 }
@@ -259,10 +272,11 @@
         display: flex;
         padding: 2px;
         overflow-x: hidden;
+        overflow-y: scroll;
         position: absolute;
         left: 0%;
         width: 100vw;
-        height: 1100px;
+        height: auto;
     }
 
     .storiesContainer {
@@ -272,7 +286,6 @@
     }
 
     .storiesContainer #eachStories {
-        border: 1px solid white;
         flex-shrink: 0;
         height: 65px;
         width: 65px;
@@ -287,9 +300,11 @@
 
     .postsContainer {
         gap: 10px;
-
+        margin: 0px;
+        padding: 0px;
         width: 100vw;
-        height: 100vh;
+        padding: 50px 4px;
+        height: auto;
     }
 
     #eachPostContainer {

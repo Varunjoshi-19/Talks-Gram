@@ -17,6 +17,7 @@ import { Heart, MessageCircle, Send } from 'lucide-react';
 import { useUserAuthContext } from "../Context/UserContext.tsx";
 import { AllPostsProps, ProfilePayload, } from "../Interfaces/index.ts";
 import PlayStoryBox from "../modules/PlayStoryBox.tsx";
+import LineLoader from "../modules/LineLoader.tsx";
 
 
 
@@ -40,6 +41,7 @@ function AppInterface() {
   const [postUsername, setPostUserName] = useState<string>("");
   const [allStories, setAllStories] = useState<any[]>([]);
   const [playStoriesDilogBox, setPlayStoriesBox] = useState<boolean>(false);
+  const [fetchingPostLoader, setFetchingPostLoader] = useState<boolean>(false);
   const [currentStoryDetails, setCurrentStoryDetails] = useState<any | null>(null);
 
   const navigate = useNavigate();
@@ -90,6 +92,8 @@ function AppInterface() {
   }
 
   async function fetchAllPosts() {
+    setFetchingPostLoader(true);
+
     try {
       const response = await fetch(`${MAIN_BACKEND_URL}/uploadPost/fetchPosts/?skip=${currentPostCount}`, { method: "POST" });
       const postsResult = await response.json();
@@ -134,6 +138,7 @@ function AppInterface() {
               console.error(`Error fetching details for post by ${post.author.userId}:`, error);
               return { ...post, authorName: "Unknown", likeStatus: false };
             }
+
           })
         );
 
@@ -144,10 +149,16 @@ function AppInterface() {
 
       }
 
+
     } catch (error) {
       console.error("Error fetching all posts:", error);
       setUploadedPosts([]);
     }
+    finally {
+      setFetchingPostLoader(false);
+    }
+
+
   }
 
   function closeInputBar(e: React.MouseEvent) {
@@ -285,7 +296,7 @@ function AppInterface() {
       <div className={styles.topLogos}>
 
         <div>
-           TalksGram
+          TalksGram
         </div>
 
 
@@ -329,8 +340,6 @@ function AppInterface() {
         <FontAwesomeIcon onClick={() => navigate("/Notification")} icon={faBell} fontSize={"1.2rem"} style={{ marginRight: "10px" }} />
 
       </div>
-
-
 
       {/* left side options  */}
 
@@ -389,7 +398,7 @@ function AppInterface() {
           </div>
 
 
-          {uploadedPosts.length > 0 ?
+          {uploadedPosts && uploadedPosts.length > 0 ?
 
             <div className={styles.postsContainer} >
 
@@ -452,10 +461,18 @@ function AppInterface() {
 
             :
 
-            <div>
-              {/* <LoadingScreen /> */}
-
+            <div className={styles.loadingContainer}>
+              {fetchingPostLoader ?
+                <LineLoader />
+                :
+                <div>
+                  <p>No posts available</p>
+                </div>
+              }
             </div>
+
+
+
 
 
           }

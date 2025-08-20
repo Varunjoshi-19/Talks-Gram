@@ -70,7 +70,6 @@
     margin-right: 30px;
     left: 0px;
     height: 100vh;
-
     position: fixed;
     z-index: 4;
     border-right: 1px solid gray;
@@ -105,22 +104,24 @@
 @media (max-width : 764px) {
 
 
-
   .leftOptions {
 
     flex-direction: row;
     align-items: center;
     justify-content: center;
+    margin: 0px;
     border: none;
-    gap: 60px;
     width: 100vw;
     overflow: hidden;
     position: fixed;
     bottom: 0px;
     border-top: 1px solid rgb(90, 90, 90);
-    height: 8%;
-    z-index: 4;
+    height: auto;
     background-color: black;
+  }
+
+  #appLogo {
+    display: none;
   }
 
   #options {
