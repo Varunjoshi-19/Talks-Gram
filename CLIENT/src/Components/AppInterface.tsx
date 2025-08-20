@@ -284,8 +284,8 @@ function AppInterface() {
 
       <div className={styles.topLogos}>
 
-        <div  >
-          TalksGram
+        <div>
+           TalksGram
         </div>
 
 

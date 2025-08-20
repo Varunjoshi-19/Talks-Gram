@@ -19,6 +19,7 @@ import { MAIN_BACKEND_URL } from "../Scripts/URL";
 import { useSocketContext } from "../Context/SocketContext";
 import { useChatContext } from "../Context/ChattedUserContext";
 import { MenuOptionProps, notificationPayload } from "../Interfaces";
+import appLogo from "../../public/appLogo.png"
 
 
 
@@ -145,7 +146,7 @@ const MenuOptions: React.FC<MenuOptionProps> = ({ profile }) => {
   }
 
   function Logout() {
-    dispatch({ type: ACTIONS.REMOVE_PROFILE});
+    dispatch({ type: ACTIONS.REMOVE_PROFILE });
     handleSendOfflineStatus();
     localStorage.removeItem("profile-details");
     navigate("/accounts/login");
@@ -180,9 +181,12 @@ const MenuOptions: React.FC<MenuOptionProps> = ({ profile }) => {
 
       <div className={styles.leftOptions}>
 
+        <div onClick={() => navigate("/")} style={{ cursor: "pointer", userSelect: "none", display: "flex", gap: "10px", alignItems: "center", padding: "10px" }}>
+          <img id={styles.appLogo} src={appLogo} alt="" width={55} />
+          <span className={styles.appLogoIcon} style={{ fontWeight: "bolder", fontSize: "1.5rem" }} >𝑻𝒂𝒍𝒌𝒔𝒈𝒓𝒂𝒎</span>
+        </div>
 
         <ul id={styles.options}>
-          <li><span>TALKSGRAM</span></li>
           <li onClick={NavigateToHomePage}> <FontAwesomeIcon icon={faHome} fontSize={"1.5rem"} />  <span>Home</span></li>
           <li id={styles.logo} onClick={OpenSearchBar} > <FontAwesomeIcon icon={faSearch} fontSize={"1.5rem"} />
             <span>Search</span>
