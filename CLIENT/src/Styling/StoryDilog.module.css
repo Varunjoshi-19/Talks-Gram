@@ -1,0 +1,116 @@
+.storyContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.activeStory,
+.sideStoryLarge,
+.sideStorySmall {
+    transition: transform 400ms ease, width 400ms ease, height 400ms ease, opacity 300ms ease;
+    transform: scale(1);
+    will-change: transform, width, height;
+    flex-shrink: 0;
+}
+
+.activeStory {
+    width: 400px;
+    height: 95vh;
+    border-radius: 30px;
+}
+
+.sideStoryLarge {
+    width: 150px;
+    height: 300px;
+    border-radius: 30px;
+    position: relative;
+    cursor: pointer;
+}
+
+
+
+.hiddenStory {
+    display: none;
+}
+
+#currentStory {
+    background: linear-gradient(45deg, #fdf497, #fd5949, #d6249f, #285aeb);
+    left: 40px;
+    top: 100px;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 70px;
+    width: 70px;
+    border-radius: 50%;
+    z-index: 1;
+    opacity: 1;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.logoContainer {
+    position: absolute;
+    display: flex;
+    z-index: 1;
+    align-items: center;
+    gap : 3px;  
+    justify-content: center;
+    flex-direction: column;
+   height: inherit;
+    width: 100%;
+}
+
+.storyLoaderWrapper {
+    width: 100%;
+    position: absolute;
+    top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.storyLoaderBackground {
+    width: 100%;
+    max-width: 400px;
+    padding: 0 16px;
+}
+
+.storyLoaderBar {
+    width: 100%;
+    height: 4px;
+    background: #e0e0e0;
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+}
+
+.storyLoaderProgress {
+    height: 100%;
+    background: #007aff;
+    width: 0;
+    border-radius: 2px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    transition: width linear;
+    animation: storyLoaderAnim var(--story-loader-time, 3000ms) linear forwards;
+}
+
+@keyframes storyLoaderAnim {
+    from {
+        width: 0%;
+    }
+
+    to {
+        width: 100%;
+    }
+}

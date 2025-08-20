@@ -1,0 +1,79 @@
+.centerBoxContainer {
+    position: absolute;
+    top: 12%;
+    width: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 500px;
+    border-radius: 25px;
+    background-color: #262626;
+}
+
+.crossButton {
+    position: absolute;
+    display: flex;
+    pointer-events: visible;
+    justify-content: center;
+    align-items: center;
+    padding: 3px;
+    z-index: 11;
+    top: 20px;
+    left: 7px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+
+.centerThoughtContainer {
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    gap: 25px;
+    display: flex;
+    flex-direction: column;
+}
+
+
+.inputShareThought {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+    border: none;
+    top: -50px;
+    left: -35px;
+    background-color: rgb(29, 29, 29);
+    height: 80px;
+    padding: 20px;
+    border-radius: 20px;
+    max-width: 230px;
+}
+
+.inputShareThought .thoughtArea {
+    resize: none;
+    outline: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    background-color: rgb(29, 29, 29);
+    font-size: 1rem;
+    padding: 20px;
+    justify-content: center;
+    color: white;
+    height: inherit;
+    width: inherit;
+}
+
+.thoughtArea::-webkit-scrollbar {
+    width: 8px;
+    background-color: black;
+    /* Track color */
+}
+
+.thoughtArea::-webkit-scrollbar-thumb {
+    background-color: rgb(43, 43, 43);
+    /* Thumb color */
+    border-radius: 4px;
+}
