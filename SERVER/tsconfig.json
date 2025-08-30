@@ -1,16 +1,16 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "commonjs",
-    "outDir": "dist",          
-    "rootDir": "src",          
-    "strict": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true,
-    "types": ["node"]          
+    "target": "ES2020",                  // Modern JS output (good choice)
+    "module": "commonjs",                // Works for Node.js
+    "outDir": "dist",                    // Compiled JS files go here
+    "rootDir": "src",                    // Keeps source structure clean
+    "strict": true,                      // Enables all strict checks (recommended)
+    "experimentalDecorators": true,      // Needed if using decorators
+    "emitDecoratorMetadata": true,       // Useful with decorators (e.g. TypeORM, NestJS)
+    "esModuleInterop": true,             // Allows default import from CommonJS
+    "forceConsistentCasingInFileNames": true, 
+    "skipLibCheck": true,                // Speeds up build by skipping type checking for node_modules
+    "types": ["node"]                    // Includes Node.js type definitions
   },
   "include": ["src/**/*"]
 }
