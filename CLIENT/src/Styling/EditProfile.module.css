@@ -1,9 +1,9 @@
 .EditProfileContainer {
     position: fixed;
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
-    z-index: 3;
+    height: 100vh;
+    left : 0px;
+    width: 100vw;
+    z-index: 4;
     background-color: black;
     opacity: 0.6;
 

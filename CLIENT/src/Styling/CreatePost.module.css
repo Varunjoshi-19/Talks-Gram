@@ -1,16 +1,17 @@
 .UploadPostContainer {
-
     position: fixed;
+    top : 0px;
+    left : 0px;
     height: 100%;
     width: 100%;
     overflow-x: hidden;
     z-index: 5;
-    background-color: black;
-    opacity: 0.6;
+    background-color: rgba(0, 0, 0, 0.45);
 
 
 
 }
+
 
 #uploadPost {
 

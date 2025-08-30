@@ -6,7 +6,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { MAIN_BACKEND_URL } from '../Scripts/URL.ts';
 import { Bookmark, Heart, MessageCircle, Send } from "lucide-react";
-import { formattedPostTime, handleTimeFormating } from '../Scripts/GetData.ts';
+import { formattedPostTime, handleTimeFormating, imageExtensions, videoExtensions } from '../Scripts/GetData.ts';
 import ShareDilogBox from '../modules/ShareDilogBox.tsx';
 import { useGeneralContext } from '../Context/GeneralContext.tsx';
 import { GetIdAndUsername } from '../Scripts/FetchDetails.ts';
@@ -17,7 +17,7 @@ import LoadingScreen from './LoadingScreen.tsx';
 
 
 
-const CommentBox: React.FC<PostIdProps> = ({ id, toogleBox, userInfoF, currentLikes, createdAt }) => {
+const CommentBox: React.FC<PostIdProps> = ({ id, toogleBox, userInfoF, postType, currentLikes, createdAt }) => {
 
   const [userInfo, setUserInfo] = useState<UserInfoProps | null>(null);
   const [commentInput, setCommentInput] = useState<string>("");
@@ -28,7 +28,7 @@ const CommentBox: React.FC<PostIdProps> = ({ id, toogleBox, userInfoF, currentLi
   const [postUsername, setPostUserName] = useState<string>("");
   const [likeStatus, setLikeStatus] = useState<boolean>(false);
   const [totalLikes, setTotalLikes] = useState<number>(currentLikes);
-
+  const [showMain, setShowMain] = useState<boolean>(false);
   const { fetchPostStatus, handleLikePost } = useGeneralContext();
   const { profile } = useUserAuthContext();
 
@@ -164,10 +164,6 @@ const CommentBox: React.FC<PostIdProps> = ({ id, toogleBox, userInfoF, currentLi
   }
 
 
-
-  const [showMain, setShowMain] = useState<boolean>(false);
-
-
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowMain(true);
@@ -192,20 +188,34 @@ const CommentBox: React.FC<PostIdProps> = ({ id, toogleBox, userInfoF, currentLi
 
       <div className={styles.CommentBoxContainer} >
 
-        <button style={{
-          position: "absolute", right: "10px",
-          color: "white", fontSize: "2rem", backgroundColor: "transparent", border: "none",
-          cursor: "pointer"
-        }} onClick={toogleBox}>✖</button>
+
 
       </div>
 
       <div className={styles.commentBox}>
+        <button style={{
+          position: "absolute", right: "15px", zIndex: "10", top: "10px",
+          color: "white", fontSize: "2rem", backgroundColor: "transparent", border: "none",
+          cursor: "pointer"
+        }} onClick={toogleBox}>✖</button>
 
         <div className={styles.postImage}>
-          <img src={`${MAIN_BACKEND_URL}/uploadPost/postImage/${id}`}
-            alt="" width="90%" height="100%"
-            style={{ borderBottomLeftRadius: "10px", objectFit: "contain", borderTopLeftRadius: "10px" }} />
+          {
+            imageExtensions.has(postType) && (
+              <img src={`${MAIN_BACKEND_URL}/uploadPost/postImage/${id}`}
+                alt="" width="90%" height="100%"
+                style={{ borderBottomLeftRadius: "10px", objectFit: "contain", borderTopLeftRadius: "10px" }} />
+            )
+          }
+
+          {
+            videoExtensions.has(postType) && (
+              <video src={`${MAIN_BACKEND_URL}/uploadReel/render-reel/${id}`}
+                autoPlay controls={false}
+                width="90%" height="100%"
+                style={{ borderBottomLeftRadius: "10px", objectFit: "contain", borderTopLeftRadius: "10px" }} />
+            )
+          }
         </div>
 
         <div className={styles.comments} >

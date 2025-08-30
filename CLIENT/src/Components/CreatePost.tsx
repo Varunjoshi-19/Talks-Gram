@@ -5,7 +5,9 @@ import { useRef, useState } from "react";
 import { MAIN_BACKEND_URL } from "../Scripts/URL";
 import { useUserAuthContext } from "../Context/UserContext";
 import { CreatePostProps } from "../Interfaces";
-
+import { X } from "lucide-react";
+import shareDilogStyles from "../Styling/ShareDilog.module.css";
+import LineLoader from "../modules/LineLoader";
 
 
 
@@ -19,6 +21,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ s }) => {
     const [caption, setCaption] = useState<string>("");
     const [descriptionBar, setDescriptionBar] = useState<boolean>(false);
     const [imageWidth, setWidth] = useState<string>("100%");
+    const [postingLoader, setPostingLoader] = useState<boolean>(false);
     const [currentExtensionType, setCurrentExtensionType] = useState<string>("");
     const ImageExtensions: string[] = ["jpg", "png", "jpeg"];
     const validExtension: string[] = ["jpg", "jpeg", "png", "mp4"];
@@ -55,7 +58,9 @@ const CreatePost: React.FC<CreatePostProps> = ({ s }) => {
 
     async function handlePostImage(profile: any) {
 
+        setPostingLoader(true);
         if (!profile) {
+            setPostingLoader(false);
             setError("Failed to Post");
             return;
         }
@@ -76,6 +81,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ s }) => {
                 const result = await response.json();
 
                 if (response.ok) {
+                    setPostingLoader(false);
                     setMessage(result.message);
                     setTimeout(() => {
                         s();
@@ -86,16 +92,21 @@ const CreatePost: React.FC<CreatePostProps> = ({ s }) => {
             } catch (error) {
                 console.error("Error posting image:", error);
                 setError("Failed to Post");
+            } finally {
+                setPostingLoader(false);
+
             }
         } else {
+            setPostingLoader(false);
             setError("No image selected");
         }
     }
 
     async function handlePostReel(profile: any) {
-
+        setPostingLoader(true);
 
         if (!profile) {
+            setPostingLoader(false);
             setError("Failed to Post");
             return;
         }
@@ -116,18 +127,26 @@ const CreatePost: React.FC<CreatePostProps> = ({ s }) => {
                 const result = await response.json();
 
                 if (response.ok) {
+                    setPostingLoader(false);
                     setMessage(result.message);
                     setTimeout(() => {
                         s();
                     }, 1500);
                 } else {
+                    setPostingLoader(false);
+
                     setError(result.error);
                 }
             } catch (error) {
                 console.error("Error posting Video:", error);
                 setError("Failed to Post");
             }
+            finally {
+                setPostingLoader(false);
+            }
         } else {
+            setPostingLoader(false);
+
             setError("No Video selected");
         }
 
@@ -158,16 +177,20 @@ const CreatePost: React.FC<CreatePostProps> = ({ s }) => {
     return (
         <>
             <div className={styles.UploadPostContainer} >
+                <div className={shareDilogStyles.crossButton}
+                    style={{ background: "red", opacity: "1", zIndex: "4" }}
+                >
+                    <X onClick={s} size={30} />
+                </div>
 
 
-                <button style={{
-                    position: "absolute", right: "10px",
-                    color: "white", fontSize: "2rem", backgroundColor: "transparent", border: "none",
-                    cursor: "pointer"
-                }} onClick={s}>✖</button>
             </div>
 
+
+
             <div id={styles.uploadPost}>
+
+
 
                 {currentExtensionType != "" ?
 
@@ -240,6 +263,9 @@ const CreatePost: React.FC<CreatePostProps> = ({ s }) => {
                                         </button>
 
                                         <p style={{ color: "green" }}>{message}</p>
+                                        {postingLoader &&
+                                            <LineLoader />
+                                        }
                                     </div>
 
                                     }

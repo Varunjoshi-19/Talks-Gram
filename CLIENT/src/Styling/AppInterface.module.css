@@ -12,20 +12,26 @@
     flex-direction: column;
     height: inherit;
     width: 50%;
+    min-width: 0;
 }
-
 
 
 
 .storiesContainer {
 
     display: flex;
-    overflow: hidden;
+    overflow-x: auto;
+    scroll-behavior: smooth;
     padding: 20px;
     height: auto;
     gap: 10px;
+    width: 100%;
+    min-width: 0;
 }
 
+.storiesContainer::-webkit-scrollbar {
+display: none;
+}
 
 .storiesContainer .Stories {
     display: flex;
@@ -65,7 +71,7 @@
     align-items: center;
     margin-top: 20px;
     overflow-x: hidden;
-    height: inherit;
+    height: 80vh;
 }
 
 #eachPostContainer {
@@ -105,11 +111,12 @@
 
 
 .postsContainer::-webkit-scrollbar {
-    width: 8px;
+    width: 4px;
+    background: transparent;
 }
 
 .postsContainer::-webkit-scrollbar-thumb {
-    background-color: rgba(128, 128, 128, 0.5);
+    background: rgba(128, 128, 128, 0.2);
     border-radius: 10px;
 }
 
@@ -181,6 +188,9 @@
     display: none;
 }
 
+.searchBar {
+     position: relative;
+}
 
 .searchBar #inputBox {
     width: 90%;
@@ -282,7 +292,15 @@
     .storiesContainer {
         padding: 10px;
         width: 100vw;
-        overflow-x: scroll;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .storiesContainer::-webkit-scrollbar {
+        display: none;
+        /* Chrome, Safari, Opera */
     }
 
     .storiesContainer #eachStories {
@@ -304,7 +322,8 @@
         padding: 0px;
         width: 100vw;
         padding: 50px 4px;
-        height: auto;
+        height: 80vh;
+        overflow-y: auto;
     }
 
     #eachPostContainer {
@@ -325,7 +344,6 @@
 
     .topLogos {
         display: flex;
-        position: relative;
         border-bottom: 1px solid gray;
         padding: 5px 5px;
         justify-content: space-between;
@@ -336,7 +354,6 @@
 
     .topLogos .searchBar {
         display: flex;
-
         gap: 20px;
         width: 40%;
         margin-left: 10px;

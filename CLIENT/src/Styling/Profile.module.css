@@ -1,35 +1,179 @@
+.mainProfileContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    height: 100vh;
+    max-height: none;
+    overflow-y: auto;
+    min-height: 100vh;
+    box-sizing: border-box;
+    -webkit-overflow-scrolling: touch;
+}
+
+
 .profileContainer {
 
-    width: 100vw;
-    position: relative;
+    margin-top: 30px;
+    padding: 8px;
     display: flex;
-    gap: 25px;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    width: 80%;
+    gap: 20px;
 }
 
 
-.profileInformation {
-
-    padding: 30px 30px;
+.topBox {
     display: flex;
-    align-items: center;
-    gap: 50px;
-
-
+    gap: 20px;
 }
 
-.profileInformation .profileImage {
 
+.userImage {
+    display: flex;
+    z-index: 1;
     border: 1px solid rgba(255, 255, 255, 0.288);
-    display: flex;
     position: relative;
     align-items: center;
     justify-content: center;
-    height: 120px;
-    width: 120px;
+    width: 150px;
+    height: 150px;
+    background-color: white;
     border-radius: 50%;
+}
+
+.ButtonContainer {
+    display: flex;
+    gap: 20px;
+    flex-direction: column;
+}
+
+#editButtons {
+    width: 140px;
+    height: 30px;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    border: none;
+    outline: none;
+    font-weight: bolder;
+    background-color: #363C44;
+}
+
+#editButtons:hover {
+    background-color: #474a4fa6;
+
+}
+
+
+
+.Userhighlights {
+    display: flex;
+    gap: 20px;
+}
+
+.highlight {
+    width: 60px;
+    height: 60px;
+    border: 1px solid white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+}
+
+
+.postContainer {
+    width: 80%;
+}
+
+.allPostContainer {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    position: relative;
+    min-height: 200px;
+    max-height: auto;
+    column-gap: 5px;
+    row-gap: 5px;
+    width: 100%;
+}
+
+.eachPost {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 1 / 1;
+    flex-shrink: 1;
+    background: #222;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.itemIcons {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    height: 50px;
+}
+
+/* hide these things in full screen */
+
+.allNewInfo {
+    display: block;
+    margin-left: 50px;
+}
+
+.ButtonContainer {
+    display: none;
+}
+
+.infoSection {
+    display: none;
+    flex-direction: column;
+
+}
+
+.infoBox {
+    display: none;
+}
+
+
+.shareANote {
+    position: absolute;
+    top: -15px;
+    cursor: pointer;
+    left: 30px;
+    width: auto;
+    background-color: rgb(63, 63, 63);
+    padding: 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    transition: transform 200ms;
+}
+
+.shareANote:hover {
+    transform: scale(1.1);
+}
+
+
+
+.activeNote {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 150px;
+    top: -25px;
+    cursor: pointer;
+    left: -15px;
+    background-color: rgb(63, 63, 63);
+    padding: 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    transition: transform 200ms;
 }
 
 .plusIcon {
@@ -55,293 +199,106 @@
     transform: scale(1.1);
 }
 
-.shareANote {
-    position: absolute;
-    top: -15px;
-    cursor: pointer;
-    left: 15px;
-    width: auto;
-    background-color: rgb(63, 63, 63);
-    padding: 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    transition: transform 200ms;
-}
 
-.activeNote {
+.noPostContainer {
     position: absolute;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 150px;
-    top: -25px;
-    cursor: pointer;
-    left: -15px;
-    background-color: rgb(63, 63, 63);
-    padding: 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    transition: transform 200ms;
-}
-
-.shareANote:hover {
-    transform: scale(1.1);
-}
-
-
-.profileInformation .profileInfo {
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-}
-
-
-.highlights {
-
-    display: flex;
-    width: 100vw;
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
-    gap: 20px;
-}
-
-.highlights #eachHighlights {
-
-    border: 1px solid rgba(255, 255, 255, 0.288);
-    display: flex;
-    flex-shrink: 0;
-    align-items: center;
-    overflow: hidden;
-    justify-content: center;
-    height: 80px;
-    width: 80px;
-    border-radius: 50%;
-
-
-}
-
-.postContainer {
-
-
-    position: relative;
-    width: 100vw;
-    left: 10%;
-    gap: 20px;
-    display: flex;
+    gap: 4px;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
 }
 
 #cameraIcon {
-    border: 2px solid white;
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-    justify-content: center;
     height: 80px;
     width: 80px;
     border-radius: 50%;
-
-}
-
-
-
-footer {
-
-
     display: flex;
-    flex-direction: column;
-    align-items: center;
     justify-content: center;
-    width: 80%;
-    padding: 5px 4px;
-    margin-left: 20%;
-    flex-wrap: wrap;
-    word-wrap: break-word;
-
-}
-
-
-.allPostsContainer {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    width: auto;
     align-items: center;
-    justify-content: center;
-    gap: 20px;
-    height: 50%;
-
-}
-
-.allPostsContainer .eachPost {
-
-    background-color: white;
-    background-color: black;
-    position: relative;
-    border: 1px solid rgba(104, 104, 104, 0.733);
-    width: 233px;
-    flex-shrink: 0;
-    height: 233px;
-    color: white;
-    text-align: center;
-    font-size: 18px;
-    cursor: pointer;
-
-
+    border: 1px solid white;
 }
 
 
-#likeAndComment {
+@media (max-width : 765px) {
 
-    position: absolute;
-    display: none;
-    user-select: none;
-    pointer-events: none;
-    gap: 20px;
-    top: 40%;
-    left: 20%;
-    font-size: 2rem;
+    #postLine {
+        flex-grow: 1;
+        width: 320px;
+        flex-wrap: nowrap;
+        flex-shrink: 1;
+        font-size: 13px;
+    }
 
-}
-
-.allPostsContainer .eachPost img {
-    transition: opacity 200ms;
-}
-
-.allPostsContainer .eachPost img:hover {
-    opacity: 0.5;
-}
-
-
-.allPostsContainer .eachPost:hover #likeAndComment {
-    display: flex;
-
-}
-
-
-
-
-@media (max-width : 858px) {
-
-    .allPostsContainer .eachPost {
-
-
-        width: 200px;
-        height: 200px;
-        color: white;
-        text-align: center;
-        font-size: 18px;
+    .shareANote {
+        left: 2px;
+        font-size: 10px;
 
     }
 
 
-}
-
-
-
-@media (max-width : 670px) {
-
-    .allPostsContainer .eachPost {
-        width: 150px;
-        height: 150px;
-        color: white;
-        text-align: center;
-        font-size: 18px;
+    .mainProfileContainer {
+        overflow-y: hidden;
+        height: auto;
 
     }
 
+    .plusIcon {
 
-}
+        height: 25px;
+        width: 25px;
+        right: 0px;
+    }
 
 
-@media (max-width : 520px) {
+    .ButtonContainer {
+        display: block;
+    }
 
-    .allPostsContainer {
-        grid-template-columns: repeat(2, 1fr);
+    .infoSection {
+        display: flex;
+
+    }
+
+    .profileContainer {
         width: 100%;
-        gap: 5px;
     }
 
-    .allPostsContainer .eachPost {
+    .allNewInfo {
+        display: none;
+    }
 
-        width: 210px;
-        height: 210px;
-        flex-shrink: 0;
-        color: white;
-        text-align: center;
-        font-size: 18px;
-
+    .eachPost {
+        overflow: hidden;
+        height: 200px;
     }
 
 
-}
+    .userImage {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+    }
 
 
-@media (max-width : 1237px) {
+    .infoBox {
+        display: flex;
+        padding: 10px;
+        justify-content: space-between;
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+        border-top: 1px solid white;
+        height: auto;
+    }
 
     .postContainer {
-
-
-        display: flex;
-        align-items: center;
-        left: 0px;
-        width: 100vw;
-
-    }
-
-    footer {
-        width: 90%;
-        margin-left: 10%;
-    }
-
-
-}
-
-@media (max-width : 764px) {
-    footer {
         width: 100%;
-        margin-left: 0%;
-    }
-}
-
-
-@media (max-width : 611px) {
-
-    footer {
-        width: 80%;
-        margin-left: 0%;
-
     }
 
-
-    .profileInformation {
-
-
-        flex-direction: column;
-        width: 100%;
-        justify-content: left;
-        gap: 10px;
-        align-items: normal;
-
-    }
-
-
-
-    .profileInformation .profileImage {
-
-        border: 1px solid rgba(255, 255, 255, 0.288);
-        display: flex;
-        align-items: center;
-        overflow: hidden;
-        justify-content: center;
-        height: 60px;
-        width: 60px;
-        border-radius: 50%;
-
-    }
 
 
 }

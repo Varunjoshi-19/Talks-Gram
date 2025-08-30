@@ -19,7 +19,7 @@ import { MAIN_BACKEND_URL } from "../Scripts/URL";
 import { useSocketContext } from "../Context/SocketContext";
 import { useChatContext } from "../Context/ChattedUserContext";
 import { MenuOptionProps, notificationPayload } from "../Interfaces";
-import appLogo from "../../public/appLogo.png"
+import appLogo from "../assets/appLogo.png"
 
 
 
@@ -39,7 +39,6 @@ const MenuOptions: React.FC<MenuOptionProps> = ({ profile }) => {
   const { searchBarVisible, toogleVisiblility, setSearchInput } = useToogle();
   const { socket, notification } = useSocketContext();
   const { messageCount } = useChatContext();
-
 
 
 
@@ -167,9 +166,6 @@ const MenuOptions: React.FC<MenuOptionProps> = ({ profile }) => {
   if (profile == null) {
     return <LoadingScreen />
   }
-
-
-
 
 
   return (

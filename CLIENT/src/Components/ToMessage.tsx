@@ -75,6 +75,7 @@ const ToMessage: React.FC<ToMessageProps> = ({ toogleButton, EnableMessageTab })
 
 
     return (
+
         <>
             <div className={styles.ToMessageContainer} >
 
@@ -118,9 +119,7 @@ const ToMessage: React.FC<ToMessageProps> = ({ toogleButton, EnableMessageTab })
                             color: "white", fontSize: "1.10rem", width: "80%"
                         }} placeholder="Search..." />
 
-                    {loading && <div className={styles.loader}>
-
-                    </div>}
+                    {loading && <div className={styles.loader}></div>}
 
                 </div>
 

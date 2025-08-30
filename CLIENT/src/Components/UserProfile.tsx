@@ -1,10 +1,9 @@
 import { useNavigate, useParams } from 'react-router-dom'
-import MenuOptions from './MenuOptions';
 import styles from "../Styling/Profile.module.css";
-
+import userStyles from "../Styling/UserProfile.module.css"
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCog, faComment, faThumbsUp } from '@fortawesome/free-solid-svg-icons';
+import { faCamera } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from "react";
 
 
@@ -15,6 +14,11 @@ import { useUserAuthContext } from '../Context/UserContext';
 import CommentBox from './CommentBox';
 import { fetchProfileDetails, fetchUserNote, fetchUserStory } from '../Scripts/FetchDetails';
 import { AllPostsProps, ProfileInfo } from '../Interfaces';
+import PostInfo from './ui/PostInfo';
+import { Clapperboard, Film, Grid, UserRound } from 'lucide-react';
+import Footer from './Footer';
+import UserPosts from '../modules/UserPosts';
+import UserReels from '../modules/UserReels';
 
 
 
@@ -25,6 +29,7 @@ function UserProfile() {
 
     const { socket } = useSocketContext();
     const { profile } = useUserAuthContext();
+    const [selectedOption, setSelectedOption] = useState<string>("POST");
 
     const [profileInfo, setProfileInfo] = useState<ProfileInfo | any>();
     const [showStatus, setShowStatus] = useState<string>("Follow");
@@ -37,7 +42,15 @@ function UserProfile() {
     const [toogleCommentBox, setCommentBox] = useState<boolean>(false);
     const [note, setNote] = useState<{ noteMessage: string, _id: string, userId: string } | null>(null);
     const [uploadedStory, setUploadedStory] = useState<any | null>(null);
+    const [allReels, setAllReels] = useState<any | null>(null);
+    const [postType, setPostType] = useState<string>("");
+    const [showMain, setShowMain] = useState<boolean>(false);
 
+    const itemIconsStyles = {
+        borderBottom: '4px solid white',
+        cursor: "pointer",
+        userSelect: "none"
+    } as React.CSSProperties;
 
 
     useEffect(() => {
@@ -74,7 +87,6 @@ function UserProfile() {
                 setAllPosts([]);
             }
         })();
-
 
     }, [id, profile]);
 
@@ -148,19 +160,44 @@ function UserProfile() {
             }
         })();
 
+        (async () => {
+            const myId = profileInfo._id;
+            const response = await fetch(`${MAIN_BACKEND_URL}/uploadReel/getReels/${myId}`);
+            const result = await response.json();
+
+            if (response.ok) {
+                setAllReels(result.reels);
+                console.log(result.reels);
+            }
+            if (!response.ok) {
+                console.log(result.message);
+            }
+
+        })();
+
         checkFollowStatus();
 
     }, [profile, profileInfo]);
 
 
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setShowMain(true);
+        }, 500);
 
-    function handleOpenCommentBox(id: string, username: string, userId: string, currentLikes: number, createdAt: string) {
+        return () => clearTimeout(timer);
+    }, []);
+
+
+
+    function handleOpenCommentBox(id: string, userId: string, type: string, currentLikes: number, createdAt: string) {
 
         setCurrentLikes(currentLikes);
+        setPostType(type);
         setCreatedAt(createdAt);
         setPostId(id);
         document.body.style.overflow = "hidden";
-        setSelectedPostUsername(username);
+        setSelectedPostUsername(profile?.username!);
         setUserId(userId);
         setCommentBox(true);
 
@@ -258,244 +295,211 @@ function UserProfile() {
 
     }
 
-
-    const [showMain, setShowMain] = useState<boolean>(false);
-
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setShowMain(true);
-        }, 500);
-
-        return () => clearTimeout(timer);
-    }, []);
-
     if (!showMain || !profileInfo) {
         return <LoadingScreen />
     }
 
-
-
     return (
         <>
 
-            {profile != null && <MenuOptions profile={profile} />}
             {toogleCommentBox &&
                 <CommentBox id={postId}
+                    postType={postType}
                     toogleBox={closeCommentInfoBox}
                     userInfoF={ProvideInfoToCommentBox} currentLikes={currentLikes}
                     createdAt={createdAtTime} />
             }
 
-            <div className={styles.profileContainer}>
+            <div className={styles.mainProfileContainer}>
 
-                <div className={styles.profileInformation}>
+                <div className={styles.profileContainer} >
 
-                    <div className={styles.profileImage} >
-                        {
-                            note &&
-                            <div className={styles.activeNote} >
-                                <span>{note.noteMessage}</span>
+                    <div className={styles.topBox} >
+
+                        <div className={styles.userImage}>
+
+
+                            {
+                                note &&
+
+                                <div className={userStyles.activeNote} >
+                                    <span>{note?.noteMessage}</span>
+                                </div>
+
+                            }
+
+                            {uploadedStory &&
+
+                                <div style={{
+                                    position: "absolute", width: `110%`, height: `110%`,
+                                    borderRadius: "50%", background: "linear-gradient(45deg, #fdf497, #fd5949, #d6249f, #285aeb)",
+                                    zIndex: "-1", cursor: "pointer"
+                                }}>
+                                </div>
+                            }
+
+                            <img
+
+                                onClick={() => {
+                                    if (!uploadedStory) return;
+                                    navigate(`/stories/${profileInfo.username}/${profileInfo._id}`)
+                                }}
+
+                                src={`${MAIN_BACKEND_URL}/accounts/profileImage/${profileInfo?._id}`} alt="user"
+                                style={{
+                                    width: "100%", height: "100%", objectFit: "contain",
+                                    cursor: `${uploadedStory ? "pointer" : "default"}`,
+                                    borderRadius: "50%"
+                                }}
+                            />
+
+                        </div>
+
+                        <div className={styles.ButtonContainer} >
+                            <div style={{ display: "flex", justifyContent: "flex-start", gap: "10px", alignItems: "center" }}>
+                                <span style={{ fontSize: "1.2rem" }} >{profileInfo.fullname}</span>
                             </div>
 
-                        }
-
-                        {uploadedStory &&
-
-                            <div style={{
-                                position: "absolute", width: `110%`, height: `110%`,
-                                borderRadius: "50%", background: "linear-gradient(45deg, #fdf497, #fd5949, #d6249f, #285aeb)",
-                                zIndex: "-1", cursor: "pointer"
-                            }}>
+                            <div style={{ display: "flex", justifyContent: "center", gap: "5px", alignItems: "center" }}>
+                                <button onClick={handleFollowUser} style={{ cursor: "pointer", fontSize: "1.03rem", color: "white", backgroundColor: "rgba(82, 78, 78, 0.712)", padding: "5px 10px", borderRadius: "5px", border: 'none', fontWeight: "bolder" }}>{showStatus}</button>
+                                <button onClick={() => navigate(`/accounts/inbox/messages/Personal-chat/${profileInfo?._id}`)} style={{ cursor: "pointer", fontSize: "1.03rem", color: "white", backgroundColor: "#1877F2", padding: "5px 10px", borderRadius: "5px", border: 'none', fontWeight: "bolder" }}>Message</button>
                             </div>
-                        }
+                        </div>
 
-                        <img onClick={() => {
-                            if (!uploadedStory) return;
-                            navigate(`/stories/${profileInfo.username}/${profileInfo._id}`)
-                        }}
-                            src={`${MAIN_BACKEND_URL}/accounts/profileImage/${profileInfo?._id}`}
-                            style={{ borderRadius: "50%", objectFit: "contain", cursor: `${uploadedStory ? "pointer" : "default"}` }}
-                            alt="_profileImage" width="100%" height="100%" />
+
+                        <div className={styles.allNewInfo} >
+                            <div style={{ display: "flex", justifyContent: "flex-start", gap: "10px", alignItems: "center" }}>
+                                <span style={{ fontSize: "1.05rem" }} >{profileInfo?.username}</span>
+                                <button onClick={handleFollowUser} style={{ cursor: "pointer", fontSize: "1.03rem", color: "white", backgroundColor: "rgba(82, 78, 78, 0.712)", padding: "5px 10px", borderRadius: "5px", border: 'none', fontWeight: "bolder" }}>{showStatus}</button>
+                                <button onClick={() => navigate(`/accounts/inbox/messages/Personal-chat/${profileInfo?._id}`)} style={{ cursor: "pointer", fontSize: "1.03rem", color: "white", backgroundColor: "#1877F2", padding: "5px 10px", borderRadius: "5px", border: 'none', fontWeight: "bolder" }}>Message</button>
+                            </div>
+
+                            <div style={{ marginTop: "20px", display: "flex", flexDirection: "column", gap: "20px" }}>
+                                <PostInfo format='row' gap="6px" />
+                                <span style={{ fontWeight: "bolder", fontSize: "1.2rem" }}>{profileInfo.username}</span>
+                                <span style={{ display: 'flex', wordWrap: "break-word", width: "300px" }}>{profileInfo.bio}</span>
+                            </div>
+
+                        </div>
+
+
                     </div>
 
-                    <div className={styles.profileInfo} >
+                    <div className={styles.infoSection} >
+                        <span style={{ fontWeight: "bolder", fontSize: "1.2rem" }}>{profileInfo.username}</span>
+                        <span>{profileInfo.bio}</span>
+                    </div>
 
-                        <div style={{ display: "flex", gap: "25px", alignItems: "center" }} >
-                            <span style={{ fontSize: "1.05rem" }} >{profileInfo?.username}</span>
-                            <button onClick={handleFollowUser} style={{ cursor: "pointer", fontSize: "1.03rem", color: "white", backgroundColor: "rgba(82, 78, 78, 0.712)", padding: "5px 10px", borderRadius: "5px", border: 'none', fontWeight: "bolder" }}>{showStatus}</button>
-                            <button onClick={() => navigate(`/Personal-chat/${profileInfo?._id}`)} style={{ cursor: "pointer", fontSize: "1.03rem", color: "white", backgroundColor: "#1877F2", padding: "5px 10px", borderRadius: "5px", border: 'none', fontWeight: "bolder" }}>Message</button>
-                            <span><FontAwesomeIcon icon={faCog} /></span>
-                        </div>
+                    <div className={styles.Userhighlights} >
 
-                        <div style={{ display: "flex", gap: "25px" }}>
-                            <p><span style={{ fontWeight: "bolder" }}>{profileInfo.post}</span> posts</p>
-                            <p><span style={{ fontWeight: "bolder" }}>{profileInfo.followers} </span>{profileInfo.followers > 1 ? "followers" : "follower"}</p>
-                            <p><span style={{ fontWeight: "bolder" }}>{profileInfo.following} </span>{profileInfo.following > 1 ? "followings" : "following"}</p>
-                        </div>
-                        <div><span style={{ fontWeight: "bolder" }}>{profileInfo.fullname}</span></div>
 
-                        <div style={{ display: "flex" }}>
-                            {profileInfo?.bio}
-                        </div>
+
                     </div>
 
                 </div>
 
-                <div className={styles.highlights}>
 
-                    <div style={{ fontSize: "3rem", display: "flex", alignItems: "center", justifyContent: "center" }} id={styles.eachHighlights}>
-                        +
-                    </div>
-
-                    <div style={{ fontSize: "3rem", display: "flex", alignItems: "center", justifyContent: "center" }} id={styles.eachHighlights}>
-                        +
-                    </div>
-
-                    <div style={{ fontSize: "3rem", display: "flex", alignItems: "center", justifyContent: "center" }} id={styles.eachHighlights}>
-                        +
-                    </div>
-
-                    <div style={{ fontSize: "3rem", display: "flex", alignItems: "center", justifyContent: "center" }} id={styles.eachHighlights}>
-                        +
-                    </div>
+                <div className={styles.infoBox} >
+                    <PostInfo format='column' gap="3px" />
 
                 </div>
-
-
 
 
                 <div className={styles.postContainer} >
 
-                    <div >
-                        <span style={{ cursor: "pointer", padding: "10px 10px", borderTop: '1px solid white' }} >POSTS</span>
+                    <div className={styles.itemIcons}>
+                        <Grid
+                            size={25}
+                            cursor="pointer"
+                            style={selectedOption === "POST" ? itemIconsStyles : undefined}
+                            color={selectedOption === "POST" ? "white" : "gray"}
+                            onClick={() => setSelectedOption("POST")}
+                        />
+                        <Clapperboard
+                            size={25}
+                            cursor="pointer"
+                            style={selectedOption === "REELS" ? itemIconsStyles : undefined}
+                            color={selectedOption === "REELS" ? "white" : "gray"}
+                            onClick={() => setSelectedOption("REELS")}
+                        />
 
+                        <UserRound
+                            size={25}
+                            cursor="pointer"
+                            style={selectedOption === "TAGGED" ? itemIconsStyles : undefined}
+                            color={selectedOption === "TAGGED" ? "white" : "gray"}
+                            onClick={() => setSelectedOption("TAGGED")}
+                        />
                     </div>
 
+                    {
+                        selectedOption == "POST" &&
+                        <div className={styles.allPostContainer}>
 
+                            {allPosts && allPosts.length ?
 
+                                <UserPosts allPosts={allPosts} handleOpenCommentBox={handleOpenCommentBox} />
 
-                    {allPosts.length > 0 ?
+                                :
 
-                        <div className={styles.allPostsContainer} >
+                                <div style={{
+                                    marginLeft: "50%", height: "200px", padding: '10px',
+                                    display: "flex", gap: "15px", flexDirection: "column", alignSelf: "center",
+                                    alignItems: "center", width: "500px"
+                                }} >
 
-                            {allPosts.map((post, index) => (
+                                    <div id={styles.cameraIcon}>
+                                        <FontAwesomeIcon icon={faCamera} size="3x" />
 
-                                <div onClick={() => handleOpenCommentBox(post._id, profileInfo.username, post.author.userId, post.postLike, post.createdAt)} key={index} className={styles.eachPost}>
-
-                                    <img src={`${MAIN_BACKEND_URL}/uploadPost/postImage/${post?._id}`} height="100%" width="100%" alt="image" />
-
-                                    <div id={styles.likeAndComment} >
-                                        <p style={{ display: "flex", gap: "5px" }} >{post.postLike}<FontAwesomeIcon icon={faThumbsUp} /> </p>
-                                        <p style={{ display: "flex", gap: "5px" }} >{post.postComment}<FontAwesomeIcon icon={faComment} /> </p>
                                     </div>
+
+                                    <p style={{ fontSize: "25px", fontWeight: "bolder" }} >No posts yet</p>
+
                                 </div>
-                            ))}
+
+
+                            }
 
                         </div>
-
-
-                        :
-
-                        <div>
-                            no post
-                        </div>
-
-
-
                     }
 
+                    {
+                        selectedOption == "REELS" &&
+                        <div className={styles.allPostContainer}>
 
+
+                            {allReels && allReels.length > 0 ?
+
+                                <UserReels allReels={allReels} handleOpenReel={handleOpenCommentBox} />
+
+                                :
+
+                                <div style={{
+                                    marginLeft: "50%", height: "200px", padding: '10px',
+                                    display: "flex", gap: "15px", flexDirection: "column", alignSelf: "center",
+                                    alignItems: "center", width: "500px"
+                                }} >
+
+                                    <div id={styles.cameraIcon}>
+                                        <Film size={50} />
+
+                                    </div>
+
+                                    <p style={{ fontSize: "25px", fontWeight: "bolder" }} >No Reels yet</p>
+
+                                </div>
+                            }
+
+
+
+
+                        </div>
+                    }
 
 
                 </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                <footer>
-
-                    <div style={{
-                        width: "100%",
-                        display: "flex",
-                        justifyContent: "center", gap: "20px", fontSize: "11px",
-                        alignItems: "center", wordWrap: "break-word", flexWrap: "wrap"
-                    }}>
-
-                        <span>About</span>
-                        <span>Blog</span>
-                        <span>Jobs</span>
-                        <span>Help</span>
-                        <span>API</span>
-                        <span>Privacy</span>
-                        <span>Terms</span>
-                        <span>Locations</span>
-                        <span>Instagram Lite</span>
-                        <span>Threads</span>
-                        <span>Contact uploading and non-users</span>
-                        <span>Meta Verified</span>
-                    </div>
-
-                    <div style={{ display: "flex", gap: "30px", fontSize: "12px", padding: "20px 20px" }} >
-                        <span>English (UK)</span>
-                        <span>© 2024 TALKSGRAM BY VARUN JOSHI</span>
-                    </div>
-
-
-                </footer>
-
+                <Footer />
             </div>
 
         </>

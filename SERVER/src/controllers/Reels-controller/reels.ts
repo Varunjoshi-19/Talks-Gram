@@ -1,6 +1,6 @@
 import { autoInjectable } from "tsyringe";
 import ReelsServices from "../../services/Reels-services/ReelsServices";
-import { Request , Response } from "express";
+import { Request, Response } from "express";
 
 
 @autoInjectable()
@@ -14,21 +14,21 @@ class ReelsController {
         const postReel = req.file!;
         const result = await this.reelsService!.handleNewPostUpload(profile, caption, postReel);
         res.status(result.status).json(result);
-        return 
+        return
     };
 
     handleFetchReels = async (req: Request, res: Response) => {
         const skip = req.query.skip as string;
         const result = await this.reelsService!.handleFetchReels(skip);
         res.status(result.status).json(result);
-        return 
+        return
     };
 
     handleAddLikePost = async (req: Request, res: Response) => {
         const { postId, userId } = req.body;
         const result = await this.reelsService!.handleAddLike(postId, userId);
         res.status(result.status).json(result);
-        return 
+        return
     };
 
     handleRemoveLikePost = async (req: Request, res: Response) => {
@@ -38,6 +38,14 @@ class ReelsController {
         return
     };
 
+
+    handleGetUserReels = async (req: Request, res: Response) => {
+
+        const id = req.params.id;
+        const result = await this.reelsService!.handleFetchUserReels(id);
+        res.status(result.status).json(result.success ? { reels: result.reels } : { message: result.message });
+        return;
+    }
 
 
 

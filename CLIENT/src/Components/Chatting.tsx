@@ -1,9 +1,8 @@
 import { useNavigate, useParams } from 'react-router-dom'
-import MenuOptions from './MenuOptions';
 import styles from "../Styling/Messages.module.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import {  faInfoCircle, faSmile, faPause, faMicrophone, faImage, faHeart, faImages, faPlay } from '@fortawesome/free-solid-svg-icons';
+import { faInfoCircle, faSmile, faPause, faMicrophone, faImage, faHeart, faImages, faPlay } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useRef, useState } from "react";
 import { fetchAllData, fetchDetailsOfUserPost, fetchUserOnlineStatus } from "../Scripts/FetchDetails.ts";
 import LoadingScreen from './LoadingScreen.tsx';
@@ -16,9 +15,8 @@ import { useSocketContext } from '../Context/SocketContext.tsx';
 import CommentBox from './CommentBox.tsx';
 import LocalImagesAndVideos from '../modules/LocalImagesAndVideos.tsx';
 import { Play } from 'lucide-react';
-import ChattedUser from '../modules/ChattedUser.tsx';
 import { useUserAuthContext } from '../Context/UserContext.tsx';
-
+import { useToogle } from '../Context/ToogleContext.tsx';
 
 
 
@@ -27,8 +25,10 @@ function Chatting() {
 
     const { id } = useParams();
 
+
     const navigate = useNavigate();
     const { profile } = useUserAuthContext();
+    const { newUserToogled } = useToogle();
 
     const videoExtension = ["mp4", "video/mp4", "webm", "ogg"];
     const imageExtension = ["jpg", "image/png", "image/jpg", "image/jpeg", "jpeg", "png", "gif", "webp"];
@@ -78,6 +78,7 @@ function Chatting() {
     const [displaySelectedItem, setSelectedItem] = useState<boolean>(false);
     const [typeOfItem, setTypeOfItem] = useState<string>("");
     const [userOnlineStatus, setUserOnlineStatus] = useState<boolean>(false);
+    const [postType, setPostType] = useState<string>("");
 
     const recordedAudioRef = useRef<HTMLAudioElement>(null);
     let audioChunks: Blob[] = [];
@@ -90,6 +91,10 @@ function Chatting() {
 
     const chatContainerRef = useRef<HTMLDivElement>(null);
 
+
+    useEffect(() => {
+        ResetEverythingOnDom();
+    }, [newUserToogled])
 
 
     useEffect(() => {
@@ -519,7 +524,6 @@ function Chatting() {
     async function saveAudioDataInfo(ChatInfo: Chat) {
 
         const audioFile = ChatInfo.AdditionalData.blobFile;
-        console.log("this is the ", audioFile);
         const formData = new FormData();
 
         formData.append("audioData", JSON.stringify(ChatInfo));
@@ -626,6 +630,7 @@ function Chatting() {
         }
 
         setMediaRecoder(null);
+        setDisableFetchMessage(false);
         setChatSkip(0);
         setAudioFileBlob(null);
         setAudioDataInfo(null);
@@ -649,14 +654,15 @@ function Chatting() {
         const post = await fetchDetailsOfUserPost(chat.sharedContent?.refId!);
         const { author: { userId }, createdAt, postLike } = post;
         console.log("post")
-        handleOpenCommentBox(chat.sharedContent?.refId!, chat.sharedContent?.postOwnerName!, userId, postLike, createdAt);
+        handleOpenCommentBox(chat.sharedContent?.refId!, userId, "image/png", postLike, createdAt);
     }
 
-    function handleOpenCommentBox(id: string, username: string, userId: string, totalLikes: number, date: string) {
+    function handleOpenCommentBox(id: string, userId: string, type: string, totalLikes: number, date: string) {
 
         setPostId(id);
+        setPostType(type);
         setCurrentPostLikes(totalLikes);
-        setSelectedPostUsername(username);
+        setSelectedPostUsername(otherUserDetails.username);
         setCurrentPostDate(date);
         setUserId(userId);
         setCommentBox(true);
@@ -677,6 +683,10 @@ function Chatting() {
 
         return info;
     }
+
+
+
+
 
 
     const [showMain, setShowMain] = useState<boolean>(false);
@@ -701,16 +711,18 @@ function Chatting() {
         <>
             {!profile && !otherUserDetails ? <LoadingScreen /> : <div>
 
-                <MenuOptions profile={profile} />
+
                 {displaySelectedItem && <LocalImagesAndVideos item={selectedItem} type={typeOfItem} setCloseImage={setSelectedItem} />}
 
-                {toogleCommentBox && <CommentBox id={postId} toogleBox={closeCommentInfoBox}
-                    userInfoF={ProvideInfoToCommentBox}
-                    currentLikes={currentPostLikes}
-                    createdAt={currentPostDate} />}
+                {toogleCommentBox &&
+                    <CommentBox id={postId}
+                        postType={postType}
+                        toogleBox={closeCommentInfoBox}
+                        userInfoF={ProvideInfoToCommentBox}
+                        currentLikes={currentPostLikes}
+                        createdAt={currentPostDate} />}
 
 
-                <ChattedUser ResetEverythingOnDom={ResetEverythingOnDom} />
 
                 <div className={styles.bothProfileAndMessages} >
 

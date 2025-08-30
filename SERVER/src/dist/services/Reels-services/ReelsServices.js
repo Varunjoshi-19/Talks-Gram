@@ -42,7 +42,6 @@ let ReelsServices = class ReelsServices {
             },
             author: {
                 userId: parsedProfile._id,
-                userAccId: parsedProfile.userAccId,
             },
         };
         if (caption !== "")
@@ -105,6 +104,37 @@ let ReelsServices = class ReelsServices {
         }
         catch (error) {
             return { status: 500, error: error.message };
+        }
+    }
+    async handleFetchUserReels(userId) {
+        try {
+            if (!userId) {
+                return {
+                    message: `id required!`,
+                    status: 404,
+                    success: false
+                };
+            }
+            const fetehReels = await ReelDoc_1.default.find({ "author.userId": userId }).select("author.userId reelVideo.contentType reelLike reelComment reelDescription createdAt");
+            if (!fetehReels || fetehReels == "") {
+                return {
+                    message: `No reels found!`,
+                    status: 404,
+                    success: false
+                };
+            }
+            return {
+                reels: fetehReels,
+                status: 202,
+                success: true
+            };
+        }
+        catch (error) {
+            return {
+                message: error.message,
+                status: 505,
+                success: false
+            };
         }
     }
 };

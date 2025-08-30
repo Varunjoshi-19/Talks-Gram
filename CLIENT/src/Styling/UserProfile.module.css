@@ -1,0 +1,20 @@
+
+
+
+.activeNote {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 150px;
+    top: -25px;
+    cursor: pointer;
+    left: -15px;
+    background-color: rgb(63, 63, 63);
+    padding: 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    transition: transform 200ms;
+}
+
+

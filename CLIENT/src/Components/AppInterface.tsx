@@ -1,23 +1,24 @@
 import styles from "../Styling/AppInterface.module.css";
-import MenuOptions from "./MenuOptions";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faSearch, faBell
+  faSearch
 } from "@fortawesome/free-solid-svg-icons";
 
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import LoadingScreen from "./LoadingScreen";
 import { useNavigate } from "react-router-dom";
 import { useToogle } from "../Context/ToogleContext"
 import CommentBox from "./CommentBox";
 import { MAIN_BACKEND_URL } from "../Scripts/URL.ts";
 import ShareDilogBox from "../modules/ShareDilogBox.tsx";
-import { Heart, MessageCircle, Send } from 'lucide-react';
-import { useUserAuthContext } from "../Context/UserContext.tsx";
+import { Bell, Heart, LogOut, MessageCircle, Plus, Send, X } from 'lucide-react';
+import { ACTIONS, useUserAuthContext } from "../Context/UserContext.tsx";
 import { AllPostsProps, ProfilePayload, } from "../Interfaces/index.ts";
 import PlayStoryBox from "../modules/PlayStoryBox.tsx";
 import LineLoader from "../modules/LineLoader.tsx";
+import Footer from "./Footer.tsx";
+import { useSocketContext } from "../Context/SocketContext.tsx";
 
 
 
@@ -44,11 +45,11 @@ function AppInterface() {
   const [fetchingPostLoader, setFetchingPostLoader] = useState<boolean>(false);
   const [currentStoryDetails, setCurrentStoryDetails] = useState<any | null>(null);
 
+
   const navigate = useNavigate();
-
-
   const { toogleVisiblility, setSearchInput, searchInput } = useToogle();
-  const { profile } = useUserAuthContext();
+  const { profile, dispatch } = useUserAuthContext();
+  const { socket } = useSocketContext();
 
 
 
@@ -65,6 +66,27 @@ function AppInterface() {
 
   }, [profile]);
 
+
+  const storiesRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const stories = storiesRef.current;
+
+    if (stories) {
+      const handleWheel = (e: WheelEvent) => {
+        if (e.deltaY !== 0) {
+          e.preventDefault();
+          stories.scrollLeft += e.deltaY;
+        }
+      };
+
+      stories.addEventListener("wheel", handleWheel, { passive: false });
+
+      return () => {
+        stories.removeEventListener("wheel", handleWheel);
+      };
+    }
+  }, []);
 
 
 
@@ -284,6 +306,25 @@ function AppInterface() {
     document.body.style.overflow = "hidden";
   }
 
+  function Logout() {
+    dispatch({ type: ACTIONS.REMOVE_PROFILE });
+    handleSendOfflineStatus();
+    localStorage.removeItem("profile-details");
+    navigate("/accounts/login");
+  }
+
+  function handleSendOfflineStatus() {
+    const user = localStorage.getItem("profile-details");
+    if (user) {
+      const parsedUserProfile = JSON.parse(user);
+      const userId = parsedUserProfile._id;
+      socket.emit("offline", userId);
+      console.log(`User offline with socket id ${socket.id} and user id ${userId}`);
+
+    }
+  }
+
+
 
   if (!profile) {
     return <LoadingScreen />
@@ -294,11 +335,7 @@ function AppInterface() {
     <>
 
       <div className={styles.topLogos}>
-
-        <div>
-          TalksGram
-        </div>
-
+        <span style={{ fontSize: "1.2rem" }} >𝑻𝒂𝒍𝒌𝒔𝒈𝒓𝒂𝒎</span>
 
         <div
           onClick={showSearchAccounts}
@@ -314,10 +351,13 @@ function AppInterface() {
                 onChange={(e) => setSearchInput(e.target.value)}
               />
               <button
-                onClick={closeInputBar}  // Call closeInputBar on button click
+                onClick={closeInputBar}
                 style={{
-                  position: "fixed",
-                  right: "27%",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  position: "absolute",
+                  right: "5px",
                   borderRadius: "50%",
                   width: "20px",
                   height: "20px",
@@ -326,7 +366,7 @@ function AppInterface() {
                   cursor: "pointer"
                 }}
               >
-                x
+                <X size={16} />
               </button>
             </>
             :
@@ -335,17 +375,20 @@ function AppInterface() {
               <p style={{ opacity: "0.5" }}>Search</p>
             </>
           }
-        </div>
 
-        <FontAwesomeIcon onClick={() => navigate("/Notification")} icon={faBell} fontSize={"1.2rem"} style={{ marginRight: "10px" }} />
+        </div>
+        <LogOut onClick={Logout} />
+        <Bell onClick={() => navigate("/Notification")} />
+
 
       </div>
 
       {/* left side options  */}
 
-      <MenuOptions profile={profile} />
 
-      {toogleCommentBox && <CommentBox id={postId} toogleBox={closeCommentInfoBox}
+      {toogleCommentBox && <CommentBox id={postId}
+        postType="image/png"
+        toogleBox={closeCommentInfoBox}
         userInfoF={ProvideInfoToCommentBox}
         currentLikes={currentPostLikes}
         createdAt={currentPostDate} />}
@@ -365,7 +408,7 @@ function AppInterface() {
 
         <div className={styles.StoriesAndPostContainer} >
 
-          <div className={styles.storiesContainer}>
+          <div ref={storiesRef} className={styles.storiesContainer}>
 
             {allStories.map((each, index) => (
 
@@ -417,7 +460,7 @@ function AppInterface() {
 
                   <div style={{ cursor: "pointer" }} id={styles.description}>
 
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "1.5rem" }} >
+                    <div style={{ display: "flex", alignItems: "center", gap: "10px", userSelect: "none", fontSize: "1.5rem" }} >
 
                       <Heart stroke={`${post.likeStatus ? "red" : "white"}`} fill={`${post.likeStatus ? "red" : "none"}`} onClick={() => handleClickLike(post?._id, post?.likeStatus)} />
 
@@ -446,16 +489,24 @@ function AppInterface() {
 
               ))}
 
-              {uploadedPosts.length > 0 &&
-                <button style={{
-                  border: '1px solid white', display: `${noMorePost ? "none" : "flex"}`, alignItems: "center", justifyContent: "center",
-                  color: "white",
-                  bottom: "47px", padding: "10px", backgroundColor: "transparent", fontWeight: "bolder",
-                  fontSize: "2rem", cursor: "pointer",
-                  position: "relative", width: "25px", height: "25px", borderRadius: "50%"
-                }}
+              {uploadedPosts.length > 0 && fetchingPostLoader ?
 
-                  onClick={fetchAllPosts}>+</button>}
+
+                <LineLoader />
+                :
+
+                <div onClick={fetchAllPosts} style={{ display: `${noMorePost ? "none" : "flex"}` }}  >
+                  <Plus size={30}
+                    style={{
+                      border: "3px solid white", width: "40px", height: "40px", borderRadius: "50%"
+                    }}
+                  />
+                </div>
+
+
+
+
+              }
 
             </div>
 
@@ -527,6 +578,10 @@ function AppInterface() {
 
             }
 
+          </div>
+
+          <div>
+            <Footer />
           </div>
 
         </div>

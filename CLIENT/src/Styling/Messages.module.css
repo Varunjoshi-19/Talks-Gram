@@ -1,11 +1,9 @@
 .allMessages {
 
     display: flex;
-    margin-left: 20%;
     flex-direction: column;
     border-right: 1px solid gray;
-    width: 30%;
-
+    width: 40%;
     height: 100vh;
 }
 
@@ -29,7 +27,7 @@
 .allMessages .notes #addNewNote {
 
     display: flex;
-     z-index: 10;
+    z-index: 10;
     position: relative;
     align-items: center;
     justify-content: center;
@@ -97,11 +95,14 @@
 
     display: flex;
     gap: 10px;
+    height: 100vh;
+    width: 48%;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     position: absolute;
-    right: 8%;
-    top: 40%;
+    right: 0%;
+    top: 0%;
 
 }
 
@@ -116,7 +117,6 @@
     width: 100px;
     border-radius: 50%;
 }
-
 
 .chatMessage {
     display: flex;
@@ -172,13 +172,10 @@
 }
 
 .bothProfileAndMessages {
-    position: absolute;
     display: flex;
     flex-direction: column;
-    left: 50%;
-    top: 0%;
     height: 100vh;
-    width: 50%;
+    width: 100%;
 }
 
 
@@ -204,7 +201,7 @@
 .myMessage {
     color: white;
     padding: 3px;
-    margin : 3px;
+    margin: 3px;
     border-radius: 15px;
     max-width: 70%;
 }
@@ -384,25 +381,15 @@
 }
 
 
-
-
-
 @media (max-width : 1250px) {
 
     .allMessages {
-        margin-left: 4%;
-        width: 30%;
+        margin-left: 5%;
+        width: 35%;
     }
 
     .sendMessage {
-        width: 65%;
-        right: 0%;
-
-    }
-
-
-    .sendMessage {
-        width: 95%;
+        width: 50%;
 
     }
 
@@ -424,13 +411,13 @@
 
 
     .bothProfileAndMessages {
-        position: absolute;
         display: flex;
+        z-index: 30;
+        background-color: #1B1B1B;
         flex-direction: column;
-        left: 34%;
         top: 0%;
         height: 100vh;
-        width: 66%;
+        width: 100%;
     }
 
     .messageInputBox {
@@ -453,41 +440,36 @@
 }
 
 
-@media (max-width : 1242px) {
+@media (max-width : 1241px) {
+
+
+    .bothProfileAndMessages {
+        width: 100%;
+    }
 
 
     .allMessages {
-        display: none;
-    }
-
-    .sendMessage {
-        width: 95%;
+        padding: 10px;
 
     }
 
     .chatMessage {
-
-        width: 90%;
-        left: 7%;
+        width: 100%;
     }
 
     .ChatMessageContainer {
 
         width: 100%;
-        left: 7%;
     }
 
     .ChatMessageContainer .messageInputBox {
 
-        width: 92%;
+        width: 100%;
 
 
     }
 
-    .bothProfileAndMessages {
-        width: 90%;
-        left: 5%;
-    }
+
 
 
 
@@ -496,17 +478,16 @@
 
 @media (max-width : 764px) {
 
-    .allMessages {
+    .sendMessage {
         display: none;
     }
 
-    .sendMessage {
+    .allMessages {
         width: 100%;
-        right: 0%;
-
-
+        border: none;
 
     }
+
 
     .chatMessage {
 
@@ -544,10 +525,4 @@
     }
 
 
-}
-
-
-hr {
-
-    color: rgba(27, 27, 27, 0.726)
 }

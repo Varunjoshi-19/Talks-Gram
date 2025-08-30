@@ -13,7 +13,6 @@ interface ReelUploadPayload {
     },
     author: {
         userId: string,
-        userAccId: string
     },
     reelDescription?: string
 }
@@ -46,7 +45,6 @@ class ReelsServices {
             },
             author: {
                 userId: parsedProfile._id,
-                userAccId: parsedProfile.userAccId,
             },
         };
 
@@ -86,7 +84,7 @@ class ReelsServices {
         }
     }
 
-     async handleAddLike(postId: string, userId: string) {
+    async handleAddLike(postId: string, userId: string) {
         if (!postId || !userId) {
             return { status: 400, message: "IDs required" };
         }
@@ -133,6 +131,43 @@ class ReelsServices {
             return { status: 200, statusText: "Unliked", liked: false };
         } catch (error: any) {
             return { status: 500, error: error.message };
+        }
+    }
+
+    async handleFetchUserReels(userId: string) {
+
+        try {
+            if (!userId) {
+                return {
+                    message: `id required!`,
+                    status: 404,
+                    success: false
+                }
+            }
+
+            const fetehReels: any = await ReelDoc.find({ "author.userId": userId }).select("author.userId reelVideo.contentType reelLike reelComment reelDescription createdAt");
+
+            if (!fetehReels || fetehReels == "") {
+  
+                return {
+                    message: `No reels found!`,
+                    status: 404,
+                    success: false
+                }
+            }
+
+            return {
+                reels: fetehReels,
+                status: 202,
+                success: true
+            }
+
+        } catch (error: any) {
+            return {
+                message: error.message,
+                status: 505,
+                success: false
+            }
         }
     }
 

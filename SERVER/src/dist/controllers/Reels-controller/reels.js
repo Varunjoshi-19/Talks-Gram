@@ -42,6 +42,12 @@ let ReelsController = class ReelsController {
             res.status(result.status).json(result);
             return;
         };
+        this.handleGetUserReels = async (req, res) => {
+            const id = req.params.id;
+            const result = await this.reelsService.handleFetchUserReels(id);
+            res.status(result.status).json(result.success ? { reels: result.reels } : { message: result.message });
+            return;
+        };
         this.reelsService = reelsService;
     }
 };

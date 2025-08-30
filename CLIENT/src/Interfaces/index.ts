@@ -39,6 +39,7 @@ export interface PostIdProps {
 
   id: string;
   toogleBox: () => void;
+  postType : string;
   userInfoF: () => UserInfoProps
   currentLikes: number;
   createdAt: string;

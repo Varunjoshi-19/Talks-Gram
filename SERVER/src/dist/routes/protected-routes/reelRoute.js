@@ -64,6 +64,7 @@ let ReelsRoutes = class ReelsRoutes {
         this.router.post("/remove-likePost", this.reelsController.handleRemoveLikePost.bind(this.reelsController));
         this.router.post("/add-likePost", this.reelsController.handleAddLikePost.bind(this.reelsController));
         this.router.get("/render-reel/:id", this.renderController.handleRenderReel.bind(this.renderController));
+        this.router.get("/getReels/:id", this.reelsController.handleGetUserReels.bind(this.reelsController));
         return this.router;
     }
 };
