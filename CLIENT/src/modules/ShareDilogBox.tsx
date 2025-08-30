@@ -86,12 +86,14 @@ function ShareDilogBox({ toogleOpenCloseButton, sharePostRefId, postOwnerId, pos
     return (
         <div className={styles.blackBehindContainer} >
 
-            <div className={styles.crossButton} >
-                <X onClick={() => toogleOpenCloseButton(prev => !prev)} />
-            </div>
 
 
-            <div id={messageStyles.toMessage} style={{ height: "55%", width: "40%" }}>
+
+            <div id={messageStyles.toMessage} >
+
+                <div className={styles.crossButton} >
+                    <X onClick={() => toogleOpenCloseButton(prev => !prev)} />
+                </div>
 
                 <div style={{
                     display: "flex", opacity: "1", position: "relative",

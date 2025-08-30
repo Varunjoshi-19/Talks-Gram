@@ -74,6 +74,13 @@
 
 .thoughtArea::-webkit-scrollbar-thumb {
     background-color: rgb(43, 43, 43);
-    /* Thumb color */
     border-radius: 4px;
+}
+
+
+@media (max-width : 764px) {
+    .centerBoxContainer {
+        width: 400px;
+    }
+
 }

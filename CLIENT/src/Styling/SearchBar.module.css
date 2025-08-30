@@ -5,8 +5,8 @@
   width: 35%;
   height: 100vh;
   left: 40%;
-  background-color: rgb(0, 0, 0);
-  z-index: 4;
+  background-color: #1B1B1B;
+  z-index: 20;
   border-right: 1px solid white;
   animation: slideInFromLeft 0.1s ease-in forwards;
   align-items: center;
@@ -146,53 +146,56 @@
 }
 
 
-@media (max-width : 764px) {
-
+@media (max-width: 764px) {
   .SearchBarContainer {
     display: flex;
-    height: 50px;
-    top :5px;
-    max-height: 300px;
-    
-   border :none;
-   border-radius: 10px;
-    position: relative;
-    width: 245px;
+    flex-direction: column;
+    position: fixed;
+    top: 50px;
+    left: 2.5vw;
+    width : 400px;
+    min-width: 0;
+    max-width: 400px;
+    height: auto;
+    max-height: 320px;
     background-color: rgb(53, 53, 53);
-    margin-left: 30%;
+    border: none;
+    border-radius: 10px;
+    margin: 0 auto;
+    z-index: 30;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    align-items: stretch;
+    animation: none;
   }
 
-.SearchBarContainer .userProfiles {
-
-  padding : 30px 10px;
-  gap : 10px;
-  justify-content: left;
-
-}
-
+  .SearchBarContainer .userProfiles {
+    padding: 16px 10px;
+    gap: 10px;
+    justify-content: flex-start;
+    min-height: 60px;
+    max-height: 80px;
+  }
 
   .foundedAccounts {
-
-    top : 0%;
+    top: 0;
     width: 100%;
     position: absolute;
     height: 200px;
     background-color: rgb(53, 53, 53);
     border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;  
-
-
+    border-bottom-right-radius: 5px;
+    overflow-y: auto;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    z-index: 31;
   }
 
   .SearchBarContainer #searchName {
-     display: none;
-  }
-
-  .SearchBarContainer .searchBar {
-
     display: none;
   }
 
+  .SearchBarContainer .searchBar {
+    display: none;
+  }
 }
 
 

@@ -16,3 +16,8 @@ POST http://localhost:4000/Personal-chat/fetch-chatted-users/687a2cbe0d1d7f2f872
 ### 
 
 GET http://localhost:4000/accounts/getIdAndUsername/6880dff880a5baca016e1769
+
+
+###
+
+GET http://localhost:4000/uploadReel/getReels/688778349c33ad5f07cddff4

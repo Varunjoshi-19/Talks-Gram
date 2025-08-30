@@ -65,7 +65,15 @@ let PostsApiServices = class PostsApiServices {
     }
     async fetchAllPosts(userId) {
         try {
-            const allPosts = await PostDoc_1.default.find({ "author.userId": userId });
+            const allPosts = await PostDoc_1.default.find({ "author.userId": userId }, {
+                postLike: true,
+                postComment: true,
+                postShare: true,
+                postDescription: true,
+                createdAt: true,
+                "postImage.contentType": true,
+                "author.userId": true,
+            });
             return { status: 202, success: true, data: allPosts };
         }
         catch (error) {

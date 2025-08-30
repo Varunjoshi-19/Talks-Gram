@@ -25,10 +25,6 @@ const ReelSchema = new mongoose_1.default.Schema({
         userId: {
             type: String,
             required: true
-        },
-        userAccId: {
-            type: String,
-            required: true
         }
     }
 }, { timestamps: true });

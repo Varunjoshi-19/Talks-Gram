@@ -1,14 +1,10 @@
-import MenuOptions from "./MenuOptions";
 import styles from '../Styling/Messages.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import {  faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import { useState } from "react";
 import ToMessage from "./ToMessage";
 import { useNavigate } from "react-router-dom";
-
-
-import ChattedUser from "../modules/ChattedUser.tsx";
 import { useUserAuthContext } from "../Context/UserContext.tsx";
 
 
@@ -25,10 +21,9 @@ function Messages() {
       const parsedOtherUserInfo = JSON.parse(otherUserInfo);
       const otherProfileId = parsedOtherUserInfo._id;
 
-      navigate(`/Personal-chat/${otherProfileId}`);
+      navigate(`/accounts/inbox/messages/Personal-chat/${otherProfileId}`);;
 
    }
-
 
 
    if (!profile) {
@@ -41,9 +36,6 @@ function Messages() {
       <>
          {ToMessagePopUp && <ToMessage toogleButton={setToMessagePopUp} EnableMessageTab={redirectToChattingPage} />}
 
-         <MenuOptions profile={profile} />
-
-         <ChattedUser />
 
          <div className={styles.sendMessage}>
 

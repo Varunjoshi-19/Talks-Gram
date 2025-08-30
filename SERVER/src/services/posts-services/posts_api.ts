@@ -55,7 +55,16 @@ class PostsApiServices {
 
     async fetchAllPosts(userId: string) {
         try {
-            const allPosts = await PostDoc.find({ "author.userId": userId });
+            const allPosts = await PostDoc.find({ "author.userId": userId }, {
+                postLike: true,
+                postComment: true,
+                postShare: true,
+                postDescription: true,
+                createdAt: true,
+                "postImage.contentType": true,
+                "author.userId": true,
+
+            });
             return { status: 202, success: true, data: allPosts };
         } catch (error: any) {
             return { status: 505, success: false, message: error.message };

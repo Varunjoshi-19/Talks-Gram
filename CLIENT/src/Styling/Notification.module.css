@@ -6,8 +6,9 @@
   height: 100vh;
   left: 40%;
   align-items: center;
-  background-color: rgb(0, 0, 0);
-  z-index: 1;
+  background-color: #1B1B1B;
+  z-index: 20;
+
   border-right: 1px solid white;
   animation: slideInFromLeft 0.1s ease-in forwards;
 

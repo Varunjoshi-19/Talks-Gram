@@ -12,13 +12,10 @@ import { useEffect, useState } from "react";
 import profileStyles from "../Styling/Profile.module.css";
 import ToMessage from "../Components/ToMessage";
 import Thought from "../UI/Thought";
-
-interface ChattedProps {
-    ResetEverythingOnDom?: () => void;
-}
+import { useToogle } from "../Context/ToogleContext";
 
 
-function ChattedUser({ ResetEverythingOnDom }: ChattedProps) {
+function ChattedUser() {
 
     const { AllChattedUsers, setChattedUsers, setMessageCount } = useChatContext();
     const [shareNote, setShareNote] = useState<boolean>(false);
@@ -26,7 +23,7 @@ function ChattedUser({ ResetEverythingOnDom }: ChattedProps) {
     const { profile } = useUserAuthContext();
     const navigate = useNavigate();
     const [note, setNote] = useState<{ noteMessage: string, _id: string, userId: string } | null>(null);
-
+    const { setNewUserToogled } = useToogle();
 
     useEffect(() => {
 
@@ -46,11 +43,10 @@ function ChattedUser({ ResetEverythingOnDom }: ChattedProps) {
 
         if (!profile) return;
 
-        if (ResetEverythingOnDom) {
-            ResetEverythingOnDom();
-        }
 
-        navigate(`/Personal-chat/${user.userId}`);
+        setNewUserToogled(`${user.userId}`);
+
+        navigate(`/accounts/inbox/messages/Personal-chat/${user.userId}`);
 
         let iteratorCount = 0;
         setChattedUsers(prevChattedUser => {
@@ -85,11 +81,11 @@ function ChattedUser({ ResetEverythingOnDom }: ChattedProps) {
     }
 
     async function redirectToChattingPage(otherUserInfo: string) {
-
         const parsedOtherUserInfo = JSON.parse(otherUserInfo);
+        setNewUserToogled(`${parsedOtherUserInfo._id}`);
         const otherProfileId = parsedOtherUserInfo._id;
+        navigate(`/accounts/inbox/messages/Personal-chat/${otherProfileId}`);
 
-        navigate(`/Personal-chat/${otherProfileId}`);
 
     }
 
@@ -121,10 +117,12 @@ function ChattedUser({ ResetEverythingOnDom }: ChattedProps) {
                     <div id={styles.addNewNote} >
                         {
                             note ?
-                                <Thought thought={note.noteMessage}  toogleBox={setShareNote} />
+                                <Thought thought={note.noteMessage} toogleBox={setShareNote} />
                                 :
 
-                                <div onClick={() => setShareNote(prev => !prev)} className={profileStyles.shareANote} >
+                                <div onClick={() => setShareNote(prev => !prev)}
+                                    style={{ left: "0px", top: "-30px" }}
+                                    className={profileStyles.shareANote} >
                                     <span style={{ opacity: "0.8" }} >Share a note</span>
                                 </div>
                         }

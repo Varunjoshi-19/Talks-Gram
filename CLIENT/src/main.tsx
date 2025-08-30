@@ -6,7 +6,9 @@ import "./Styling/global.css"
 import { SocketProvider } from './Context/SocketContext.tsx'
 import { ChatContextProvider } from './Context/ChattedUserContext.tsx'
 import { GeneralContextProvider } from './Context/GeneralContext.tsx'
+import { ElementProvider } from './Context/ElementContext.tsx'
 createRoot(document.getElementById('root')!).render(
+  <ElementProvider>
   <AuthContextProvider>
     <ToggleProvider>
       <ChatContextProvider>
@@ -22,5 +24,6 @@ createRoot(document.getElementById('root')!).render(
         </SocketProvider>
       </ChatContextProvider>
     </ToggleProvider>
-  </AuthContextProvider>,
+  </AuthContextProvider>
+  </ElementProvider>,
 )

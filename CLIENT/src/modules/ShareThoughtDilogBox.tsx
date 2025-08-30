@@ -146,11 +146,11 @@ function ShareThoughtDilogBox({ userId, closeDilogBox, imageSrc }: ShareThoughtP
                     <span style={{ cursor: "pointer" }} onClick={() => setShowEmojiPicker(prev => !prev)}>
                         <Smile />
                     </span>
+                 
                     {showEmojiPicker &&
 
-
-                        <div style={{ position: "absolute", height: "100px", bottom: "-100px" }}>
-                            <EmojiPicker height={300}
+                        <div style={{ position: "absolute", height: "200px", top : "-200px" }}>
+                            <EmojiPicker height={360}
                                 onEmojiClick={handleOnEmojiClick}
                                 style={{ overflow: "hidden" }} />
                         </div>
