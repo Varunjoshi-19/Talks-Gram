@@ -1,5 +1,5 @@
 import { Server as httpServer } from "http";
-import io, { Socket, Server as SocketServer } from "socket.io";
+import  { Socket, Server as SocketServer } from "socket.io";
 import { autoInjectable } from "tsyringe";
 import { CacheService } from "../services/Others/OtherServices";
 import { notificationPayload } from "../interfaces";
