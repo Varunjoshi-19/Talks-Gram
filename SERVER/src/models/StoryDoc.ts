@@ -29,7 +29,7 @@ const StorySchema = new mongoose.Schema({
     expiredAt: {
         type: Date,
         required: true,
-        index: { expires: 0 }
+        // index: { expires: 0 }
     },
 
     peopleViewedId: [{ type: mongoose.Schema.Types.ObjectId }]
