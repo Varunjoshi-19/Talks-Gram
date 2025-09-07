@@ -13,7 +13,7 @@ class PostsApiServices {
 
     async fetchAllComments(postId: string) {
         try {
-            const comments = await CommentDoc.find({ postId }).sort({ createdAt: -1 });
+            const comments = await CommentDoc.find({ postId }).sort({ createdAt: -1 }).populate("userId", "name profileImage").lean();
             if (!comments || comments.length === 0) {
                 return { status: 404, success: false, message: "No comment yet" };
             }
@@ -25,7 +25,7 @@ class PostsApiServices {
 
     async fetchPosts(skip: number) {
         try {
-            const posts = await PostDoc.find({}).sort({ createdAt: 1 }).skip(skip).limit(5);
+            const posts = await PostDoc.find({}).sort({ createdAt: 1 }).skip(skip).limit(5).populate("authorId", "username profileImage").lean();
             if (!posts || posts.length === 0) {
                 return { status: 201, success: false, message: "Empty" };
             }
@@ -55,16 +55,7 @@ class PostsApiServices {
 
     async fetchAllPosts(userId: string) {
         try {
-            const allPosts = await PostDoc.find({ "author.userId": userId }, {
-                postLike: true,
-                postComment: true,
-                postShare: true,
-                postDescription: true,
-                createdAt: true,
-                "postImage.contentType": true,
-                "author.userId": true,
-
-            });
+            const allPosts = await PostDoc.find({ "authorId": userId }).lean();
             return { status: 202, success: true, data: allPosts };
         } catch (error: any) {
             return { status: 505, success: false, message: error.message };
@@ -78,7 +69,7 @@ class PostsApiServices {
                 return { status: 404, message: "post id missing!" };
             }
 
-            const post = await PostDoc.findOne({ _id: id }, { "author.userId": 1, "author.userAccId": 1, postLike: 1, createdAt: 1 });
+            const post = await PostDoc.findOne({ _id: id }).lean();
             if (!post) {
                 return { status: 404, message: "post not available" }
             }
@@ -91,7 +82,7 @@ class PostsApiServices {
 
     async handleFetchAllStories() {
         try {
-            const stories = await StoryDoc.find({}).select("_id userId username storyData.contentType storyData.duration").lean();
+            const stories = await StoryDoc.find({}).populate("userId" , "username profileImage").lean();
             if (!stories) {
                 return { status: 404, success: false, message: "no stories available" }
             }
@@ -105,7 +96,8 @@ class PostsApiServices {
 
     async fetchStory(id: string) {
         try {
-            const story = await StoryDoc.findOne({ userId: id }).select("_id userId storyData.contentType storyData.duration username expiredAt").lean();
+            const story = await StoryDoc.findOne({ userId: id }).populate("userId", "username profileImage").lean();
+          
             if (!story) {
                 return { status: 404, success: false, message: "no story" }
             }

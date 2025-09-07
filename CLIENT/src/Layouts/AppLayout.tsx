@@ -11,7 +11,7 @@ const AppLayout = () => {
 
       {profile && <MenuOptions profile={profile} />}
 
-      <main style={{ flex: 1}}>
+      <main style={{ flex: 1 }}>
         <Outlet />
       </main>
     </div>

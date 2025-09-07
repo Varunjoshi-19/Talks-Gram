@@ -63,7 +63,7 @@ function RenderSingleStory() {
 
     async function verifyStory() {
         const story: any = await fetchUserStory(id!);
-        console.log(story);
+      
         if (!story) {
             navigate("/error");
             return;

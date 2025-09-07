@@ -24,4 +24,3 @@ data.forEach(each =>  {
      }
 })
 
-console.log(map);

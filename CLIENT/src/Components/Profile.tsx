@@ -20,7 +20,7 @@ import { faCamera } from '@fortawesome/free-solid-svg-icons';
 import UserPosts from '../modules/UserPosts';
 import UserReels from '../modules/UserReels';
 import LineLoader from '../modules/LineLoader';
-
+import defaultImage from "../assets/default.png"
 
 
 function Profile() {
@@ -32,10 +32,11 @@ function Profile() {
     const [enableEditProfile, setEnableEditProfile] = useState<boolean>(false);
     const [postId, setPostId] = useState<string>("");
     const [userId, setUserId] = useState<string>("");
+    const [posturl, setPostUrl] = useState<string | null>(null);
     const [toogleCommentBox, setCommentBox] = useState<boolean>(false);
     const [selectedPostUsername, setSelectedPostUsername] = useState<string>("");
     const [currentLikes, setCurrentLikes] = useState<number>(0);
-    const [createdAtTime, setCreatedAt] = useState<string>("");
+    const [createdAtTime, setCreatedAt] = useState<string | null>(null);
     const { profile, dispatch } = useUserAuthContext();
     const [shareThoughtDilogBox, setShareThoughtDilogBox] = useState<boolean>(false);
     const [showMain, setShowMain] = useState<boolean>(false);
@@ -48,7 +49,7 @@ function Profile() {
     const [postFetchLoader, setPostFetchLoader] = useState<boolean>(false);
     const [reelFetchLoader, setReelFetchLoader] = useState<boolean>(false);
     const [allReels, setAllReels] = useState<any | null>(null);
-    const [postType, setPostType] = useState<string>("");
+    const [postType, setPostType] = useState<string | null>(null);
     const navigate = useNavigate();
 
     const itemIconsStyles = {
@@ -76,7 +77,7 @@ function Profile() {
             const result = await response.json();
             if (response.ok) {
                 setAllPosts(result.allPosts);
-                console.log(" all posts", result.allPosts);
+    
             }
             if (!response.ok) {
                 setAllPosts([]);
@@ -94,11 +95,9 @@ function Profile() {
 
             if (response.ok) {
                 setAllReels(result.reels);
-                console.log(" reels ", result.reels);
+              
             }
-            if (!response.ok) {
-                console.log(result.message);
-            }
+           
 
             setReelFetchLoader(false);
 
@@ -108,7 +107,6 @@ function Profile() {
         (async () => {
             if (profile) {
                 const story = await fetchUserStory(profile?._id);
-                console.log("fetch story", story);
 
                 setUploadedStory(story);
             }
@@ -117,7 +115,7 @@ function Profile() {
         (async () => {
             if (profile) {
                 const note = await fetchUserNote(profile._id);
-                console.log("fetched note", note);
+               
                 setNote(note);
             }
         })();
@@ -158,10 +156,11 @@ function Profile() {
         setEnableEditProfile(c => !c);
     }
 
-    function handleOpenCommentBox(id: string, userId: string, type: string, currentLikes: number, createdAt: string) {
+    function handleOpenCommentBox(id: string, url: string, userId: string, type: string, currentLikes: number, createdAt: string) {
 
         setCurrentLikes(currentLikes);
         setPostType(type);
+        setPostUrl(url);
         setCreatedAt(createdAt);
         setPostId(id);
         document.body.style.overflow = "hidden";
@@ -192,12 +191,12 @@ function Profile() {
         const file = event.target.files?.[0];
         if (file) {
             setSelectedStoryFile(file);
-            console.log("extension type", file.type);
+        
             const blob = new Blob([file], { type: file.type })
             const url = URL.createObjectURL(blob);
             setStoryUrl(url);
             handleGetDuration(file)?.then((duration) => {
-                console.log("duration", duration)
+                
                 setStoryDuration(duration)
             });
 
@@ -225,12 +224,14 @@ function Profile() {
 
 
             {shareThoughtDilogBox && profile && <ShareThoughtDilogBox userId={profile._id}
-                imageSrc={`${MAIN_BACKEND_URL}/accounts/profileImage/${profile?._id}`}
+                imageSrc={profile.profileImage?.url || defaultImage}
                 closeDilogBox={setShareThoughtDilogBox} />}
 
             {enableEditProfile && <EditProfile profileInfo={profile} s={handleEditProfile} />}
-            {toogleCommentBox &&
+            {toogleCommentBox && postType && posturl && createdAtTime &&
                 <CommentBox id={postId}
+                    userImageUrl={profile.profileImage?.url || defaultImage}
+                    postUrl={posturl}
                     toogleBox={closeCommentInfoBox}
                     postType={postType}
                     userInfoF={ProvideInfoToCommentBox} currentLikes={currentLikes}
@@ -283,7 +284,7 @@ function Profile() {
                                     if (!uploadedStory) return;
                                     navigate(`/stories/${profile.username}/${profile._id}`)
                                 }}
-                                src={`${MAIN_BACKEND_URL}/accounts/profileImage/${profile?._id}`} alt="user"
+                                src={profile.profileImage?.url || defaultImage} alt="user"
                                 style={{
                                     width: "100%", height: "100%", objectFit: "contain",
                                     cursor: `${uploadedStory ? "pointer" : "default"}`,

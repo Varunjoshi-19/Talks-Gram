@@ -3,7 +3,7 @@ import styles from "../Styling/Notification.module.css";
 import { MAIN_BACKEND_URL } from "../Scripts/URL";
 import { updateLocalStorageData } from "../Scripts/FetchDetails";
 import { notificationPayload } from "../Interfaces";
-
+import defaultImage from "../assets/default.png";
 
 interface NotificationProps {
     AllNotifications: Map<string, notificationPayload>;
@@ -34,8 +34,7 @@ const Notification: React.FC<NotificationProps> = ({ AllNotifications, setAllNot
     async function handleAcceptRequest(item: string) {
 
         const parsedItem = JSON.parse(item);
-        console.log(parsedItem);
-
+      
         setNotiCount(count => count - 1);
 
         setAllNotifications((prevNotification) => {
@@ -105,7 +104,7 @@ const Notification: React.FC<NotificationProps> = ({ AllNotifications, setAllNot
                         <div key={userId} className={styles.eachNotification}>
 
                             <div id={styles.profileImage}>
-                                <img src={`${MAIN_BACKEND_URL}/accounts/profileImage/${notification.userIdOf}`} width="100%" height="100%" alt="" />
+                                <img src={notification.userId.profileImage?.url || defaultImage} width="100%" height="100%" alt="" />
                             </div>
 
                             <p>

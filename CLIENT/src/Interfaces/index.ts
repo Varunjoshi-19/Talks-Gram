@@ -5,6 +5,11 @@ export interface ProfilePayload {
   fullname: string,
   post: number,
   bio: string,
+  profileImage: {
+    url: string,
+    contentType: string
+  },
+
   followers: number,
   following: number
 };
@@ -12,16 +17,23 @@ export interface ProfilePayload {
 export interface AllPostsProps {
 
   _id: string;
-  authorName: string;
   likeStatus: boolean;
   postLike: number;
   postComment: number;
   postShare: number;
   postDescription: string;
   createdAt: string,
-  author: {
-    userId: string;
-    userAccId: string;
+  postImage: {
+    url: string
+    contentType: string
+  },
+  authorId: {
+    _id: string,
+    profileImage: {
+      url: string,
+      contentType: string
+    },
+    username: string
   }
 }[];
 
@@ -39,18 +51,29 @@ export interface PostIdProps {
 
   id: string;
   toogleBox: () => void;
-  postType : string;
+  postType: string;
   userInfoF: () => UserInfoProps
+  postUrl: string;
+  userImageUrl?: string;
   currentLikes: number;
   createdAt: string;
 
 }
 
 export interface CommentProps {
-  userId: string | any,
+  userId: {
+    _id: string,
+    name: string;
+    profileImage: {
+      url: string,
+      contentType: string
+
+    }
+  }
   username: string | any,
   comment: string,
   time: string,
+
   initiateTime: number
 }
 
@@ -61,6 +84,10 @@ export interface EditProfileProps {
     username: string;
     fullname: string;
     post: number,
+    profileImage: {
+      url: string,
+      contentType: string
+    },
     bio: string;
     followers: number;
     following: number
@@ -87,17 +114,17 @@ export interface MenuOptionProps {
 
 export interface notificationPayload {
 
-  userId: string,
+  userId: {
+    _id: string,
+    profileImage: {
+      url: string,
+      contentType: string
+    }
+  }
   userIdOf: string,
   usernameOf: string
 };
 
-export interface NotificationProps {
-
-  userId: string,
-  userIdOf: string,
-  usernameOf: string
-}
 
 
 export interface ProfileInfo {
@@ -118,10 +145,19 @@ export type RecievedReelType = {
   reelLike: number;
   reelComment: number;
   reelDescription: string;
-  author: {
-    userId: string;
-    userAccId: string;
-  }
+  authorUserId: {
+    _id: string,
+    profileImage: {
+      url: string,
+      contentType: string
+    },
+    username: string
+
+  },
+  reelVideo: {
+    url: string,
+    contentType: string,
+  },
 
 
 }
@@ -129,15 +165,24 @@ export type RecievedReelType = {
 export type AllReelsType = {
 
   _id: string;
-  authorName: string;
   likeStatus: boolean;
   reelLike: number;
+
   reelComment: number;
   reelDescription: string;
-  author: {
-    userId: string;
-    userAccId: string;
-  }
+  authorUserId: {
+    _id: string,
+    profileImage: {
+      url: string,
+      contentType: string
+    },
+    username: string
+
+  },
+  reelVideo: {
+    url: string,
+    contentType: string,
+  },
   videoRef: any;
 
 }
@@ -152,6 +197,10 @@ export type ReelLikeAndStatus = {
 
 export interface searchAccount {
   _id: string,
+  profileImage: {
+    url: string,
+    contentType: string
+  },
   username: string,
   fullname: string,
   followers: number,
@@ -168,28 +217,55 @@ export interface ToMessageProps {
 
 
 export interface ShareThoughtProps {
-  userId : string;
+  userId: string;
   closeDilogBox: React.Dispatch<React.SetStateAction<boolean>>;
   imageSrc: string;
 
 }
 
 export interface StoryDilogBoxProps {
-  id : string;
-  username : string;
+  id: string;
+  username: string;
   itemUrl: string;
   type: string;
   storyDuration: number;
-  storyFile : File;
+  storyFile: File;
   closeDilogBox: React.Dispatch<React.SetStateAction<File | null>>;
 }
 
 
 export interface PlayStoryProps {
-  allStories : any[];
-  currentSelectedStory : {
-     story : any;
-     currentIndex : number;
+  allStories: any[];
+  currentSelectedStory: {
+    story: any;
+    currentIndex: number;
   };
-  closeDilogBox  : React.Dispatch<React.SetStateAction<boolean>>;
+  closeDilogBox: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+
+
+interface StoryProps {
+    _id: string,
+    userId: {
+        _id: string,
+        profileImage: {
+            url: string,
+            contentType: string
+        }
+    },
+    username: string,
+    storyData: { duration: number, contentType: string }
+};
+
+
+export interface StoryCardProps {
+    setCurrentStory: React.Dispatch<React.SetStateAction<number>>;
+    index: number;
+    allStoriesLength: number;
+    currentStory: number;
+    closeDilogBox: React.Dispatch<React.SetStateAction<boolean>>;
+    story: StoryProps,
+    className: { name: string, positions: string };
+    logoIcon?: string;
 }

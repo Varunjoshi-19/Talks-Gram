@@ -19,7 +19,7 @@ import { Clapperboard, Film, Grid, UserRound } from 'lucide-react';
 import Footer from './Footer';
 import UserPosts from '../modules/UserPosts';
 import UserReels from '../modules/UserReels';
-
+import defaultImage  from "../assets/default.png";
 
 
 function UserProfile() {
@@ -44,7 +44,9 @@ function UserProfile() {
     const [uploadedStory, setUploadedStory] = useState<any | null>(null);
     const [allReels, setAllReels] = useState<any | null>(null);
     const [postType, setPostType] = useState<string>("");
+    const [postUrl , setPostUrl] = useState<string | null>(null);
     const [showMain, setShowMain] = useState<boolean>(false);
+    const [userImageUrl , setUserImageUrl] = useState<string | null>(null);
 
     const itemIconsStyles = {
         borderBottom: '4px solid white',
@@ -80,6 +82,7 @@ function UserProfile() {
 
             const result = await response.json();
             if (response.ok) {
+
                 setAllPosts(result.allPosts);
 
             }
@@ -88,7 +91,7 @@ function UserProfile() {
             }
         })();
 
-    }, [id, profile]);
+    }, [id]);
 
 
     useEffect(() => {
@@ -147,7 +150,7 @@ function UserProfile() {
         (async () => {
             if (profile) {
                 const story = await fetchUserStory(profileInfo?._id);
-                console.log("fetch story", story);
+            
                 setUploadedStory(story);
             }
         })();
@@ -155,7 +158,7 @@ function UserProfile() {
         (async () => {
             if (profile) {
                 const note = await fetchUserNote(profileInfo._id);
-                console.log("fetched note", note);
+               
                 setNote(note);
             }
         })();
@@ -166,12 +169,9 @@ function UserProfile() {
             const result = await response.json();
 
             if (response.ok) {
-                setAllReels(result.reels);
-                console.log(result.reels);
+                setAllReels(result.reels);            
             }
-            if (!response.ok) {
-                console.log(result.message);
-            }
+
 
         })();
 
@@ -190,12 +190,16 @@ function UserProfile() {
 
 
 
-    function handleOpenCommentBox(id: string, userId: string, type: string, currentLikes: number, createdAt: string) {
+    function handleOpenCommentBox(id: string, url : string,  userId: string, type: string, 
+        
+        currentLikes: number, createdAt: string) {
 
         setCurrentLikes(currentLikes);
         setPostType(type);
         setCreatedAt(createdAt);
         setPostId(id);
+        setUserImageUrl(profileInfo.profileImage?.url || defaultImage);
+        setPostUrl(url);
         document.body.style.overflow = "hidden";
         setSelectedPostUsername(profile?.username!);
         setUserId(userId);
@@ -302,9 +306,11 @@ function UserProfile() {
     return (
         <>
 
-            {toogleCommentBox &&
+            {toogleCommentBox && postUrl && postType && createdAtTime && userImageUrl &&
                 <CommentBox id={postId}
                     postType={postType}
+                    postUrl={postUrl}
+                    userImageUrl={userImageUrl}
                     toogleBox={closeCommentInfoBox}
                     userInfoF={ProvideInfoToCommentBox} currentLikes={currentLikes}
                     createdAt={createdAtTime} />
@@ -345,9 +351,9 @@ function UserProfile() {
                                     navigate(`/stories/${profileInfo.username}/${profileInfo._id}`)
                                 }}
 
-                                src={`${MAIN_BACKEND_URL}/accounts/profileImage/${profileInfo?._id}`} alt="user"
+                                src={profileInfo?.profileImage?.url || defaultImage} alt="user"
                                 style={{
-                                    width: "100%", height: "100%", objectFit: "contain",
+                                    width: "100%", height: "100%", objectFit: "cover",
                                     cursor: `${uploadedStory ? "pointer" : "default"}`,
                                     borderRadius: "50%"
                                 }}

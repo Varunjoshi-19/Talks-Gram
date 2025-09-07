@@ -1,19 +1,17 @@
 import { autoInjectable } from "tsyringe";
 import ReelDoc from "../../models/ReelDoc";
 import ProfileDoc from "../../models/ProfileDoc";
-import { reelsUploadPath } from "../..";
-import fs from "fs";
 import allHelpServices from "../../utils";
 import LikedPostDoc from "../../models/LikedPost";
+import globalConfig from "../../config";
+import mongoose from "mongoose";
 
 interface ReelUploadPayload {
     reelVideo: {
-        data: Buffer,
+        url: string,
         contentType: string
     },
-    author: {
-        userId: string,
-    },
+    authorUserId: string;
     reelDescription?: string
 }
 
@@ -38,30 +36,33 @@ class ReelsServices {
             return { status: 400, error: "Invalid profile data" };
         }
 
+      
+        const data = await this.allHelper.handleUploadFile(postReel, globalConfig.talksGramBucketId);
+
+        if (!data.success || !data.imageUrl) {
+            return { status: 500, success: false, message: "Failed to upload file" };
+        }
+
         const newPostInfo: ReelUploadPayload = {
             reelVideo: {
-                data: postReel.buffer,
+                url: data.imageUrl,
                 contentType: postReel.mimetype,
             },
-            author: {
-                userId: parsedProfile._id,
-            },
+            authorUserId: parsedProfile._id,
         };
 
         if (caption !== "") newPostInfo.reelDescription = caption;
 
+
         try {
             const newPost = await ReelDoc.create(newPostInfo);
-            if (!newPost) return { status: 500, error: "Failed to upload post" };
+            if (!newPost) return { status: 500, error: "Failed to upload reel" };
 
             await ProfileDoc.findOneAndUpdate(
                 { _id: parsedProfile._id },
                 { $inc: { post: 1 } },
                 { new: true }
             );
-
-            const filePath = `${reelsUploadPath}/${Date.now()}-${postReel.originalname}`;
-            fs.writeFileSync(filePath, postReel.buffer);
 
             return { status: 200, message: "Successfully uploaded" };
         } catch (error: any) {
@@ -71,7 +72,7 @@ class ReelsServices {
 
     async handleFetchReels(skip: string) {
         try {
-            const allReels = await ReelDoc.find({}).skip(parseInt(skip));
+            const allReels = await ReelDoc.find({}).skip(parseInt(skip)).populate("authorUserId", "username profileImage").lean();
 
             if (allReels.length === 0) {
                 return { status: 204, statusText: "No Content", message: "No posts available" };
@@ -145,10 +146,10 @@ class ReelsServices {
                 }
             }
 
-            const fetehReels: any = await ReelDoc.find({ "author.userId": userId }).select("author.userId reelVideo.contentType reelLike reelComment reelDescription createdAt");
+            const fetehReels: any = await ReelDoc.find({ "authorUserId": userId });
 
             if (!fetehReels || fetehReels == "") {
-  
+
                 return {
                     message: `No reels found!`,
                     status: 404,

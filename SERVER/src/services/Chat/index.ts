@@ -2,14 +2,22 @@ import { injectable } from "tsyringe";
 import crypto from "crypto";
 import PersonalChatDoc from "../../models/PersonalChatDoc";
 import { MessageInfo } from "../../interfaces/user";
+import AllHelpServices from "../../utils/index";
+import globalConfig from "../../config";
+
 
 @injectable()
 class ChatMessageService {
+
+    constructor(private allHelp: AllHelpServices) {
+        this.allHelp = allHelp;
+    }
 
     async savePersonalChat(chatData: any) {
         try {
             const { userId, otherUserId } = chatData;
             const savedChat = await PersonalChatDoc.create({ ...chatData, seenStatus: userId === otherUserId });
+            console.log(savedChat);
             return {
                 status: 200,
                 success: true,
@@ -29,10 +37,16 @@ class ChatMessageService {
     async saveAdditionalData(allData: string, files: Express.Multer.File[]) {
         try {
             const parsedData = JSON.parse(allData);
-            const additionalData: any = files.map((file) => ({
-                data: file.buffer,
-                contentType: file.mimetype,
-            }));
+
+            const additionalData: any = files.map(async (file) => {
+                const data = await this.allHelp.handleUploadFile(file, globalConfig.talksGramBucketId);
+                if (data.success) {
+                    return {
+                        url: data.imageUrl,
+                        contentType: file.mimetype
+                    }
+                }
+            });
 
             const dataToSave: MessageInfo = {
                 userId: parsedData.userId,
@@ -67,9 +81,14 @@ class ChatMessageService {
 
         try {
             const parsedData = JSON.parse(audioData);
+            const data = await this.allHelp.handleUploadFile(audioFile, globalConfig.talksGramBucketId);
 
-            const fileData = {
-                data: audioFile.buffer,
+            if (!data.success) {
+                return { status: 500, success: false, message: "Failed to upload audio file" };
+            }
+
+            const fileData: { url: string, contentType: string } = {
+                url: data.imageUrl!,
                 contentType: "wav",
             };
 

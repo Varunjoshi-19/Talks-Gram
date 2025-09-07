@@ -30,7 +30,7 @@ class PostRouter {
         this.router.post("/add-comment", this.postController.handlePostComment.bind(this.postController));
         this.router.post("/fetch-comments/:id", this.postApiController.fetchAllComments.bind(this.postApiController));
 
-        this.router.post("/share-post/:id", this.postController.handleSharePost.bind(this.postController));
+        this.router.post("/share-post", this.postController.handleSharePost.bind(this.postController));
         this.router.post("/share-story", this.upload.single("file"), this.postController.handleUploadNewStory.bind(this.postController));
         this.router.post("/new-note" , this.upload.none(), this.postController.handleAddNewNote.bind(this.postController));
 
@@ -40,7 +40,7 @@ class PostRouter {
         this.router.get("/fetch-note/:id" , this.postApiController.handleGetNote.bind(this.postApiController));
         this.router.delete("/remove-story/:id" , this.postApiController.handleRemoveStory.bind(this.postApiController));
         
-        this.router.get("/postImage/:id", this.renderController.renderPostImage.bind(this.renderController));
+        // this.router.get("/postImage/:id", this.renderController.renderPostImage.bind(this.renderController));
         this.router.get("/render-story/:id", this.renderController.RenderStory.bind(this.renderController));
         // router.post("/deletePost", );  // TODO LATER
 

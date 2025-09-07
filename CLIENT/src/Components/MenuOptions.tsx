@@ -73,7 +73,7 @@ const MenuOptions: React.FC<MenuOptionProps> = ({ profile }) => {
     const result = await response.json();
 
     if (response.ok) {
-      console.log(result.requests);
+      
       setAllNotifications((prevNotification) => {
         const newNotification = new Map(prevNotification);
 
@@ -81,7 +81,7 @@ const MenuOptions: React.FC<MenuOptionProps> = ({ profile }) => {
           const { userIdOf } = each;
           if (userIdOf) {
             newNotification.set(userIdOf, each); // Overwrites only if userId exists
-            console.log("Setting notification for userId:", userIdOf);
+           
           }
         });
 
@@ -158,7 +158,7 @@ const MenuOptions: React.FC<MenuOptionProps> = ({ profile }) => {
       const parsedUserProfile = JSON.parse(user);
       const userId = parsedUserProfile._id;
       socket.emit("offline", userId);
-      console.log(`User offline with socket id ${socket.id} and user id ${userId}`);
+    
 
     }
   }

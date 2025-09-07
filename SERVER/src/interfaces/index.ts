@@ -17,6 +17,7 @@ export interface ChattedUserPayload {
   userId: string,
   yourMessage : boolean,
   checkName : string,
+  profileImage: string | null,
   username: string,
   initateTime: string,
   seenStatus: string,

@@ -4,13 +4,13 @@ const FollowRequestSchema = new mongoose.Schema({
 
     userId: {
 
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         required: true
     },
 
     userIdOf: {
 
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         required: true
 
     },

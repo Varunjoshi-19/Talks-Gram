@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { faInfoCircle, faSmile, faPause, faMicrophone, faImage, faHeart, faImages, faPlay } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useRef, useState } from "react";
-import { fetchAllData, fetchDetailsOfUserPost, fetchUserOnlineStatus } from "../Scripts/FetchDetails.ts";
+import { fetchAllData, fetchUserOnlineStatus } from "../Scripts/FetchDetails.ts";
 import LoadingScreen from './LoadingScreen.tsx';
 import {
     ProfileProps, InfoDataType, BufferedDataType, AdditionalDataType,
@@ -17,7 +17,7 @@ import LocalImagesAndVideos from '../modules/LocalImagesAndVideos.tsx';
 import { Play } from 'lucide-react';
 import { useUserAuthContext } from '../Context/UserContext.tsx';
 import { useToogle } from '../Context/ToogleContext.tsx';
-
+import defaultImage from "../assets/default.png";
 
 
 
@@ -79,7 +79,8 @@ function Chatting() {
     const [typeOfItem, setTypeOfItem] = useState<string>("");
     const [userOnlineStatus, setUserOnlineStatus] = useState<boolean>(false);
     const [postType, setPostType] = useState<string>("");
-
+    const [postUrl, setPostUrl] = useState<string | null>(null);
+    const [showMain, setShowMain] = useState<boolean>(false);
     const recordedAudioRef = useRef<HTMLAudioElement>(null);
     let audioChunks: Blob[] = [];
     let stream;
@@ -101,7 +102,7 @@ function Chatting() {
 
         socket.on("user-online", (userId) => {
             if (userId === id) {
-                console.log("user online via login");
+
                 setUserOnlineStatus(true);
             }
 
@@ -223,7 +224,6 @@ function Chatting() {
             const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
             setAudioDataInfo({ blobFile: audioBlob, extension: "wav" });
             const audioUrl = URL.createObjectURL(audioBlob);
-            console.log(audioChunks);
             setAudioFileBlob(audioBlob);
             setAudioUrl(audioUrl);
             audioChunks = [];
@@ -276,6 +276,15 @@ function Chatting() {
     useEffect(() => {
         fetchChatsFromDatabase();
     }, [chatId]);
+
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setShowMain(true);
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, []);
 
 
 
@@ -336,7 +345,7 @@ function Chatting() {
 
                     socket.emit('new-chat', MInfoData);
                     saveAdditionalInfo(MChatInfo);
-                    console.log("Your message has been sent with additional data", ChatInfo);
+
                 }
 
 
@@ -382,7 +391,7 @@ function Chatting() {
         }
 
         else if (audioFileBlob) {
-            console.log("you have sended audioBlob file bro");
+
             const InfoData: InfoDataType = {
 
                 audioData: audioDataInfo,
@@ -416,7 +425,9 @@ function Chatting() {
             setBufferedData([]);
         }
 
-        if (profile._id === otherUserDetails._id) return;
+        if (profile._id === otherUserDetails._id) {
+            return;
+        }
 
         const reelTimeData = {
             senderId: profile._id,
@@ -432,8 +443,6 @@ function Chatting() {
             unseenCount: 0
 
         }
-
-        console.log("after all message this exectued");
         socket.emit("new-message", reelTimeData);
 
 
@@ -464,16 +473,12 @@ function Chatting() {
 
             if (chatSkip > 0) {
 
-                console.log("spread one exectuted");
-                console.log(result);
-
                 setAllChats(prevChats => [...result, ...prevChats]);
                 setChatSkip(prev => prev + 10);
 
             }
             else {
 
-                console.log("single chat exectued");
                 setAllChats(result);
                 setChatSkip(prev => prev + 10);
             }
@@ -485,18 +490,13 @@ function Chatting() {
     }
 
     async function savedChatToDatabases(chat: Chat) {
-
-        const response = await fetch(`${MAIN_BACKEND_URL}/personal-chat/save-personal-chats`, {
+        await fetch(`${MAIN_BACKEND_URL}/personal-chat/save-personal-chats`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(chat),
         });
-
-        if (response.ok) console.log("Chat has been saved to the database");
-
-
 
 
     }
@@ -513,12 +513,12 @@ function Chatting() {
         })
 
 
-        const response = await fetch(`${MAIN_BACKEND_URL}/personal-chat/additionalInfo-message`, {
+        await fetch(`${MAIN_BACKEND_URL}/personal-chat/additionalInfo-message`, {
             method: "POST",
             body: formData
         });
 
-        if (response.ok) console.log("Chat has been saved to the database");
+
     }
 
     async function saveAudioDataInfo(ChatInfo: Chat) {
@@ -529,14 +529,12 @@ function Chatting() {
         formData.append("audioData", JSON.stringify(ChatInfo));
         formData.append("audioFile", audioFile);
 
-        const response = await fetch(`${MAIN_BACKEND_URL}/personal-chat/audioDataInfo-message`, {
+        await fetch(`${MAIN_BACKEND_URL}/personal-chat/audioDataInfo-message`, {
             method: "POST",
             body: formData
         });
 
-        if (response.ok) console.log("Chat has been saved to the database");
     }
-
 
     function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
 
@@ -551,7 +549,7 @@ function Chatting() {
 
         if (file) {
             const extension = file.name.split(".")[1];
-            console.log(extension);
+
             if (extension == "mp4" || extension == "jpeg" || extension == "jpg" || extension == "png") {
 
 
@@ -559,7 +557,7 @@ function Chatting() {
 
                 fileReader.onload = function (e) {
                     const arrayBuffer = e.target?.result;
-                    console.log("Video Sent:", arrayBuffer);
+
                     setBufferedData(prev => [...prev, { file: arrayBuffer, extension: extension }]);
                 }
 
@@ -567,7 +565,6 @@ function Chatting() {
 
                 setMultipleItemsSelected(prev => [...prev, file]);
                 const showFile = URL.createObjectURL(file);
-                console.log("Look over here ", file.type, showFile);
                 setShowMultipleItems(prev => [...prev, { extensionName: extension, actualBlob: showFile }]);
             }
 
@@ -651,15 +648,20 @@ function Chatting() {
 
     async function handleGetPost(chat: Chat) {
 
-        const post = await fetchDetailsOfUserPost(chat.sharedContent?.refId!);
-        const { author: { userId }, createdAt, postLike } = post;
-        console.log("post")
-        handleOpenCommentBox(chat.sharedContent?.refId!, userId, "image/png", postLike, createdAt);
+        const { postId, userId } = chat.sharedContent!;
+
+        const { postImage, postLike, _id: postIdValue, createdAt } = postId;
+        const { _id: userIdValue, profileImage: { url } } = userId;
+
+        console.log(postIdValue, userIdValue, url, postImage, postLike, createdAt);
+
+        handleOpenCommentBox(postIdValue, url, userIdValue, "image/png", postLike, createdAt);
     }
 
-    function handleOpenCommentBox(id: string, userId: string, type: string, totalLikes: number, date: string) {
+    function handleOpenCommentBox(id: string, url: string, userId: string, type: string, totalLikes: number, date: string) {
 
         setPostId(id);
+        setPostUrl(url);
         setPostType(type);
         setCurrentPostLikes(totalLikes);
         setSelectedPostUsername(otherUserDetails.username);
@@ -668,7 +670,6 @@ function Chatting() {
         setCommentBox(true);
 
     }
-
 
     function closeCommentInfoBox() {
         setCommentBox(false);
@@ -685,23 +686,6 @@ function Chatting() {
     }
 
 
-
-
-
-
-    const [showMain, setShowMain] = useState<boolean>(false);
-
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setShowMain(true);
-        }, 500);
-
-        return () => clearTimeout(timer);
-    }, []);
-
-
-
     if (!showMain || !profile) {
         return <LoadingScreen />
     }
@@ -714,8 +698,9 @@ function Chatting() {
 
                 {displaySelectedItem && <LocalImagesAndVideos item={selectedItem} type={typeOfItem} setCloseImage={setSelectedItem} />}
 
-                {toogleCommentBox &&
+                {toogleCommentBox && postUrl && postType && currentPostDate && currentPostLikes &&
                     <CommentBox id={postId}
+                        postUrl={postUrl}
                         postType={postType}
                         toogleBox={closeCommentInfoBox}
                         userInfoF={ProvideInfoToCommentBox}
@@ -735,7 +720,7 @@ function Chatting() {
                             }}>
 
                                 <div id={styles.profileIcon}>
-                                    <img src={`${MAIN_BACKEND_URL}/accounts/profileImage/${id}`} height="100%" width="100%" alt="profile" />
+                                    <img src={otherUserDetails?.profileImage?.url || defaultImage} height="100%" width="100%" alt="profile" />
                                 </div>
 
                                 <p>{otherUserDetails?.username}</p>
@@ -761,7 +746,7 @@ function Chatting() {
                             alignItems: "center"
                         }}>
                             <div id={styles.profileIcon} style={{ width: "90px", height: "90px" }} >
-                                <img src={`${MAIN_BACKEND_URL}/accounts/profileImage/${id}`} height="100%" width="100%" alt="profile" />
+                                <img src={otherUserDetails?.profileImage?.url || defaultImage} height="100%" width="100%" alt="profile" />
                             </div>
                             <p>{otherUserDetails?.fullname}</p>
                             <button onClick={() => navigate(`/userProfile/${otherUserDetails?._id}`)} style={{
@@ -902,12 +887,12 @@ function Chatting() {
                                                             }}
                                                         >
                                                             <video
-                                                                key={each._id}
-                                                                src={`${MAIN_BACKEND_URL}/Personal-chat/render-message-items/${chat._id}/${each._id}`}
+                                                                key={each.url}
+                                                                src={each.url}
                                                                 id={`eachVideo-${each._id}`} onClick={() => {
                                                                     setTypeOfItem("video");
                                                                     setSelectedItem(prev => !prev);
-                                                                    setItem(`${MAIN_BACKEND_URL}/Personal-chat/render-message-items/${chat._id}/${each._id}`);
+                                                                    setItem(each.url)
 
                                                                 }}
 
@@ -923,7 +908,7 @@ function Chatting() {
                                                     return (
                                                         <audio
                                                             key={each._id}
-                                                            src={`${MAIN_BACKEND_URL}/Personal-chat/render-message-items/${chat._id}/${each._id}`}
+                                                            src={each.url}
                                                             controls
                                                             style={{ width: "200px", objectFit: "contain", objectPosition: "center" }}
                                                         />
@@ -932,11 +917,11 @@ function Chatting() {
                                                     return (
                                                         <img onClick={() => {
                                                             setTypeOfItem("image");
-                                                            setItem(`${MAIN_BACKEND_URL}/Personal-chat/render-message-items/${chat._id}/${each._id}`);
+                                                            setItem(each.url)
                                                             setSelectedItem(true);
                                                         }}
                                                             key={each._id}
-                                                            src={`${MAIN_BACKEND_URL}/Personal-chat/render-message-items/${chat._id}/${each._id}`}
+                                                            src={each.url}
                                                             alt="image"
                                                             style={{ margin: "3px", borderRadius: "10px", width: "300px", objectFit: "contain", objectPosition: "center", cursor: "pointer" }}
 
@@ -963,15 +948,15 @@ function Chatting() {
                                                 <div style={{ display: "flex", alignItems: "center", gap: '10px', padding: "5px" }} >
                                                     <img width="40px" height="40px"
                                                         style={{ borderRadius: "50%" }}
-                                                        src={`${MAIN_BACKEND_URL}/accounts/profileImage/${chat.sharedContent.postOwnerId}`} alt="" />
-                                                    <span>{chat.sharedContent.postOwnerName}</span>
+                                                        src={chat.sharedContent.userId.profileImage?.url || defaultImage} alt="" />
+                                                    <span>{chat.sharedContent.userId.username}</span>
                                                 </div>
-                                                <img onClick={() => handleGetPost(chat)} src={`${MAIN_BACKEND_URL}/uploadPost/postImage/${chat.sharedContent.refId}`}
+                                                <img onClick={() => handleGetPost(chat)} src={chat.sharedContent.postId.postImage.url}
                                                     style={{ width: "100%", height: "100%", objectFit: 'contain' }}
                                                     alt="Image" />
 
                                                 <div style={{ padding: "5px" }} >
-                                                    <span>{chat.sharedContent.previewText}</span>
+                                                    <span>Shared Post!</span>
                                                 </div>
                                             </div>
 
@@ -997,8 +982,6 @@ function Chatting() {
 
                         <div className={styles.messageInputBox}>
 
-
-                            {/* CURRENT WORKING AREA UNDER CONSTRUCTION */}
 
 
                             {recording &&
@@ -1061,62 +1044,67 @@ function Chatting() {
                             }
 
 
+                            <>
 
-                            <FontAwesomeIcon icon={faSmile} id={styles.fontAwButtons} />
+                                <FontAwesomeIcon icon={faSmile} id={styles.fontAwButtons} />
 
-                            <input ref={inputMessageRef} onKeyDown={handleKeyDown} placeholder="Message..." value={messageInputValue} onChange={(e) => setMessageInputValue(e.target.value)}
-                                type="text" style={{
-                                    width: "78%", position: "relative",
-                                    backgroundColor: "transparent", border: "none", outline: "none", color: "white", fontSize: "1.05rem"
-                                }} />
+                                <input ref={inputMessageRef} onKeyDown={handleKeyDown} placeholder="Message..." value={messageInputValue} onChange={(e) => setMessageInputValue(e.target.value)}
+                                    type="text" style={{
+                                        width: "70%", position: "relative",
+                                        backgroundColor: "transparent", border: "none", outline: "none", color: "white", fontSize: "1.05rem"
+                                    }} />
 
-                            {messageInputValue.length > 0 || multipleItemSelected.length > 0 || recording ?
+                                {messageInputValue.length > 0 || multipleItemSelected.length > 0 || recording ?
 
-                                <>
+                                    <>
 
-                                    <button ref={sendMessageButtonRef} onClick={handleSendMessage} id={styles.sendMessageButton} style={{
-                                        left: "10px", border: "none",
-                                        display: "flex", justifyContent: "right",
-                                        padding: "5px 17px", gap: "10px",
-                                        backgroundColor: "transparent", width: "100px",
-                                        fontWeight: "bolder", cursor: "pointer"
-                                    }}
-                                    >Send</button>
-
-                                    {multipleItemSelected.length > 0 || recording ?
-                                        <button onClick={handleDiscardButton} id={styles.sendMessageButton} style={{
-                                            border: "none",
+                                        <button ref={sendMessageButtonRef} onClick={handleSendMessage} id={styles.sendMessageButton} style={{
+                                            left: "10px", border: "none",
                                             display: "flex", justifyContent: "right",
                                             padding: "5px 17px", gap: "10px",
-                                            backgroundColor: "transparent",
+                                            backgroundColor: "transparent", width: "100px",
                                             fontWeight: "bolder", cursor: "pointer"
-                                        }} >Discard</button>
+                                        }}
+                                        >Send</button>
 
-                                        :
-                                        null
+                                        {multipleItemSelected.length > 0 || recording ?
+                                            <button onClick={handleDiscardButton} id={styles.sendMessageButton} style={{
+                                                border: "none",
+                                                display: "flex", justifyContent: "right",
+                                                padding: "5px 17px", gap: "10px",
+                                                backgroundColor: "transparent",
+                                                fontWeight: "bolder", cursor: "pointer"
+                                            }} >Discard</button>
 
-                                    }
+                                            :
+                                            null
 
-                                </>
+                                        }
+
+                                    </>
+
+                                    :
+                                    <div style={{
+                                        position: "relative", left: "5px", display: "flex",
+                                        alignItems: "center", justifyContent: "center",
+                                        gap: "5px", width: "100px"
+                                    }} >
+
+                                        <FontAwesomeIcon onClick={handleRecordAudio} id={styles.fontAwButtons} icon={faMicrophone} />
+                                        <FontAwesomeIcon id={styles.fontAwButtons} icon={faHeart} />
+                                        <FontAwesomeIcon onClick={() => fileRef.current?.click()} id={styles.fontAwButtons} icon={faImage} />
+                                        <input type="file" hidden={true}
+                                            ref={fileRef}
+                                            onChange={handleSelectedFile}
+                                        />
+                                    </div>
+                                }
+
+                            </>
 
 
 
-                                :
-                                <div style={{
-                                    position: "relative", left: "5px", display: "flex",
-                                    alignItems: "center", justifyContent: "center",
-                                    gap: "5px", width: "100px"
-                                }} >
 
-                                    <FontAwesomeIcon onClick={handleRecordAudio} id={styles.fontAwButtons} icon={faMicrophone} />
-                                    <FontAwesomeIcon id={styles.fontAwButtons} icon={faHeart} />
-                                    <FontAwesomeIcon onClick={() => fileRef.current?.click()} id={styles.fontAwButtons} icon={faImage} />
-                                    <input type="file" hidden={true}
-                                        ref={fileRef}
-                                        onChange={handleSelectedFile}
-                                    />
-                                </div>
-                            }
                         </div>
 
                     </div>

@@ -6,62 +6,62 @@ import RenderService from "../../utils/others/render";
 class RenderController {
     constructor(private renderService: RenderService) { }
 
-    renderImage: RequestHandler = async (req: Request, res: Response) => {
-        const { id } = req.params;
+    // renderImage: RequestHandler = async (req: Request, res: Response) => {
+    //     const { id } = req.params;
 
-        const result: any = await this.renderService.getProfileImage(id);
+    //     const result: any = await this.renderService.getProfileImage(id);
 
-        if (!result.success) {
-            res.status(result.status).json({ error: result.message });
-            return
-        }
+    //     if (!result.success) {
+    //         res.status(result.status).json({ error: result.message });
+    //         return
+    //     }
 
-        res.contentType(result.contentType);
-        res.status(200).send(result.data);
-    };
+    //     res.contentType(result.contentType);
+    //     res.status(200).send(result.data);
+    // };
 
-    renderMessageItem: RequestHandler = async (req: Request, res: Response) => {
-        const { id1, id2 } = req.params;
+    // renderMessageItem: RequestHandler = async (req: Request, res: Response) => {
+    //     const { id1, id2 } = req.params;
 
-        const result: any = await this.renderService.fetchMessageItem(id1, id2);
+    //     const result: any = await this.renderService.fetchMessageItem(id1, id2);
 
-        if (!result.success) {
-            res.status(result.status).json({ error: result.message });
-            return
-        }
+    //     if (!result.success) {
+    //         res.status(result.status).json({ error: result.message });
+    //         return
+    //     }
 
-        res.contentType(result.contentType);
-        res.status(result.status).send(result.data);
-    };
+    //     res.contentType(result.contentType);
+    //     res.status(result.status).send(result.data);
+    // };
 
-    renderPostImage = async (req: Request, res: Response) => {
-        const { id } = req.params;
-        const result = await this.renderService.renderPostImage(id);
+    // renderPostImage = async (req: Request, res: Response) => {
+    //     const { id } = req.params;
+    //     const result = await this.renderService.renderPostImage(id);
 
-        if (!result.success) {
-            res.status(result.status).json({ error: result.message });
-            return
-        }
+    //     if (!result.success) {
+    //         res.status(result.status).json({ error: result.message });
+    //         return
+    //     }
 
-        res.contentType(result.contentType!);
-        res.send(result.data);
-        return
-    };
+    //     res.contentType(result.contentType!);
+    //     res.send(result.data);
+    //     return
+    // };
 
-    handleRenderReel = async (req: Request, res: Response) => {
-        const id = req.params.id?.trim();
-        const result = await this.renderService.handleRenderReel(id);
+    // handleRenderReel = async (req: Request, res: Response) => {
+    //     const id = req.params.id?.trim();
+    //     const result = await this.renderService.handleRenderReel(id);
 
-        if (result.error) {
-            res.status(result.status).json({ error: result.error });
-            return
-        }
+    //     if (result.error) {
+    //         res.status(result.status).json({ error: result.error });
+    //         return
+    //     }
 
-        res.contentType(result.contentType!);
-        res.send(result.data);
+    //     res.contentType(result.contentType!);
+    //     res.send(result.data);
 
-        return;
-    };
+    //     return;
+    // };
 
 
     RenderStory = async (req: Request, res: Response) => {

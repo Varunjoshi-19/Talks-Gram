@@ -1,8 +1,18 @@
 import mongoose from "mongoose";
 import { injectable } from "tsyringe";
-
+import { Client } from "appwrite";
+import globalConfig from "../config";
 @injectable()
-class MongoDBConnection  {
+
+class MongoDBConnection {
+
+
+    #appwriteClient: Client | null;
+
+    constructor() {
+        this.#appwriteClient = null
+    }
+
 
     async mongodbDatabaseConnection() {
         try {
@@ -21,11 +31,23 @@ class MongoDBConnection  {
 
     }
 
-    async postgresqlConnection () {
-         
+    getAppWriteConnection() {
+
+        if (this.#appwriteClient != null) {
+            return this.#appwriteClient;
+
+        }
+
+        this.#appwriteClient = new Client();
+
+        this.#appwriteClient
+            .setEndpoint(globalConfig.appwriteEndPoint)
+            .setProject(globalConfig.appwriteProjectId)
+
+        return this.#appwriteClient;
     }
 
 
 }
 
-export default MongoDBConnection ;
+export default MongoDBConnection;

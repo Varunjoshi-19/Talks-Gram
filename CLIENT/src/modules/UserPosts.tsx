@@ -1,9 +1,8 @@
-import { MAIN_BACKEND_URL } from "../Scripts/URL";
 import styles from "../Styling/Profile.module.css";
 
 interface UserPostProps {
     allPosts: any;
-    handleOpenCommentBox: (id: string, userId: string, postType : string,  currentLikes: number, createdAt: string) => void;
+    handleOpenCommentBox: (id: string,  url : string,  userId: string, postType : string,  currentLikes: number, createdAt: string) => void;
 }
 
 function UserPosts({ allPosts, handleOpenCommentBox }: UserPostProps) {
@@ -19,7 +18,8 @@ function UserPosts({ allPosts, handleOpenCommentBox }: UserPostProps) {
                         onClick={() =>
                             handleOpenCommentBox(
                                 post._id,
-                                post.author.userId,
+                                post.postImage.url,
+                                post.authorId._id,
                                 post.postImage.contentType,
                                 post.postLike || 0,
                                 post.createdAt
@@ -28,7 +28,7 @@ function UserPosts({ allPosts, handleOpenCommentBox }: UserPostProps) {
                     >
 
                         <img
-                            src={`${MAIN_BACKEND_URL}/uploadPost/postImage/${post._id}`}
+                            src={post.postImage?.url}
                             alt="post"
                             style={{
                                 width: "100%",

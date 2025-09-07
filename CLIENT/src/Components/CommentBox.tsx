@@ -9,26 +9,24 @@ import { Bookmark, Heart, MessageCircle, Send } from "lucide-react";
 import { formattedPostTime, handleTimeFormating, imageExtensions, videoExtensions } from '../Scripts/GetData.ts';
 import ShareDilogBox from '../modules/ShareDilogBox.tsx';
 import { useGeneralContext } from '../Context/GeneralContext.tsx';
-import { GetIdAndUsername } from '../Scripts/FetchDetails.ts';
 import { useUserAuthContext } from '../Context/UserContext.tsx';
 import { CommentProps, PostIdProps, UserInfoProps } from '../Interfaces/index.ts';
 import LoadingScreen from './LoadingScreen.tsx';
+import defaultImage from "../assets/default.png";
 
 
 
-
-const CommentBox: React.FC<PostIdProps> = ({ id, toogleBox, userInfoF, postType, currentLikes, createdAt }) => {
+const CommentBox: React.FC<PostIdProps> = ({ id, userImageUrl, postUrl, toogleBox, userInfoF, postType, currentLikes, createdAt }) => {
 
   const [userInfo, setUserInfo] = useState<UserInfoProps | null>(null);
   const [commentInput, setCommentInput] = useState<string>("");
   const [allComments, setAllComments] = useState<CommentProps[]>([]);
   const [toogleShareDilogBox, setToogleShareDilogBox] = useState<boolean>(false);
-  const [sharePostRefId, setSharePostRefId] = useState<string>("");
-  const [postOwnerId, setPostOwnerId] = useState<string>("");
-  const [postUsername, setPostUserName] = useState<string>("");
   const [likeStatus, setLikeStatus] = useState<boolean>(false);
   const [totalLikes, setTotalLikes] = useState<number>(currentLikes);
   const [showMain, setShowMain] = useState<boolean>(false);
+  const [userRef, setUserRef] = useState<any | null>(null);
+  const [postRef, setPostRef] = useState<any | null>(null);
   const { fetchPostStatus, handleLikePost } = useGeneralContext();
   const { profile } = useUserAuthContext();
 
@@ -46,22 +44,7 @@ const CommentBox: React.FC<PostIdProps> = ({ id, toogleBox, userInfoF, postType,
       const result = await response.json();
 
       if (response.ok) {
-        console.log(result.comments);
-        const commentsWithUsernames = await Promise.all(
-          result.comments.map(async (item: CommentProps) => {
-
-            const commentResponse = await GetIdAndUsername(item.userId);
-            const timeAgo = handleTimeFormating(item.initiateTime);
-
-            return {
-              ...item,
-              username: commentResponse?.username || "unknown user",
-              time: timeAgo
-            };
-          })
-        );
-
-        setAllComments(commentsWithUsernames);
+        setAllComments(result.comments);
       }
 
       if (!response.ok) {
@@ -117,7 +100,11 @@ const CommentBox: React.FC<PostIdProps> = ({ id, toogleBox, userInfoF, postType,
         const timeAgo: string = handleTimeFormating(commentTime);
 
         setAllComments([{
-          userId: profile?._id,
+          userId: {
+            _id: profile?._id!,
+            name: profile?.username!,
+            profileImage: profile?.profileImage!,
+          },
           username: profile?.username,
           comment: newComment,
           time: timeAgo,
@@ -139,17 +126,26 @@ const CommentBox: React.FC<PostIdProps> = ({ id, toogleBox, userInfoF, postType,
 
   async function handleSharePost() {
 
-    const response = await fetch(`${MAIN_BACKEND_URL}/uploadPost/fetch-single-post/${id}`);
-    const result = await response.json();
-
-    if (response.ok) {
-      const post = result.post;
-      setSharePostRefId(post._id);
-      setPostOwnerId(post.author.userId);
-      setPostUserName(post.authorName);
-      setToogleShareDilogBox(prev => !prev);
+    const postObjectRef = {
+      _id: id,
+      postImage: {
+        url: postUrl,
+        contentType: "image/jpeg"
+      },
+      postLike: currentLikes,
+      createdAt: createdAt,
     }
-
+    const userobjectRef = {
+      _id: userInfo?.userId,
+      profileImage: {
+        url: postUrl,
+        contentType: userImageUrl
+      },
+      username: userInfo?.username
+    }
+    setPostRef(postObjectRef);
+    setUserRef(userobjectRef);
+    setToogleShareDilogBox(prev => !prev);
 
   }
 
@@ -182,8 +178,10 @@ const CommentBox: React.FC<PostIdProps> = ({ id, toogleBox, userInfoF, postType,
   return (
     <>
 
-      {toogleShareDilogBox && <ShareDilogBox sharePostRefId={sharePostRefId} postOwnerId={postOwnerId} postOwnerName={postUsername}
-        toogleOpenCloseButton={setToogleShareDilogBox} />}
+      {toogleShareDilogBox && userRef && postRef &&
+
+        <ShareDilogBox userRef={userRef} postRef={postRef}
+          toogleOpenCloseButton={setToogleShareDilogBox} />}
 
 
       <div className={styles.CommentBoxContainer} >
@@ -202,7 +200,7 @@ const CommentBox: React.FC<PostIdProps> = ({ id, toogleBox, userInfoF, postType,
         <div className={styles.postImage}>
           {
             imageExtensions.has(postType) && (
-              <img src={`${MAIN_BACKEND_URL}/uploadPost/postImage/${id}`}
+              <img src={postUrl}
                 alt="" width="90%" height="100%"
                 style={{ borderBottomLeftRadius: "10px", objectFit: "contain", borderTopLeftRadius: "10px" }} />
             )
@@ -210,7 +208,7 @@ const CommentBox: React.FC<PostIdProps> = ({ id, toogleBox, userInfoF, postType,
 
           {
             videoExtensions.has(postType) && (
-              <video src={`${MAIN_BACKEND_URL}/uploadReel/render-reel/${id}`}
+              <video src={postUrl}
                 autoPlay controls={false}
                 width="90%" height="100%"
                 style={{ borderBottomLeftRadius: "10px", objectFit: "contain", borderTopLeftRadius: "10px" }} />
@@ -223,7 +221,7 @@ const CommentBox: React.FC<PostIdProps> = ({ id, toogleBox, userInfoF, postType,
           <div id={styles.postedUserInfo} >
 
             <div id={styles.profileImage}>
-              <img src={`${MAIN_BACKEND_URL}/accounts/profileImage/${userInfo?.userId}`} alt="" />
+              <img src={userImageUrl} alt="" />
             </div>
 
             <p>{userInfo?.username}</p>
@@ -243,14 +241,14 @@ const CommentBox: React.FC<PostIdProps> = ({ id, toogleBox, userInfoF, postType,
                 <div key={index} className={styles.eachComment}>
 
                   <div id={styles.imageIcon} >
-                    <img src={`${MAIN_BACKEND_URL}/accounts/profileImage/${comment.userId}`}
-                      style={{ width: "40px", height: "40px", borderRadius: "50%" }}
+                    <img src={comment.userId?.profileImage?.url || defaultImage}
+                      style={{ objectFit: "cover", width: "40px", height: "40px", borderRadius: "50%" }}
                       alt="" />
                   </div>
 
                   <div id={styles.usernameAndTime}>
                     <p style={{ fontWeight: "bolder", fontSize: "13px", fontFamily: "Helvetica Neue , Helvetica, Arial, sans-serif" }} >{comment.username}</p>
-                    <p style={{ fontSize: "12px", marginTop: "5px", opacity: "0.7" }}>{comment.time}</p>
+                    <p style={{ fontSize: "12px", marginTop: "5px", opacity: "0.7" }}>{handleTimeFormating(comment.initiateTime)}</p>
                   </div>
 
                   <div id={styles.userComment}>

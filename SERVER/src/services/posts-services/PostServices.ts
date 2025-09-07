@@ -6,9 +6,16 @@ import CommentDoc from "../../models/Comments";
 import PersonalChatDoc from "../../models/PersonalChatDoc";
 import StoryDoc from "../../models/StoryDoc";
 import NoteDoc from "../../models/NoteDoc";
+import allHelpServices from "../../utils/index";
+import globalConfig from "../../config";
 
 @autoInjectable()
 class PostServices {
+
+
+    constructor(private allHelp: allHelpServices) {
+        this.allHelp = allHelp;
+    }
 
     async handleNewPostUpload(profile: string, caption: string, postImage: Express.Multer.File) {
         if (!postImage || !profile) {
@@ -17,14 +24,18 @@ class PostServices {
 
         const parsedProfile = JSON.parse(profile);
 
+        const data = await this.allHelp.handleUploadFile(postImage, globalConfig.talksGramBucketId);
+
+        if (!data) {
+            return { status: 500, success: false, message: "Failed to upload post image" };
+        }
+
         const newPostInfo: any = {
             postImage: {
-                data: postImage.buffer,
+                url: data.imageUrl,
                 contentType: postImage.mimetype
             },
-            author: {
-                userId: parsedProfile._id,
-            }
+            authorId: parsedProfile._id
         };
 
         if (caption !== "") newPostInfo.postDescription = caption;
@@ -99,7 +110,7 @@ class PostServices {
         }
     }
 
-    async SharedPost(data: any, refId: string) {
+    async SharedPost(data: any) {
 
         try {
             const { userId,
@@ -110,9 +121,7 @@ class PostServices {
                 chatId,
                 sharedContent } = data;
 
-            if (!refId) {
-                return { message: "post refId required to share", status: 404 };
-            }
+
 
             if (!userId || !otherUserId || !chatId) {
                 return { message: "some id's are missing ", status: 404 };
@@ -131,7 +140,7 @@ class PostServices {
                 sharedContent
             }
 
-            const id = sharedContent.refId;
+            const id = sharedContent.postId._id;
             const sharedPost = await PersonalChatDoc.create(storeMessage);
 
             if (!sharedPost) {
@@ -153,11 +162,12 @@ class PostServices {
                 return { status: 404, success: false };
             }
 
-            // check already posted 
             const alreadyStory = await StoryDoc.findOne({ userId: userId });
             if (alreadyStory) {
                 return { status: 404, success: false, message: "story already there" }
             }
+
+
 
             const story = new StoryDoc({
                 userId: userId,

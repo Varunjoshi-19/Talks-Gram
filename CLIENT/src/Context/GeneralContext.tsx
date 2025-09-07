@@ -1,4 +1,4 @@
-import { createContext, useContext  } from "react";
+import { createContext, useContext } from "react";
 import { Chat, CreateAndShareMessage } from "../Scripts/GetData";
 import { fetchAllData, fetchProfileLocalStorage } from "../Scripts/FetchDetails";
 import { NavigateFunction } from "react-router-dom";
@@ -7,12 +7,12 @@ import { useUserAuthContext } from "./UserContext";
 import { useSocketContext } from "./SocketContext";
 
 interface GeneralContextPayload {
-    handleSharePost: (selectedUserId: string,
-        sharePostRefId: string,
+    handleSharePost: (
+        selectedUserId: string,
+        userRef: any,
+        postRef: any,
         toogleOpenCloseButton: React.Dispatch<React.SetStateAction<boolean>>,
         navigate: NavigateFunction,
-        postOwnerId: string,
-        postOwnerName: string,
     ) => Promise<void>;
     fetchPostStatus: (postId: string) => Promise<any>,
     handleLikePost: (postId: string, likedStatus: boolean) => Promise<boolean>;
@@ -35,19 +35,19 @@ export const GeneralContextProvider = ({ children }: { children: React.ReactNode
 
 
     const { profile } = useUserAuthContext();
-    const { socket }  = useSocketContext();
+    const { socket } = useSocketContext();
 
 
-    async function handleSharePost(selectedUserId: string,
-        sharePostRefId: string,
+    async function handleSharePost(
+        selectedUserId: string,
+        userRef: any,
+        postRef: any,
         toogleOpenCloseButton: React.Dispatch<React.SetStateAction<boolean>>,
         navigate: NavigateFunction,
-        postOwnerId: string,
-        postOwnerName: string
     ) {
 
         if (!profile) return;
-        console.log(selectedUserId, sharePostRefId);
+
         const otherUserId = selectedUserId;
         const data = await fetchAllData(profile, otherUserId);
         const { success } = data;
@@ -56,22 +56,19 @@ export const GeneralContextProvider = ({ children }: { children: React.ReactNode
             return;
         }
 
-        const shareDataInfo = { ...data, refId: sharePostRefId, userId: postOwnerId, username: postOwnerName };
-        const { receiverDetails, chatId, refId, userId, username } = shareDataInfo;
+        const { receiverDetails, chatId } = data;
 
-        const sharedInfo: Chat = {
+
+        const realTimeShareData: Chat = {
             userId: profile._id,
-            otherUserId: receiverDetails._id,
+            otherUserId: selectedUserId,
             chatId: chatId,
             initateTime: Date.now().toString(),
             senderUsername: profile.username || "",
             receiverUsername: receiverDetails.username || "",
             sharedContent: {
-                type: "post",
-                postOwnerId: userId,
-                postOwnerName: username,
-                refId: refId,
-                previewText: "this is the shared post!"
+                userId: userRef,
+                postId: postRef
             }
         }
 
@@ -93,9 +90,9 @@ export const GeneralContextProvider = ({ children }: { children: React.ReactNode
 
         // send the real time reference of that post that you are sharing 
         socket.emit("new-message", reelTimeData);
-        socket.emit("new-chat", sharedInfo);
+        socket.emit("new-chat", realTimeShareData);
 
-        const status: any = await CreateAndShareMessage(shareDataInfo, sharedInfo);
+        const status: any = await CreateAndShareMessage(realTimeShareData);
 
 
 
@@ -132,7 +129,7 @@ export const GeneralContextProvider = ({ children }: { children: React.ReactNode
 
             })
             const likeResult = await likeResponse.json();
-            console.log(likeResult);
+
 
             return {
                 likeStatus: likeResponse.ok && likeResponse.status == 200 ? likeResult.likeStatus : false,
@@ -153,7 +150,6 @@ export const GeneralContextProvider = ({ children }: { children: React.ReactNode
             userId: profile._id
         }
 
-        console.log(idInfo);
 
         if (likeStatus) {
             await fetch(`${MAIN_BACKEND_URL}/uploadPost/remove-likePost`, {

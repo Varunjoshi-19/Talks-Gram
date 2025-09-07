@@ -19,9 +19,7 @@ import PlayStoryBox from "../modules/PlayStoryBox.tsx";
 import LineLoader from "../modules/LineLoader.tsx";
 import Footer from "./Footer.tsx";
 import { useSocketContext } from "../Context/SocketContext.tsx";
-
-
-
+import defaultImage from "../assets/default.png";
 
 function AppInterface() {
 
@@ -37,16 +35,21 @@ function AppInterface() {
   const [currentPostLikes, setCurrentPostLikes] = useState<number>(0);
   const [currentPostDate, setCurrentPostDate] = useState<string>("");
   const [toogleShareDilogBox, setToogleShareDilogBox] = useState<boolean>(false);
-  const [sharePostRefId, setSharePostRefId] = useState<string>("");
-  const [postOwnerId, setPostOwnerId] = useState<string>("");
-  const [postUsername, setPostUserName] = useState<string>("");
   const [allStories, setAllStories] = useState<any[]>([]);
   const [playStoriesDilogBox, setPlayStoriesBox] = useState<boolean>(false);
   const [fetchingPostLoader, setFetchingPostLoader] = useState<boolean>(false);
   const [currentStoryDetails, setCurrentStoryDetails] = useState<any | null>(null);
+  const [userImageUrl, setUserImageUrl] = useState<string | null>(null);
+
+  //   shared post item
+
+  const [postRef, setPostRef] = useState<any | null>(null);
+  const [userRef, setUserRef] = useState<any | null>(null);
 
 
   const navigate = useNavigate();
+  const storiesRef = useRef<HTMLDivElement | null>(null);
+  const [postUrl, setPostUrl] = useState<string | null>(null);
   const { toogleVisiblility, setSearchInput, searchInput } = useToogle();
   const { profile, dispatch } = useUserAuthContext();
   const { socket } = useSocketContext();
@@ -67,7 +70,6 @@ function AppInterface() {
   }, [profile]);
 
 
-  const storiesRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const stories = storiesRef.current;
@@ -94,13 +96,14 @@ function AppInterface() {
     try {
       const response = await fetch(`${MAIN_BACKEND_URL}/uploadPost/fetch-all-stories`);
       const result = await response.json();
-      if (response.ok) setAllStories(result);
+      if (response.ok) {
+        setAllStories(result);
+      }
       if (!response.ok) setAllStories([]);
     } catch (error: any) {
       throw new Error(`${error.message}`)
     }
   }
-
 
   async function fetchAllAccounts() {
 
@@ -130,34 +133,25 @@ function AppInterface() {
                 postId: post._id,
                 userId: profile?._id,
               }
+              const likeResponse = await fetch(`${MAIN_BACKEND_URL}/uploadPost/fetchLikePost`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json"
 
-              const [profileResponse, likeResponse] = await Promise.all([
-                fetch(`${MAIN_BACKEND_URL}/accounts/getIdAndUsername/${post.author.userId}`),
-                fetch(`${MAIN_BACKEND_URL}/uploadPost/fetchLikePost`, {
+                },
+                body: JSON.stringify(IdInfo)
+              })
 
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json"
-
-                  },
-                  body: JSON.stringify(IdInfo)
-
-                }),
-              ]);
-
-              const profileResult = await profileResponse.json();
               const likeResult = await likeResponse.json();
 
               setCurrentPostCount(prevCount => prevCount + 1);
 
               return {
                 ...post,
-                authorName: profileResponse.ok ? profileResult.username : "Unknown",
                 likeStatus: likeResponse.ok && likeResponse.status == 200 ? likeResult.likeStatus : false,
               };
             }
             catch (error) {
-              console.error(`Error fetching details for post by ${post.author.userId}:`, error);
               return { ...post, authorName: "Unknown", likeStatus: false };
             }
 
@@ -265,9 +259,11 @@ function AppInterface() {
   }
 
 
-  function handleOpenCommentBox(id: string, username: string, userId: string, totalLikes: number, date: string) {
+  function handleOpenCommentBox(id: string, url: string, imageUrl: string = defaultImage, username: string, userId: string, totalLikes: number, date: string) {
 
     setPostId(id);
+    setPostUrl(url);
+    setUserImageUrl(imageUrl);
     setCurrentPostLikes(totalLikes);
     setSelectedPostUsername(username);
     setCurrentPostDate(date);
@@ -292,10 +288,22 @@ function AppInterface() {
 
   function handleSharePost(post: AllPostsProps) {
 
+    const postObjectRef = {
+      _id: post._id,
+      postImage: post.postImage,
+      postLike: post.postLike,
+      createdAt: post.createdAt,
+    }
+    const userobjectRef = {
+      _id: post.authorId._id,
+      profileImage: post.authorId.profileImage,
+      username: post.authorId.username
+    }
+    setPostRef(postObjectRef);
+    setUserRef(userobjectRef);
     setToogleShareDilogBox(prev => !prev);
-    setSharePostRefId(post._id);
-    setPostOwnerId(post.author.userId);
-    setPostUserName(post.authorName);
+
+
   }
 
 
@@ -319,7 +327,7 @@ function AppInterface() {
       const parsedUserProfile = JSON.parse(user);
       const userId = parsedUserProfile._id;
       socket.emit("offline", userId);
-      console.log(`User offline with socket id ${socket.id} and user id ${userId}`);
+
 
     }
   }
@@ -386,16 +394,21 @@ function AppInterface() {
       {/* left side options  */}
 
 
-      {toogleCommentBox && <CommentBox id={postId}
-        postType="image/png"
-        toogleBox={closeCommentInfoBox}
-        userInfoF={ProvideInfoToCommentBox}
-        currentLikes={currentPostLikes}
-        createdAt={currentPostDate} />}
+      {toogleCommentBox && postUrl && currentPostDate && userImageUrl &&
+        <CommentBox id={postId}
+          postUrl={postUrl}
+          userImageUrl={userImageUrl}
+          postType="image/png"
+          toogleBox={closeCommentInfoBox}
+          userInfoF={ProvideInfoToCommentBox}
+          currentLikes={currentPostLikes}
+          createdAt={currentPostDate} />}
 
 
-      {toogleShareDilogBox && <ShareDilogBox sharePostRefId={sharePostRefId} postOwnerId={postOwnerId} postOwnerName={postUsername}
-        toogleOpenCloseButton={setToogleShareDilogBox} />}
+      {toogleShareDilogBox && userRef && postRef &&
+        <ShareDilogBox userRef={userRef} postRef={postRef}
+          toogleOpenCloseButton={setToogleShareDilogBox} />
+      }
 
       {playStoriesDilogBox &&
         currentStoryDetails &&
@@ -412,7 +425,7 @@ function AppInterface() {
 
             {allStories.map((each, index) => (
 
-              <div key={index} className={styles.Stories} onClick={() => handleOpenStory(each.userId, each.username, each, index)}  >
+              <div key={index} className={styles.Stories} onClick={() => handleOpenStory(each.userId._id, each.username, each, index)}  >
 
                 <div id={styles.eachStories} >
 
@@ -421,7 +434,7 @@ function AppInterface() {
                     display: "flex", justifyContent: "center", alignItems: "center", overflow: "hidden"
                   }}>
 
-                    <img src={`${MAIN_BACKEND_URL}/accounts/profileImage/${each.userId}`}
+                    <img src={each.userId?.profileImage?.url || defaultImage} alt="story"
                       style={{
                         objectFit: "cover", width: "100%", height: "100%", borderRadius: "50%",
                         pointerEvents: "none",
@@ -450,13 +463,13 @@ function AppInterface() {
 
                   <div id={styles.headerInfo}>
 
-                    <img style={{ width: "50px", height: "50px", borderRadius: "50%" }} src={`${MAIN_BACKEND_URL}/accounts/profileImage/${post?.author.userId}`} alt="" />
-                    <p>{post?.authorName}</p>
+                    <img style={{ width: "50px", height: "50px", borderRadius: "50%" }} src={post.authorId?.profileImage?.url || defaultImage} alt="" />
+                    <p>{post.authorId.username}</p>
 
                   </div>
 
                   <img id={styles.mainPostImage}
-                    src={`${MAIN_BACKEND_URL}/uploadPost/postImage/${post?._id}`} alt="" />
+                    src={post?.postImage?.url} alt="" />
 
                   <div style={{ cursor: "pointer" }} id={styles.description}>
 
@@ -466,8 +479,8 @@ function AppInterface() {
 
                       <span style={{ fontSize: "16px" }}>{post?.postLike}</span>
 
-                      <MessageCircle onClick={() => handleOpenCommentBox(post?._id, post?.authorName,
-                        post?.author.userId, post.postLike, post.createdAt)} />
+                      <MessageCircle onClick={() => handleOpenCommentBox(post?._id, post.postImage?.url, post.authorId.profileImage?.url, post.authorId.username,
+                        post?.authorId._id, post.postLike, post.createdAt)} />
 
                       <span style={{ fontSize: "16px" }}>{post.postComment}</span>
 
@@ -538,7 +551,7 @@ function AppInterface() {
 
           <div className={styles.UserProfile}>
             <div className={styles.userImage}>
-              <img src={`${MAIN_BACKEND_URL}/accounts/profileImage/${profile?._id}`} width="100%" height="100%" alt="_pic" />
+              <img src={profile?.profileImage?.url || defaultImage} width="100%" height="100%" alt="_pic" />
             </div>
 
             <div>
@@ -557,7 +570,9 @@ function AppInterface() {
                 <div onClick={() => VisitProfile(item._id)} key={index} className={styles.suggestedAccount}>
 
                   <div id={styles.suggestedProfile}>
-                    <img src={`${MAIN_BACKEND_URL}/accounts/profileImage/${item._id}`} width="100%" height="100%" alt="_user" />
+                    <img src={item?.profileImage?.url || defaultImage} width="100%" height="100%"
+                      style={{ objectFit: "cover" }}
+                      alt="_user" />
                   </div>
 
                   <div>

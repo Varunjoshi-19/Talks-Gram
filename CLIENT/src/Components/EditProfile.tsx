@@ -4,7 +4,7 @@ import { updateLocalStorageData } from "../Scripts/FetchDetails";
 import { MAIN_BACKEND_URL } from "../Scripts/URL";
 import styles from "../Styling/EditProfile.module.css";
 import { useRef, useState, useEffect } from "react";
-
+import defaultImage from "../assets/default.png";
 
 
 const EditProfile: React.FC<EditProfileProps> = ({ profileInfo, s }) => {
@@ -115,7 +115,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ profileInfo, s }) => {
             setUsername(profileInfo?.username);
             setFullname(profileInfo?.fullname);
             setBio(profileInfo?.bio);
-            setProfileImage(`${MAIN_BACKEND_URL}/accounts/profileImage/${profileInfo?._id}`);
+            setProfileImage(profileInfo?.profileImage?.url);
         }
 
 
@@ -161,7 +161,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ profileInfo, s }) => {
                     alignItems: " center", justifyContent: "center"
                 }}>
 
-                    <p style={{ fontWeight: "bolder" }} >Edit Profile</p>
+                    <p style={{ fontWeight: "bolder" }}>Edit Profile</p>
 
                 </div>
 
@@ -174,7 +174,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ profileInfo, s }) => {
                     <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: "10px" }} >
 
                         <div id={styles.profileIconEdit} >
-                            <img src={profileImage} alt="_profileImage" width="100%" height="100%" />
+                            <img src={profileImage || defaultImage} alt="_profileImage" width="100%" height="100%" />
                         </div>
 
                         <button onClick={handleEditProfileImage} style={{

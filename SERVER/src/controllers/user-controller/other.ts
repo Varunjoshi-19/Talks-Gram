@@ -61,15 +61,15 @@ class UserHelperController {
         }
     };
 
-    getDefaultImage = async (_req: Request, res: Response) => {
-        try {
-            const image = this.userHelper.getDefaultImage();
-            res.contentType(image.contentType);
-            res.status(200).send(image.data);
-        } catch (error: any) {
-            res.status(500).json({ error: "Image not found or failed to load" });
-        }
-    };
+    // getDefaultImage = async (_req: Request, res: Response) => {
+    //     try {
+    //         const image = this.userHelper.getDefaultImage();
+    //         res.contentType(image.contentType);
+    //         res.status(200).send(image.data);
+    //     } catch (error: any) {
+    //         res.status(500).json({ error: "Image not found or failed to load" });
+    //     }
+    // };
 }
 
 export default UserHelperController;

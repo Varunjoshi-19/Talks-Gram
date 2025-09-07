@@ -8,9 +8,8 @@ import { fetchSearchUser } from "../Scripts/FetchDetails";
 import { useNavigate } from "react-router-dom";
 
 import { useToogle } from "../Context/ToogleContext"
-import { MAIN_BACKEND_URL } from "../Scripts/URL";
 import { searchAccount } from "../Interfaces";
-
+import defaultImage from "../assets/default.png";
 function SearchBar() {
 
     const [searchInputClicked, setSearchInputClicked] = useState<boolean>(false);
@@ -115,7 +114,7 @@ function SearchBar() {
 
                             <div id={styles.profilePic}>
 
-                                <img src={`${MAIN_BACKEND_URL}/accounts/profileImage/${account._id}`} height="100%" width="100%" alt="" />
+                                <img src={account.profileImage?.url || defaultImage} height="100%" width="100%" alt="" />
                             </div>
 
                             <div style={{ marginLeft: "3px", display: "flex", flexDirection: "column", justifyContent: "center" }} >

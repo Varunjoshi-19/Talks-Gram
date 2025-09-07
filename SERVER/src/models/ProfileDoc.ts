@@ -31,7 +31,7 @@ const ProfileSchema = new mongoose.Schema({
     },
 
     profileImage: {
-        data: Buffer,
+        url: String,
         contentType: String,
 
     },

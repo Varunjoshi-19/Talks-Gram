@@ -39,7 +39,6 @@ export function ChatContextProvider({ children }: { children: React.ReactNode })
             if (profile) {
                 const id = profile._id;
                 const users: any = await fetchChattedUserDetails(id);
-                console.log("these are the fetch chateed user ", users);
                 setChattedUsers(users);
                 handleCountTotalMessages(users);
             }

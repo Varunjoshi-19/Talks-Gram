@@ -15,10 +15,11 @@
   },
   "scripts": {
     "build": "tsc",
-    "start": "node dist/main/main.js"
+    "start": "nodemon src/main/main.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.11.1",
+    "appwrite": "^19.0.0",
     "body-parser": "^2.2.0",
     "bull": "^4.16.5",
     "cookie-parser": "^1.4.7",

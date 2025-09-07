@@ -1,30 +1,19 @@
-import React, { useEffect, useRef } from 'react';
+import  { useEffect, useRef } from 'react';
 import styles from "../Styling/StoryDilog.module.css";
 import { imageExtensions, videoExtensions } from '../Scripts/GetData';
 import { MAIN_BACKEND_URL } from '../Scripts/URL';
+import defaultImage from "../assets/default.png";
+import { StoryCardProps } from '../Interfaces';
 
-interface props {
-    setCurrentStory: React.Dispatch<React.SetStateAction<number>>;
-    index: number;
-    allStoriesLength: number;
-    currentStory: number;
-    closeDilogBox: React.Dispatch<React.SetStateAction<boolean>>;
-    story: { _id: string, userId: string, username: string, storyData: { duration: number, contentType: string } };
-    className: { name: string, positions: string };
-    logoIcon?: string;
-}
 
-function StoryCard({
-    setCurrentStory,
-    currentStory,
-    index,
-    story,
-    className,
-    logoIcon
-}: props) {
+
+function StoryCard({ setCurrentStory, currentStory, index, story, className, logoIcon }: StoryCardProps) {
+
     const videoRef = useRef<HTMLVideoElement | null>(null);
 
+    
     useEffect(() => {
+        
         const video = videoRef.current;
         if (!video) return;
 
@@ -57,7 +46,7 @@ function StoryCard({
                             overflow: "hidden"
                         }}>
                             <img
-                                src={`${MAIN_BACKEND_URL}/accounts/profileImage/${logoIcon}`}
+                                src={story.userId?.profileImage?.url || defaultImage}
                                 style={{ width: "50px", borderRadius: "50%" }}
                             />
                         </div>

@@ -8,7 +8,7 @@ import { MAIN_BACKEND_URL } from '../Scripts/URL';
 import { AllReelsType, RecievedReelType, ReelLikeAndStatus } from '../Interfaces';
 import { useUserAuthContext } from '../Context/UserContext';
 import LineLoader from '../modules/LineLoader';
-
+import defaultImage from "../assets/default.png";
 
 
 function Reels() {
@@ -20,119 +20,88 @@ function Reels() {
     const [playing, setPlaying] = useState<boolean>(true);
     const [reelFetching, setReelsFetching] = useState<boolean>(false);
     const [likes, setLikes] = useState<ReelLikeAndStatus[]>([]);
-
+    const [skip, setSkip] = useState<number>(0);
+    const [hasMore, setHasMore] = useState<boolean>(true);
     const { profile } = useUserAuthContext();
     const navigate = useNavigate();
 
-
-
     useEffect(() => {
-
-        async function FetchReels() {
-            setReelsFetching(true);
-            try {
-
-                const response = await fetch(`${MAIN_BACKEND_URL}/uploadReel/fetch-reels/?skip=0`, { method: "POST" })
-                const result = await response.json();
-
-                if (response.ok) {
-                    const shuffedPost: RecievedReelType[] = result.shuffledReels;
-
-                    const reelWithItsDetails = await Promise.all(
-
-                        shuffedPost.map((async (each: RecievedReelType, index: number) => {
-
-                            try {
-
-
-                                const IdInfo = {
-                                    postId: each._id,
-                                    userId: profile!._id
-                                }
-
-                                const [profileResponse, likedResponse] = await Promise.all([
-                                    fetch(`${MAIN_BACKEND_URL}/accounts/getIdAndUsername/${each.author.userId}`),
-                                    fetch(`${MAIN_BACKEND_URL}/uploadPost/fetchLikePost`, {
-
-                                        method: "POST",
-                                        headers: {
-                                            "Content-Type": "application/json"
-
-                                        },
-                                        body: JSON.stringify(IdInfo)
-
-                                    }),
-                                ])
-
-                                const profileResult = await profileResponse.json();
-                                const likeResult = await likedResponse.json();
-
-
-                                return {
-                                    ...each,
-                                    authorName: profileResponse.ok ? profileResult.username : "Unknown",
-                                    likeStatus: likedResponse.ok && likedResponse.status == 200 ? likeResult.likeStatus : false,
-                                    videoRef: (el: HTMLVideoElement | null) => {
-                                        if (el) videoRefs.current[index] = el;
-                                    }
-                                };
-
-                            }
-                            catch (error) {
-                                console.error(`Error fetching details for post by ${each.author.userId}:`, error);
-                                return {
-                                    ...each,
-                                    authorName: "Unknown",
-                                    likeStatus: false,
-                                    videoRef: (el: HTMLVideoElement | null) => {
-                                        if (el) videoRefs.current[index] = el;
-                                    }
-                                };
-                            }
-                            finally {
-                                setReelsFetching(false);
-
-                            }
-
-
-                        }))
-                    )
-                    setAllReels(reelWithItsDetails);
-                    setLikes(reelWithItsDetails.map((each) => ({
-                        likes: each.reelLike,
-                        likeStatus: each.likeStatus
-                    })));
-                    setReelsFetching(false);
-
-                }
-            }
-            catch (error) {
-                setReelsFetching(false);
-                console.log(error);
-            }
-            finally {
-                setReelsFetching(false);
-
-            }
-
-        }
-
         if (!profile) return;
+        fetchReels(skip);
+    }, [profile]);
 
-        FetchReels();
+    useEffect(() => {
+        if (!profile || skip === 0) return;
+        fetchReels(skip);
+    }, [skip]);
 
-    }, [profile])
+    async function fetchReels(currentSkip: number) {
+        setReelsFetching(true);
+        try {
+            const response = await fetch(`${MAIN_BACKEND_URL}/uploadReel/fetch-reels/?skip=${currentSkip}&limit=4`, { method: "POST" });
+            const result = await response.json();
+            if (response.ok) {
+                const shuffedPost: RecievedReelType[] = result.shuffledReels;
+                if (!shuffedPost || shuffedPost.length === 0) {
+                    setHasMore(false);
+                    setReelsFetching(false);
+                    return;
+                }
+                const reelWithItsDetails = await Promise.all(
+                    shuffedPost.map((async (each: RecievedReelType, index: number) => {
+                        try {
+                            const IdInfo = {
+                                postId: each._id,
+                                userId: profile!._id
+                            }
+                            const likedResponse = await fetch(`${MAIN_BACKEND_URL}/uploadPost/fetchLikePost`, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+                                body: JSON.stringify(IdInfo)
+                            });
+                            const likeResult = await likedResponse.json();
+                            return {
+                                ...each,
+                                likeStatus: likedResponse.ok && likedResponse.status == 200 ? likeResult.likeStatus : false,
+                                videoRef: (el: HTMLVideoElement | null) => {
+                                    if (el) videoRefs.current[index + currentSkip] = el;
+                                }
+                            };
+                        } catch (error) {
+                            console.error(`Error fetching details for post by ${each.authorUserId._id}:`, error);
+                            return {
+                                ...each,
+                                authorName: "Unknown",
+                                likeStatus: false,
+                                videoRef: (el: HTMLVideoElement | null) => {
+                                    if (el) videoRefs.current[index + currentSkip] = el;
+                                }
+                            };
+                        }
+                    }))
+                );
+                setAllReels(prev => [...prev, ...reelWithItsDetails]);
+                setLikes(prev => [...prev, ...reelWithItsDetails.map((each) => ({
+                    likes: each.reelLike,
+                    likeStatus: each.likeStatus
+                }))]);
+            }
+        } catch (error : any) {
+          throw new Error(error);
+        } finally {
+            setReelsFetching(false);
+        }
+    }
 
 
     useEffect(() => {
-
         if (videoRefs.current.length === 0) return;
-
         const options = {
             root: reelContainer.current,
             threshold: 0.6,
         };
-
         const observer = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
                 const video = entry.target as HTMLVideoElement;
@@ -147,17 +116,35 @@ function Reels() {
                 }
             });
         }, options);
-
         videoRefs.current.forEach((video) => {
             if (video) observer.observe(video);
         });
-
         return () => {
             videoRefs.current.forEach((video) => {
                 if (video) observer.unobserve(video);
             });
         };
     }, [AllReels]);
+
+    // Infinite scroll logic
+    useEffect(() => {
+        const handleScroll = () => {
+            if (!reelContainer.current || reelFetching || !hasMore) return;
+            const { scrollTop, scrollHeight, clientHeight } = reelContainer.current;
+            if (scrollHeight - scrollTop - clientHeight < 100) {
+                setSkip(prev => prev + 4);
+            }
+        };
+        const container = reelContainer.current;
+        if (container) {
+            container.addEventListener('scroll', handleScroll);
+        }
+        return () => {
+            if (container) {
+                container.removeEventListener('scroll', handleScroll);
+            }
+        };
+    }, [reelFetching, hasMore]);
 
 
     function clearUi() {
@@ -277,7 +264,7 @@ function Reels() {
                                     ref={video.videoRef}
                                     autoPlay={false}
                                     loop={true}
-                                    src={`${MAIN_BACKEND_URL}/uploadReel/render-reel/${video._id}`}
+                                    src={video.reelVideo?.url}
                                 ></video>
                                 {PlayAndPauseButton && (
                                     <div className={styles.VideoController}>
@@ -305,16 +292,15 @@ function Reels() {
                                 <div className={styles.reelUserInfo}>
                                     <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                                         <img
-                                            onClick={() => navigate(`/userProfile/${video.author.userId}`)}
-                                            src={`${MAIN_BACKEND_URL}/accounts/profileImage/${video.author.userId}`}
-                                            alt=""
+                                            onClick={() => navigate(`/userProfile/${video.authorUserId._id}`)}
+                                            src={video.authorUserId.profileImage?.url || defaultImage}
                                             style={{
                                                 width: "40px", height: "40px",
                                                 borderRadius: "50%",
                                                 objectFit: "cover"
                                             }}
                                         />
-                                        <p>{video.authorName}</p>
+                                        <p>{video.authorUserId.username}</p>
                                     </div>
                                     <span style={{ fontSize: "14px" }}>
                                         {video.reelDescription.length > 40 ? (

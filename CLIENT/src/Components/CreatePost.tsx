@@ -38,7 +38,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ s }) => {
                 const extension = file.name.split(".")[1];
 
                 if (extension === "jpeg" || extension === "jpg" || extension === "png" || extension == "mp4") {
-                    console.log(extension);
+                 
                     setPostFile(file);
                     const imageUrl = URL.createObjectURL(file);
                     setCurrentExtensionType(extension);
@@ -62,6 +62,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ s }) => {
         if (!profile) {
             setPostingLoader(false);
             setError("Failed to Post");
+            console.log(error)
             return;
         }
 
@@ -112,7 +113,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ s }) => {
         }
 
         if (profile && postFile) {
-            console.log(postFile);
+            
             const formData = new FormData();
             formData.append("profile", JSON.stringify(profile));
             formData.append("postReel", postFile);
@@ -157,7 +158,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ s }) => {
 
         if (profile) {
             if (ImageExtensions.includes(currentExtensionType)) {
-                console.log("Image Posted bro");
+          
                 handlePostImage(profile);
                 return;
             }
@@ -170,7 +171,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ s }) => {
 
     function EnableDescriptionBar() {
         setDescriptionBar(true);
-        console.log(error);
+       
         setWidth("60%");
     }
 

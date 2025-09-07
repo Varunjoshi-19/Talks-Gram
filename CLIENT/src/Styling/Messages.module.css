@@ -255,6 +255,8 @@
 
 
 
+
+
 #sendMessageButton {
     color: white;
 }
@@ -272,9 +274,12 @@
     position: fixed;
     padding: 10px;
     gap: 10px;
-    width: 49%;
+    width: calc(100% - 40px);
+    max-width: 600px;
     font-size: 1.2rem;
-    bottom: 5px;
+    bottom: 70px;
+    left: 55%;
+    bottom: 10px;
     height: 50px;
     border-radius: 10px;
 
@@ -394,22 +399,15 @@
     }
 
     .chatMessage {
-
-        width: 65%;
-        left: 35%;
-
+        width: calc(100% - 40px);
+        max-width: 700px;
+        bottom: 20px;
+        left: 20px;
     }
-
     .ChatMessageContainer {
-
         width: 100%;
         height: 70%;
-
     }
-
-
-
-
     .bothProfileAndMessages {
         display: flex;
         z-index: 30;
@@ -419,22 +417,22 @@
         height: 100vh;
         width: 100%;
     }
-
     .messageInputBox {
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid rgba(255, 255, 255, 0.336);
-        position: fixed;
-        padding: 10px;
-        gap: 10px;
-        width: 64%;
-        font-size: 1.2rem;
-        bottom: 5px;
-        height: 50px;
-        border-radius: 10px;
-
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.336);
+    position: fixed;
+    padding: 10px;
+    gap: 10px;
+    width: 100%;
+    font-size: 1.2rem;
+    bottom: 90px;
+    height: 50px;
+    border-radius: 10px;
+    margin-bottom: 0;
+    left: 50%;
+    transform: none;
     }
 
 }
@@ -464,8 +462,9 @@
 
     .ChatMessageContainer .messageInputBox {
 
-        width: 100%;
-
+    bottom: 10px;
+    width: 50%;
+    left : 44%;
 
     }
 
@@ -518,9 +517,10 @@
 
     .ChatMessageContainer .messageInputBox {
 
-        width: 97%;
-        left: 1%;
-        top: 85%;
+    width: calc(100% - 20px);
+    max-width: 700px;
+    left: 10px;
+    bottom: 70px;
 
     }
 
