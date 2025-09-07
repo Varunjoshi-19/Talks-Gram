@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 const PostSchema = new mongoose.Schema({
 
     postImage: {
-        data: Buffer,
+        url: String,
         contentType: String
 
     },
@@ -30,15 +30,11 @@ const PostSchema = new mongoose.Schema({
         default: ""
     },
 
-    author: {
-
-        userId: {
-            type: mongoose.Schema.ObjectId,
-            required: true,
-
-        }
+    authorId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Profile",
+        required: true
     }
-
 }, { timestamps: true });
 
 

@@ -25,8 +25,6 @@ export class CacheService {
 
     }
 
-
-
     handleRemoveNotification(userData: notificationPayload) {
         const { senderUserID, receiverUserID }: notificationPayload = userData;
 

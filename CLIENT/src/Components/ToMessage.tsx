@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import styles from "../Styling/ToMessage.module.css";
-
 import { fetchSearchUser } from "../Scripts/FetchDetails.ts";
-import { MAIN_BACKEND_URL } from "../Scripts/URL.ts";
 import { searchAccount, ToMessageProps } from "../Interfaces/index.ts";
+import defaultImage from "../assets/default.png";
 
 
 
@@ -134,7 +133,7 @@ const ToMessage: React.FC<ToMessageProps> = ({ toogleButton, EnableMessageTab })
                             <div onClick={() => handleSelectedUser(JSON.stringify(account))} key={account._id} className={styles.eachAccount} >
 
                                 <div id={styles.profileImage}>
-                                    <img src={`${MAIN_BACKEND_URL}/accounts/profileImage/${account._id}`} alt="_pic" width="100%" height="100%" />
+                                    <img src={account?.profileImage?.url || defaultImage} alt="_pic" width="100%" height="100%" />
                                 </div>
 
                                 <div>

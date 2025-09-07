@@ -1,10 +1,9 @@
 
 import styles from "../Styling/UserReels.module.css";
-import { MAIN_BACKEND_URL } from "../Scripts/URL";
 
 interface UserReelProps {
     allReels: any;
-    handleOpenReel: (id: string, userId: string,  postType : string, currentLikes: number, createdAt: string) => void;
+    handleOpenReel: (id: string,  url : string, userId: string,  postType : string, currentLikes: number, createdAt: string) => void;
 }
 
 function UserReels({ allReels, handleOpenReel }: UserReelProps) {
@@ -18,7 +17,8 @@ function UserReels({ allReels, handleOpenReel }: UserReelProps) {
                     onClick={() =>
                         handleOpenReel(
                             reel._id,
-                            reel.author.userId,
+                            reel.reelVideo.url,
+                            reel.authorUserId._id,
                             reel.reelVideo.contentType,
                             reel.reelLike,
                             reel.createdAt
@@ -26,7 +26,7 @@ function UserReels({ allReels, handleOpenReel }: UserReelProps) {
                     }
                 >
                     <video
-                        src={`${MAIN_BACKEND_URL}/uploadReel/render-reel/${reel._id}`}
+                        src={reel.reelVideo.url}
                         className={styles.reelVideo}
                         controls={false}
                         preload="metadata"

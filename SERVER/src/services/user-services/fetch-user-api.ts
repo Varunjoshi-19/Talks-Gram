@@ -10,7 +10,7 @@ class UserApiServices {
         }
 
         try {
-            const userProfile = await ProfileDoc.findById(id).select("_id username fullname post bio followers following").lean();
+            const userProfile = await ProfileDoc.findById(id).select("_id username profileImage fullname post bio followers following").lean();
             if (!userProfile) {
                 return { success: false, status: 404, message: "No user profile found" };
             }
@@ -29,7 +29,7 @@ class UserApiServices {
 
     async getAllAccounts(excludeEmail: string) {
         if (!excludeEmail) throw new Error("Email is required");
-        const allAccounts = await ProfileDoc.find({ email: { $ne: excludeEmail } }).select("_id username fullname").limit(4).lean();
+        const allAccounts = await ProfileDoc.find({ email: { $ne: excludeEmail } }).select("_id username profileImage fullname").limit(4).lean();
         return allAccounts;
     }
 

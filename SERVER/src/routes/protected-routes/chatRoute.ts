@@ -6,7 +6,7 @@ import ChatApiController from "../../controllers/chats/apiController"
 import ChatController from "../../controllers/chats/index"
 import UserApiController from "../../controllers/user-controller/user_api";
 import multer, { memoryStorage } from "multer";
-import RenderController from "../../controllers/others/render";
+// import RenderController from "../../controllers/others/render";
 
 
 
@@ -20,7 +20,7 @@ export class ChatRoutes {
         private chatApiController: ChatApiController,
         private followapiController: FollowApiController,
         private followController: FollowController,
-        private renderController: RenderController
+        // private renderController: RenderController
     ) {
         this.router = Router();
         this.upload = multer({ storage: memoryStorage() })
@@ -44,7 +44,7 @@ export class ChatRoutes {
         this.router.post("/fetchRequests/:id", this.followapiController.fetchAllRequests.bind(this.followapiController));
         this.router.post("/additionalInfo-message", this.upload.array("files", 10), this.chatController.saveAdditionalData.bind(this.chatController));
         this.router.post("/audioDataInfo-message", this.upload.single("audioFile"), this.chatController.saveAudioMessage.bind(this.chatController))
-        this.router.get("/render-message-items/:id1/:id2", this.renderController.renderMessageItem.bind(this.renderController));
+        // this.router.get("/render-message-items/:id1/:id2", this.renderController.renderMessageItem.bind(this.renderController));
 
 
         this.router.post("/seen-chats/:id1/:id2", this.chatController.handleSeenChats.bind(this.chatController));

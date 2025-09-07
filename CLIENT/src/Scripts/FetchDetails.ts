@@ -19,6 +19,7 @@ export async function fetchProfileDetails(id: string) {
     try {
         const response = await fetch(`${MAIN_BACKEND_URL}/accounts/fetch-profile-details/${id}`);
         const result = await response.json();
+      
         return result;
     } catch (error) {
         return false;
@@ -62,7 +63,7 @@ export async function fetchChattedUserDetails(id: string) {
     }
 
     if (!response.ok) {
-        console.log("no users")
+       
         return;
     }
 }
@@ -77,7 +78,7 @@ export async function fetchSearchUser(searchValue: string) {
 
     if (response.ok) {
 
-        console.log(result.searchedAccounts);
+      
         return result.searchedAccounts;
 
     }
@@ -156,7 +157,7 @@ export async function fetchDetailsOfUserPost(id: string) {
 
     }
     catch (error) {
-        console.log(error);
+       
         return post;
     }
 
@@ -166,7 +167,7 @@ export async function fetchUserOnlineStatus(id: string) {
     try {
         const response = await fetch(`${MAIN_BACKEND_URL}/accounts/user-online-status/${id}`);
         const result = await response.json();
-        console.log(result);
+      
         if (response.ok) return result.onlineStatus;
         if (!response.ok) return result.onlineStatus;
     }
@@ -176,18 +177,13 @@ export async function fetchUserOnlineStatus(id: string) {
 }
 
 export async function seenAllChats(senderId: string, receiverId: string) {
-    console.log("seen chat fired");
-    const response = await fetch(`${MAIN_BACKEND_URL}/Personal-chat/seen-chats/${senderId}/${receiverId}`, {
+  
+  await fetch(`${MAIN_BACKEND_URL}/Personal-chat/seen-chats/${senderId}/${receiverId}`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         }
     });
-
-    const result = await response.json();
-    if (response.ok) console.log(result);
-
-
     return;
 }
 
@@ -197,7 +193,7 @@ export async function fetchProfileLocalStorage(): Promise<any> {
     if (!profile) throw new Error("No profile exists!");
 
     const parsedProfile = JSON.parse(profile);
-    console.log(parsedProfile._id);
+  
     return parsedProfile;
 }
 
@@ -206,14 +202,14 @@ export async function fetchUserStory(id: string) {
     const response = await fetch(`${MAIN_BACKEND_URL}/uploadPost/fetch-story/${id}`);
     const result = await response.json();
     if (response.ok) return result;
-    if(!response.ok) return null;
+    if (!response.ok) return null;
 }
 
 
-export async function fetchUserNote(id : string)  { 
-      if(!id) return null;
-      const response = await fetch(`${MAIN_BACKEND_URL}/uploadPost/fetch-note/${id}`);
-      const noteResult = await response.json();
-      if(response.ok) return noteResult;
-      if(!response.ok) return null;
+export async function fetchUserNote(id: string) {
+    if (!id) return null;
+    const response = await fetch(`${MAIN_BACKEND_URL}/uploadPost/fetch-note/${id}`);
+    const noteResult = await response.json();
+    if (response.ok) return noteResult;
+    if (!response.ok) return null;
 }

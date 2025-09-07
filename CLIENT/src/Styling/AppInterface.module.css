@@ -169,6 +169,7 @@ display: none;
     border: 1px solid white;
     display: flex;
     align-items: center;
+    object-fit: contain;
     overflow: hidden;
     justify-content: center;
     height: 40px;

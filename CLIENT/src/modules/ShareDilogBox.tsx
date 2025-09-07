@@ -3,20 +3,20 @@ import styles from "../Styling/ShareDilog.module.css";
 import { useEffect, useState } from "react";
 import { fetchSearchUser } from "../Scripts/FetchDetails";
 import messageStyles from "../Styling/ToMessage.module.css";
-import { MAIN_BACKEND_URL } from "../Scripts/URL";
 import { useGeneralContext } from "../Context/GeneralContext";
 import { useNavigate } from "react-router-dom";
 import { searchAccount } from "../Interfaces";
+import defaultImage from "../assets/default.png";
+
 
 interface ShareDilogBoxPayload {
 
     toogleOpenCloseButton: React.Dispatch<React.SetStateAction<boolean>>;
-    sharePostRefId: string;
-    postOwnerId: string,
-    postOwnerName: string;
+    postRef: any,
+    userRef: any
 }
 
-function ShareDilogBox({ toogleOpenCloseButton, sharePostRefId, postOwnerId, postOwnerName }: ShareDilogBoxPayload) {
+function ShareDilogBox({ toogleOpenCloseButton, userRef, postRef }: ShareDilogBoxPayload) {
 
     const [searchValue, setSearchValue] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
@@ -65,7 +65,7 @@ function ShareDilogBox({ toogleOpenCloseButton, sharePostRefId, postOwnerId, pos
 
 
     function handleSelectedUser(account: string) {
-        console.log(JSON.parse(account));
+
         const parsedAccount = JSON.parse(account);
         const id = parsedAccount._id;
         setSelectedUserId(id);
@@ -73,13 +73,9 @@ function ShareDilogBox({ toogleOpenCloseButton, sharePostRefId, postOwnerId, pos
     }
 
     async function sharePost() {
-        await handleSharePost(selectedUserId,
-            sharePostRefId,
-            toogleOpenCloseButton,
-            navigate,
-            postOwnerId,
-            postOwnerName);
+        await handleSharePost(selectedUserId, userRef, postRef, toogleOpenCloseButton, navigate);
     }
+
 
 
 
@@ -139,7 +135,7 @@ function ShareDilogBox({ toogleOpenCloseButton, sharePostRefId, postOwnerId, pos
                             <div onClick={() => handleSelectedUser(JSON.stringify(account))} key={account._id} className={messageStyles.eachAccount} >
 
                                 <div id={messageStyles.profileImage}>
-                                    <img src={`${MAIN_BACKEND_URL}/accounts/profileImage/${account._id}`} alt="_pic" width="100%" height="100%" />
+                                    <img src={account.profileImage?.url || defaultImage} alt="_pic" width="100%" height="100%" />
                                 </div>
 
                                 <div>

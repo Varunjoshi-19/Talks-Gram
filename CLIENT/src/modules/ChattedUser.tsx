@@ -1,8 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useChatContext } from "../Context/ChattedUserContext"
-import { ChattedUserPayload, handleTimeFormating } from "../Scripts/GetData";
+import { ChattedUserPayload, CountMessages, handleTimeFormating } from "../Scripts/GetData";
 import styles from '../Styling/Messages.module.css';
-import { MAIN_BACKEND_URL } from "../Scripts/URL";
 import { useUserAuthContext } from "../Context/UserContext";
 import { fetchUserNote, seenAllChats } from "../Scripts/FetchDetails";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -13,7 +12,7 @@ import profileStyles from "../Styling/Profile.module.css";
 import ToMessage from "../Components/ToMessage";
 import Thought from "../UI/Thought";
 import { useToogle } from "../Context/ToogleContext";
-
+import defaultImage from '../assets/default.png';
 
 function ChattedUser() {
 
@@ -30,7 +29,7 @@ function ChattedUser() {
         (async () => {
             if (profile) {
                 const note = await fetchUserNote(profile._id);
-                console.log("fetched note", note);
+            
                 setNote(note);
             }
         })();
@@ -38,7 +37,7 @@ function ChattedUser() {
     }, [profile]);
 
 
-    async function handleEnableMessageTab(_: string, value: string) {
+async function handleEnableMessageTab(_: string, value: string) {
         const user: any = JSON.parse(value);
 
         if (!profile) return;
@@ -58,7 +57,7 @@ function ChattedUser() {
                     value.unseenCount = 0;
                 }
             }
-
+            setMessageCount(CountMessages(newMap));
             return newMap;
 
         })
@@ -99,7 +98,7 @@ function ChattedUser() {
                 shareNote &&
 
                 <ShareThoughtDilogBox userId={profile._id} closeDilogBox={setShareNote}
-                    imageSrc={`${MAIN_BACKEND_URL}/accounts/profileImage/${profile._id}`} />
+                    imageSrc={profile?.profileImage?.url || defaultImage} />
             }
 
             {toogleButton && <ToMessage toogleButton={setToogleButton} EnableMessageTab={redirectToChattingPage} />}
@@ -130,7 +129,7 @@ function ChattedUser() {
 
 
                         <img
-                            src={`${MAIN_BACKEND_URL}/accounts/profileImage/${profile?._id}`}
+                            src={profile?.profileImage?.url || defaultImage}
                             style={{ borderRadius: "50%", objectFit: "contain", }}
                             alt="_profileImage" width="100%" height="100%" />
                     </div>
@@ -151,13 +150,13 @@ function ChattedUser() {
                 <div style={{ gap: "20px" }} className={styles.MessagesContainer}>
 
 
-                    {AllChattedUsers.size > 0 &&
+                    {AllChattedUsers && AllChattedUsers.size > 0 &&
 
                         Array.from(AllChattedUsers).map(([key, value]: [key: string, value: ChattedUserPayload]) => (
 
                             <div key={key} onClick={() => handleEnableMessageTab(key, JSON.stringify(value))} style={{ gap: "20px" }} id={styles.userMessage}>
                                 <div id={styles.userIcon}>
-                                    <img src={`${MAIN_BACKEND_URL}/accounts/profileImage/${value.userId}`} width="100%" height="100%" alt="_image" />
+                                    <img src={value.profileImage || defaultImage} width="100%" height="100%" alt="_image" />
                                 </div>
 
                                 <div>

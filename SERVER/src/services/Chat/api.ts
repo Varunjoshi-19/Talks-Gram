@@ -13,7 +13,9 @@ class ChatApiServices {
                 .sort({ initateTime: -1 })
                 .skip(chatSkip)
                 .limit(limit)
-                .select("chatId userId otherUserId senderUsername receiverUsername initateTime chat seenStatus sharedContent AdditionalData._id AdditionalData.contentType")
+                .select("chatId userId otherUserId senderUsername receiverUsername initateTime chat seenStatus sharedContent AdditionalData")
+                .populate("sharedContent.userId", "username profileImage")
+                .populate("sharedContent.postId", "createdAt postLike postImage")
                 .lean();
 
 
@@ -50,35 +52,36 @@ class ChatApiServices {
                     { otherUserId: userId }
                 ]
             })
-                .select("chatId userId otherUserId senderUsername receiverUsername initateTime seenStatus chat")
-                .sort({ initateTime: -1 });
+                .select("chatId userId otherUserId  initateTime seenStatus chat")
+                .sort({ initateTime: -1 })
+                .populate("userId", "username profileImage")
+                .populate("otherUserId", "username profileImage");
 
             const uniqueUser = new Map<string, ChattedUserPayload>();
 
             users.forEach((each: any) => {
+                const isSender = each.userId._id.toString() === userId.toString();
+                const otherUser = isSender ? each.otherUserId : each.userId;
 
-                const id = userId === each.userId ? each.otherUserId : each.userId;
-                const name = userId === each.userId ? each.receiverUsername : each.senderUsername;
-
-
-                if (!uniqueUser.has(id)) {
-                    const entry: ChattedUserPayload = {
+                if (!uniqueUser.has(otherUser._id.toString())) {
+                    uniqueUser.set(otherUser._id.toString(), {
                         chatId: each.chatId,
-                        userId: id,
-                        yourMessage: userId === each.userId,
-                        checkName: each.senderUsername,
-                        username: name ?? "Unknown",
+                        userId: otherUser._id.toString(),
+                        yourMessage: isSender,
+                        checkName: each.userId.username,
+                        username: otherUser.username ?? "Unknown",
+                        profileImage: otherUser.profileImage.url ?? null,
                         initateTime: each.initateTime,
                         seenStatus: each.seenStatus,
                         unseenCount: 0,
                         recentChat: each.chat ?? "",
-                    };
-                    uniqueUser.set(id, entry);
+                    });
                 }
 
-                if (each.otherUserId === userId && !each.seenStatus) {
-                    const otherUid = each.userId;
-                    const user = uniqueUser.get(otherUid);
+
+                if (each.otherUserId._id.toString() === userId.toString() && !each.seenStatus) {
+                    const senderId = each.userId._id.toString();
+                    const user = uniqueUser.get(senderId);
                     if (user) user.unseenCount++;
                 }
             });

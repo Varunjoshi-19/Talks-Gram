@@ -52,13 +52,14 @@ function App() {
           path="/"
           element={profile ? <AppLayout /> : <Navigate to="/accounts/login" />}
         >
-          <Route path="accounts/inbox/messages/" element={profile ? <MessageLayout /> : <Navigate to="/accounts/login" />} >
+            <Route index element={<AppInterface />} />
+          <Route path="accounts/inbox/messages" element={profile ? <MessageLayout /> : <Navigate to="/accounts/login" />} >
             <Route index element={<Messages />} />
             <Route path="Personal-chat/:id" element={<Chatting />} />
 
           </Route>
+
           <Route path="reels" element={<Reels />} />
-          <Route index element={<AppInterface />} />
           <Route path="accounts/profile" element={<Profile />} />
           <Route path="userProfile/:id" element={<UserProfile />} />
           <Route path="Notification" element={<NotificationPage />} />

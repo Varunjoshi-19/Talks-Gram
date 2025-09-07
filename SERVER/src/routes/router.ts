@@ -21,7 +21,6 @@ class Routers {
 
   getRoutes(): Router {
     this.router.get("/api", (req, res) => {
-      console.log("api route");
       res.send({ message: "api router" });
     });
 

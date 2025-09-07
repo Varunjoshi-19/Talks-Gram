@@ -3,11 +3,13 @@ import ProfileDoc from "../../models/ProfileDoc";
 import crypto from "crypto";
 import userDoc from "../../models/userDoc";
 import UserHelper from "../../utils/others/user";
+import AllHelpServices from "../../utils/index";
+import globalConfig from "../../config";
 
 @injectable()
 class UserService {
 
-    constructor(private userHelper: UserHelper) { }
+    constructor(private userHelper: UserHelper, private allHelp: AllHelpServices) { }
 
 
     async login(body: { username?: string; email?: string; password: string }) {
@@ -23,7 +25,7 @@ class UserService {
         const user = await this.userHelper.findAccount(key as any, value as string);
         if (!user) return { status: 404, success: false, message: "Invalid username or email" };
         const id = user?._id;
-        const profile = await ProfileDoc.findOne({ userAccId: id }).select("_id username email fullname post bio followers following").lean();
+        const profile = await ProfileDoc.findOne({ userAccId: id }).select("_id username  profileImage email fullname post bio followers following").lean();
 
         const token = this.userHelper.verifyAndGenerateToken(password, user);
         if (!token) return { status: 400, success: false, message: "Incorrect password" };
@@ -63,17 +65,23 @@ class UserService {
 
             const newAccount = await userDoc.create(userData);
 
-            const defaultImage = this.userHelper.getDefaultImage();
 
             const profileData = {
                 userAccId: newAccount._id,
                 username,
                 fullname,
                 email,
-                profileImage: defaultImage,
             };
 
             const userProfile = await ProfileDoc.create(profileData);
+
+            if (!userProfile) {
+                return {
+                    status: 500,
+                    success: false,
+                    message: "Failed to create user profile"
+                }
+            }
 
             return {
                 status: 201,
@@ -120,25 +128,17 @@ class UserService {
         }
 
         if (file) {
+            const fileData = await this.allHelp.handleUploadFile(file, globalConfig.talksGramBucketId);
+            if (!fileData.success) throw new Error("Failed to upload profile image");
+
             NewProfileData.profileImage = {
-                data: file.buffer,
-                contentType: file.mimetype,
-            };
+                url: fileData.imageUrl,
+                contentType: file.mimetype
+            }
         }
 
         const existingDetails = await ProfileDoc.findById(id);
         if (!existingDetails) throw new Error("Profile not found");
-
-        const existingUsername = existingDetails.username;
-
-        await userDoc.findOneAndUpdate(
-            { username: existingUsername },
-            {
-                username: NewProfileData.username,
-                fullname: NewProfileData.fullname,
-            },
-            { new: true }
-        );
 
         const updatedProfile = await ProfileDoc.findByIdAndUpdate(id, NewProfileData, {
             new: true,

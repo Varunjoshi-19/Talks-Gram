@@ -2,28 +2,32 @@ import mongoose from "mongoose";
 
 
 const CommentSchema = new mongoose.Schema({
-     
-postId : {
-     type : String,
-     required : true
-},
 
-userId : {
-     type : String,
-     required : true
-},
+     postId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Posts",
+          required: true
+     },
 
-comment : {
-     type : String,
-     required : true
-},
+     userId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Profile",
+          required: true
+     },
 
-initiateTime : {
-      type : Number,
-      required: true
-},
-    
-} , { timestamps : true })
+     comment: {
+          type: String,
+          required: true
+     },
+
+     initiateTime: {
+          type: Number,
+          required: true
+     },
+
+}, { timestamps: true })
 
 
-export default mongoose.model("Comments" , CommentSchema);
+
+
+export default mongoose.model("Comments", CommentSchema);

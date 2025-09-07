@@ -36,9 +36,8 @@ class PostController {
     };
 
     handleSharePost = async (req: Request, res: Response) => {
-        const id = req.params.id;
         const data = req.body;
-        const result = await this.postServices.SharedPost(data, id);
+        const result = await this.postServices.SharedPost(data);
         res.status(result?.status).json(result);
         return;
     }
@@ -52,9 +51,9 @@ class PostController {
         return;
     }
 
-    handleAddNewNote = async (req : Request , res : Response) => { 
+    handleAddNewNote = async (req: Request, res: Response) => {
         const data = req.body;
-        const result =  await this.postServices.UploadNewNote(data);
+        const result = await this.postServices.UploadNewNote(data);
         res.status(result.status).json(result.message);
         return;
     }

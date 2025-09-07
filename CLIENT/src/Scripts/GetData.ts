@@ -33,7 +33,8 @@ export type AudioData = {
 }
 
 export type AdditionalDataType = {
-    _id?: string,
+    _id?: string;
+    url: string,
     contentType: string,
 
 }
@@ -50,12 +51,25 @@ export interface Chat {
     temporaryAddData?: ShowFile[];
     AdditionalData?: any;
     sharedContent?: {
-        type: "post" | "reel",
-        postOwnerId: string,
-        postOwnerName: string,
-        refId: string,
-        previewText?: string
-    };
+        userId: {
+            _id: string,
+            profileImage: {
+                url: string,
+                contentType: string
+            }
+            username: string
+        },
+        postId: {
+            _id: string,
+            createdAt: string,
+            postLike: number,
+            postImage: {
+                url: string,
+                contentType: string
+            }
+        }
+
+    }
 }
 
 export type BufferedDataType = {
@@ -68,6 +82,7 @@ export type BufferedDataType = {
 export interface ChattedUserPayload {
     chatId: string,
     userId: string,
+    profileImage: string | null,
     yourMessage: boolean,
     checkName: string,
     username: string,
@@ -144,16 +159,16 @@ export function handleTimeFormating(previousTime: number) {
 
 }
 
-export async function CreateAndShareMessage(shareDataInfo: any, sharedInfo: any) {
+export async function CreateAndShareMessage(realTimeShareData: any) {
 
 
     try {
-        const response = await fetch(`${MAIN_BACKEND_URL}/uploadPost/share-post/${shareDataInfo.refId}`, {
+        const response = await fetch(`${MAIN_BACKEND_URL}/uploadPost/share-post`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(sharedInfo)
+            body: JSON.stringify(realTimeShareData)
         });
 
         if (response.ok) {

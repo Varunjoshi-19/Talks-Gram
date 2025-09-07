@@ -66,17 +66,17 @@ class UserHelper {
     }
 
 
-    getDefaultImage() {
+    // getDefaultImage() {
 
-        const imagePath = path.resolve(defaultImagePath);
-        const imageBuffer = fs.readFileSync(imagePath);
+    //     const imagePath = path.resolve(defaultImagePath);
+    //     const imageBuffer = fs.readFileSync(imagePath);
 
 
-        return {
-            data: imageBuffer,
-            contentType: "image/jpeg"
-        }
-    }
+    //     return {
+    //         data: imageBuffer,
+    //         contentType: "image/jpeg"
+    //     }
+    // }
 
 
 

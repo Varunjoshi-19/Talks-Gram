@@ -8,7 +8,7 @@ class FollowApiServices {
 
     async fetchAllRequests(userId: string) {
         try {
-            const requests = await FollowRequestDoc.find({ userId });
+            const requests = await FollowRequestDoc.find({ userId }).populate("userIdOf", "profileImage").lean();
             if (!requests || requests.length === 0) {
                 return { success: false, status: 404, message: "No requests" };
             }

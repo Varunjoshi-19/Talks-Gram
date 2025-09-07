@@ -6,7 +6,7 @@ import UserApiController from "../../controllers/user-controller/user_api";
 import OtpService from "../../controllers/validation-controller/validation";
 import CommunicationController from "../../controllers/others/communication";
 import UserHelperController from "../../controllers/user-controller/other";
-import RenderController from "../../controllers/others/render";
+// import RenderController from "../../controllers/others/render";
 
 
 @autoInjectable()
@@ -16,7 +16,7 @@ class UserRoutes {
         private userValidation: OtpService,
         private commController: CommunicationController,
         private userHelperController: UserHelperController,
-        private renderController: RenderController
+        // private renderController: RenderController
 
     ) { }
 
@@ -44,7 +44,7 @@ class UserRoutes {
         router.get("/user-online-status/:id", this.userapiController.fetchOnlineStatus.bind(this.userapiController));
 
 
-        router.get("/profileImage/:id", this.renderController.renderImage.bind(this.renderController));
+        // router.get("/profileImage/:id", this.renderController.renderImage.bind(this.renderController));
 
 
         return router;

@@ -13,7 +13,7 @@ export interface MessageInfo {
     initateTime: string,
     chat?: string,
     seenStatus?: boolean,
-    AdditionalData?: [{ data: Buffer, contentType: string }],
+    AdditionalData?: [{ url: string, contentType: string }],
     sharedContent?: {
         type: string,
         postOwnerId: string,

@@ -1,12 +1,11 @@
-import mongoose from "mongoose";
+import mongoose, { mongo } from "mongoose";
 
 
 const ReelSchema = new mongoose.Schema({
 
 
     reelVideo: {
-
-        data: Buffer,
+        url: String,
         contentType: String
     },
 
@@ -25,16 +24,15 @@ const ReelSchema = new mongoose.Schema({
         default: "",
     },
 
-    author: {
-        userId: {
-            type: String,
-            required: true
-        }
+    authorUserId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Profile",
+        required: true
     }
 
 
 
-} , {timestamps : true });
+}, { timestamps: true });
 
 
-export default mongoose.model("Reels" , ReelSchema);
+export default mongoose.model("Reels", ReelSchema);

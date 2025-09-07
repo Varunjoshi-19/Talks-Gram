@@ -9,12 +9,14 @@ const MessageSchema = new mongoose.Schema({
     },
 
     userId: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Profile",
         required: true,
     },
 
     otherUserId: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Profile",
         required: true
     },
 
@@ -42,24 +44,19 @@ const MessageSchema = new mongoose.Schema({
     },
 
     AdditionalData: [{
-        data: Buffer,
+        url: String,
         contentType: String
     }],
 
     sharedContent: {
-        type: {
-            type: String,
-            enum: ["post", "reel"]
-        },
-        postOwnerId: {
+        userId: {
             type: mongoose.Schema.Types.ObjectId,
+            ref: "Profile",
         },
-        postOwnerName: String,
-        refId: {
+        postId: {
             type: mongoose.Schema.Types.ObjectId,
-        },
-        previewText: String,
-        previewImage: String
+            ref: "Posts",
+        }
     }
 
 }, { timestamps: true });

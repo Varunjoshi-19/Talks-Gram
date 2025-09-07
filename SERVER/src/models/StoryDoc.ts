@@ -5,7 +5,8 @@ import mongoose from "mongoose";
 const StorySchema = new mongoose.Schema({
 
     userId: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref : "Profile",
         required: true,
     },
 
@@ -21,7 +22,7 @@ const StorySchema = new mongoose.Schema({
     },
 
 
-    createdTime: {  
+    createdTime: {
         type: Date,
         required: true
     },

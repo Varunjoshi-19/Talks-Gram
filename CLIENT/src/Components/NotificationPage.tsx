@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import styles from "../Styling/NotificationPage.module.css";
 import { MAIN_BACKEND_URL } from "../Scripts/URL.js";
 import { useUserAuthContext } from "../Context/UserContext.js";
-import { NotificationProps } from "../Interfaces/index.js";
-
+import { notificationPayload } from "../Interfaces/index.js";
+import defaultImage from "../assets/default.png";
 
 
 function NotificationPage() {
 
-    const [AllNotifications, setAllNotifications] = useState<NotificationProps[]>([]);
+    const [AllNotifications, setAllNotifications] = useState<notificationPayload[]>([]);
     const [message, setMessage] = useState<string | null>(null);
     const { profile } = useUserAuthContext();
 
@@ -121,7 +121,7 @@ function NotificationPage() {
                         <div key={index} className={styles.eachNotific}>
 
                             <div id={styles.profileImage}>
-                                <img src={`${MAIN_BACKEND_URL}/accounts/profileImage/${item.userIdOf}`} width="100%" height="100%" alt="" />
+                                <img src={item.userId.profileImage?.url || defaultImage} width="100%" height="100%" alt="" />
                             </div>
 
                             <p style={{ color: "white", fontWeight: "bolder" }}>

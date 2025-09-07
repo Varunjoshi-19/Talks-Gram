@@ -19,7 +19,7 @@
     scroll-snap-type: y mandatory;
     background: #181818;
     border-radius: 16px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
 }
 
 .reelsLayout::-webkit-scrollbar {
@@ -73,8 +73,9 @@
     color: #fff;
     transition: background 0.2s;
 }
+
 .VideoController button:active {
-    background: rgba(40,40,40,0.9);
+    background: rgba(40, 40, 40, 0.9);
 }
 
 .reelInfoContainer {
@@ -126,6 +127,7 @@ hr {
         align-items: flex-start;
         background: #000;
     }
+
     .reelsLayout {
         width: 100vw;
         height: 100dvh;
@@ -134,23 +136,27 @@ hr {
         padding: 0;
         margin: 0;
     }
+
     .eachReels {
         width: 100vw;
         height: 100dvh;
         padding: 0;
         border-radius: 0;
     }
+
     .eachReels #eachReelVideo {
         border-radius: 0;
         object-fit: cover;
         width: 100vw;
         height: 100dvh;
     }
+
     .reelUserInfo {
         left: 4vw;
         bottom: 60px;
         font-size: 1rem;
     }
+
     .reelInfoContainer {
         bottom: 80px;
         right: 10px;
@@ -219,9 +225,7 @@ hr {
 
 @media (max-width : 764px) {
 
-    .reelsContainer {
-        
-    }
+    .reelsContainer {}
 
     .reelsLayout {
 
