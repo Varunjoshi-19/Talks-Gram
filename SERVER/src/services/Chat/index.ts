@@ -17,7 +17,7 @@ class ChatMessageService {
         try {
             const { userId, otherUserId } = chatData;
             const savedChat = await PersonalChatDoc.create({ ...chatData, seenStatus: userId === otherUserId });
-            console.log(savedChat);
+            
             return {
                 status: 200,
                 success: true,

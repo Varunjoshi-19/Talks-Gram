@@ -61,7 +61,7 @@ function ForgotPassword() {
         const result = await response.json();
 
         if (response.ok) {
-            console.log(result);
+    
             setOTP(1);
             setUserId(result.data.userId);
             setInputText("");
