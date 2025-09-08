@@ -53,6 +53,7 @@ function Chatting() {
     const [multipleItemSelected, setMultipleItemsSelected] = useState<File[]>([]);
     const fileRef = useRef<HTMLInputElement>(null);
     const [bufferedData, setBufferedData] = useState<BufferedDataType[]>([]);
+    const [sendingMedia, setSendingMedia] = useState<boolean>(false);
     // video and image stuff
 
 
@@ -291,7 +292,7 @@ function Chatting() {
 
     // ------ other handling functions -------  // 
 
-    function handleSendMessage() {
+    async function handleSendMessage() {
 
         if (!profile) return;
 
@@ -325,15 +326,13 @@ function Chatting() {
 
 
                 if (multipleItemSelected.length > 0) {
-
+                    setSendingMedia(true);
                     const MInfoData: InfoDataType = {
                         AdditionalInfoData: bufferedData,
                         senderUsername: profile?.username,
                         receiverUsername: otherUserDetails.username,
                         chatId: chatId,
-
                     }
-
                     const MChatInfo: Chat = {
                         userId: profile?._id,
                         otherUserId: otherUserDetails?._id,
@@ -343,10 +342,9 @@ function Chatting() {
                         initateTime: Date.now().toString(),
                         AdditionalData: multipleItemSelected
                     };
-
                     socket.emit('new-chat', MInfoData);
-                    saveAdditionalInfo(MChatInfo);
-
+                    await saveAdditionalInfo(MChatInfo);
+                    setSendingMedia(false);
                 }
 
 
@@ -392,17 +390,13 @@ function Chatting() {
         }
 
         else if (audioFileBlob) {
-
+            setSendingMedia(true);
             const InfoData: InfoDataType = {
-
                 audioData: audioDataInfo,
                 senderUsername: profile?.username,
                 receiverUsername: otherUserDetails.username,
                 chatId: chatId,
-
-
             }
-
             const ChatInfo: Chat = {
                 userId: profile?._id,
                 otherUserId: otherUserDetails?._id,
@@ -412,13 +406,9 @@ function Chatting() {
                 initateTime: Date.now().toString(),
                 AdditionalData: audioDataInfo
             };
-
-
-
-
             socket.emit('new-chat', InfoData);
-
-            saveAudioDataInfo(ChatInfo);
+            await saveAudioDataInfo(ChatInfo);
+            setSendingMedia(false);
             setMessageInputValue('');
             ResetEverythingOnDom();
             setMultipleItemsSelected([]);
@@ -690,6 +680,9 @@ function Chatting() {
 
     if (!showMain || !profile) {
         return <LoadingScreen />
+    }
+    if (sendingMedia) {
+        return <LoadingScreen />;
     }
 
 
