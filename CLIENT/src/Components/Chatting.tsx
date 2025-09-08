@@ -194,9 +194,6 @@ function Chatting() {
             setAllChats((prevChats) => [...prevChats, ChatInfo]);
         });
 
-
-
-
         return () => {
             socket.off('chat-receive');
         };

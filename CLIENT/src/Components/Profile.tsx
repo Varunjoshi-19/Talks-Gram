@@ -44,7 +44,7 @@ function Profile() {
     const [selectedStoryFile, setSelectedStoryFile] = useState<File | null>(null);
     const [uploadedStory, setUploadedStory] = useState<any | null>(null);
     const [storyUrl, setStoryUrl] = useState<string | null>(null);
-    const [note, setNote] = useState<{ noteMessage: string, _id: string, userId: string } | null>(null);
+    const [note, setNote] = useState<any>();
     const [storyDuration, setStoryDuration] = useState<number>(5000);
     const [postFetchLoader, setPostFetchLoader] = useState<boolean>(false);
     const [reelFetchLoader, setReelFetchLoader] = useState<boolean>(false);
@@ -77,7 +77,7 @@ function Profile() {
             const result = await response.json();
             if (response.ok) {
                 setAllPosts(result.allPosts);
-    
+
             }
             if (!response.ok) {
                 setAllPosts([]);
@@ -95,9 +95,9 @@ function Profile() {
 
             if (response.ok) {
                 setAllReels(result.reels);
-              
+
             }
-           
+
 
             setReelFetchLoader(false);
 
@@ -115,7 +115,7 @@ function Profile() {
         (async () => {
             if (profile) {
                 const note = await fetchUserNote(profile._id);
-               
+
                 setNote(note);
             }
         })();
@@ -191,12 +191,12 @@ function Profile() {
         const file = event.target.files?.[0];
         if (file) {
             setSelectedStoryFile(file);
-        
+
             const blob = new Blob([file], { type: file.type })
             const url = URL.createObjectURL(blob);
             setStoryUrl(url);
             handleGetDuration(file)?.then((duration) => {
-                
+
                 setStoryDuration(duration)
             });
 
@@ -223,9 +223,12 @@ function Profile() {
                     type={selectedStoryFile.type} />}
 
 
-            {shareThoughtDilogBox && profile && <ShareThoughtDilogBox userId={profile._id}
-                imageSrc={profile.profileImage?.url || defaultImage}
-                closeDilogBox={setShareThoughtDilogBox} />}
+            {shareThoughtDilogBox && profile &&
+                <ShareThoughtDilogBox
+                    setNote={setNote}
+                    userId={profile._id}
+                    imageSrc={profile.profileImage?.url || defaultImage}
+                    closeDilogBox={setShareThoughtDilogBox} />}
 
             {enableEditProfile && <EditProfile profileInfo={profile} s={handleEditProfile} />}
             {toogleCommentBox && postType && posturl && createdAtTime &&
