@@ -458,7 +458,6 @@ function Chatting() {
         }
 
         if (response.ok) {
-            console.log(result);
             if (chatSkip > 0) {
 
                 setAllChats(prevChats => [...result, ...prevChats]);
@@ -641,7 +640,7 @@ function Chatting() {
         const { postImage: { url: postUrl }, postLike, _id: postIdValue, createdAt } = postId;
         const { _id: userIdValue, profileImage: { url: userProfileUrl } } = userId;
 
-        console.log(postIdValue, userIdValue, postUrl, postLike, createdAt);
+       
 
         handleOpenCommentBox(postIdValue, userProfileUrl, postUrl, userIdValue, "image/png", postLike, createdAt);
     }

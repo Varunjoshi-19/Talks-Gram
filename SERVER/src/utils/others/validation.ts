@@ -33,7 +33,6 @@ class OtpService {
 
     async verifyOTP(userId: string, enteredOTP: number) {
         const data = otps[userId];
-        console.log(otps);
         if (!data) throw new Error("Invalid OTP, request a new one.");
         if (Date.now() > data.expires) throw new Error("OTP expired, try again later.");
         if (data.OTP != enteredOTP) throw new Error("Wrong OTP");
