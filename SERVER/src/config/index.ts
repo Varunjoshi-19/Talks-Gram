@@ -6,9 +6,18 @@ const globalConfig = {
     appwriteProjectId: process.env.VITE_APPWRITE_PROJECT_ID!,
     appwriteProjectName: process.env.VITE_APPWRITE_PROJECT_NAME!,
     appwriteEndPoint: process.env.VITE_APPWRITE_ENDPOINT!,
-    talksGramBucketId: process.env.VITE_APPWRITE_QUICK_CART_BUCKET_ID!
+    talksGramBucketId: process.env.VITE_APPWRITE_QUICK_CART_BUCKET_ID!,
+    emailUser: process.env.EMAIL_USER!,
+    emailPass: process.env.EMAIL_PASSWORD!,
+
+
+
 
 };
+
+
+
+
 
 export default globalConfig;
 

@@ -4,12 +4,15 @@ import { faLock } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MAIN_BACKEND_URL } from "../Scripts/URL";
+import { useGeneralContext } from "../Context/GeneralContext";
+import { useUserAuthContext } from "../Context/UserContext";
 
 
 
 function ForgotPassword() {
 
     const [message, setMessage] = useState<string | null>("");
+    const { profile } = useUserAuthContext()
     const [inputText, setInputText] = useState<string>("");
     const [OTP, setOTP] = useState<number | null>(null);
     const [userId, setUserId] = useState<string | null>(null);
@@ -61,11 +64,10 @@ function ForgotPassword() {
         const result = await response.json();
 
         if (response.ok) {
-
-            setOTP(result.OTP);
-            setUserId(result.userId);
+            console.log(result);
+            setOTP(1);
+            setUserId(result.data.userId);
             setInputText("");
-            window.alert(`OTP -> ${result.OTP} , Copy your OTP otherwise you loss it.`);
         }
 
         if (!response.ok) {
@@ -175,7 +177,7 @@ function ForgotPassword() {
 
                 {/* Footer */}
                 <div className={styles.footer}>
-                    <p>© 2024 TalksGram By Varun Joshi</p>
+                    <p>© 2025 TalksGram By Varun Joshi</p>
                 </div>
             </div>
         </>

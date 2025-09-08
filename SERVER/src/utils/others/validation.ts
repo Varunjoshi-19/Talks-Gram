@@ -2,8 +2,8 @@ import { injectable } from "tsyringe";
 import crypto from "crypto";
 import Userdoc from "../../models/userDoc";
 import UserHelper from "./user";
+import { otps } from "../../index";
 
-const otps: Record<string, { OTP: number; expires: number }> = {};
 
 @injectable()
 class OtpService {
@@ -27,11 +27,13 @@ class OtpService {
             expires: Date.now() + 20 * 1000,
         };
 
+
         return { userId, OTP };
     }
 
     async verifyOTP(userId: string, enteredOTP: number) {
         const data = otps[userId];
+        console.log(otps);
         if (!data) throw new Error("Invalid OTP, request a new one.");
         if (Date.now() > data.expires) throw new Error("OTP expired, try again later.");
         if (data.OTP != enteredOTP) throw new Error("Wrong OTP");

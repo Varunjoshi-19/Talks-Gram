@@ -1,7 +1,8 @@
 import { autoInjectable } from "tsyringe";
 import dbConnection from "../database/connections";
 import { Client, Storage, ID } from "appwrite";
-import { Readable } from "stream";
+import nodemailer from "nodemailer";
+import globalConfig from "../config";
 
 @autoInjectable()
 class allHelpServices {
@@ -18,8 +19,6 @@ class allHelpServices {
 
         return allPosts;
     }
-
-
 
     async handleUploadFile(file: Express.Multer.File, bucketId: string) {
 
@@ -66,6 +65,43 @@ class allHelpServices {
 
 
     };
+
+    async sendOtpEmail(to: string, otp: string) {
+
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: globalConfig.emailUser,
+                pass: globalConfig.emailPass,
+            },
+        });
+
+        const mailOptions = {
+            from: '"Talksgram" <no-reply@talksgram.com>',
+            to,
+            subject: "🔑 Your Talksgram Verification Code",
+            html: `
+      <div style="font-family: Arial, sans-serif; padding:20px; max-width:500px; margin:auto; border:1px solid #eee; border-radius:10px;">
+        <h2 style="color:#4CAF50; text-align:center;">Talksgram</h2>
+        <p>Hi there,</p>
+        <p>We received a request to verify your account on <b>Talksgram</b>. Use the code below to continue:</p>
+        <div style="text-align:center; margin:20px 0;">
+          <span style="font-size:24px; letter-spacing:4px; font-weight:bold; background:#f5f5f5; padding:10px 20px; border-radius:8px; display:inline-block;">
+            ${otp}
+          </span>
+        </div>
+        <p>This code will expire in <b>10 minutes</b>.</p>
+        <p>If you didn’t request this, you can safely ignore this email.</p>
+        <br/>
+        <p style="color:#777;">Thanks,<br/>The Talksgram Team</p>
+      </div>
+    `,
+        }
+
+        await transporter.sendMail(mailOptions);
+
+    }
+
 
 }
 

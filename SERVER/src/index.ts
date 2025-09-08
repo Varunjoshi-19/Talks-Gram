@@ -5,3 +5,4 @@ export const defaultImagePath = path.join(publicFolderPath, "default.jpg")
 export const reelsUploadPath = path.join(publicFolderPath , "posts");
 
 export const onlineUsers = new Map<string, string>();
+export const otps: Record<string, { OTP: number; expires: number }> = {};
