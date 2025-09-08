@@ -205,7 +205,7 @@ function Profile() {
 
 
     if (!showMain || !profile) {
-        return <LoadingScreen />
+        return <LoadingScreen/>
     }
 
 
