@@ -3,7 +3,8 @@ import dbConnection from "../database/connections";
 import { Client, Storage, ID, InputFile } from "node-appwrite";
 import nodemailer from "nodemailer";
 import globalConfig from "../config";
-import "web-file-polyfill"; 
+import { Readable } from "stream";
+
 
 
 @autoInjectable()
@@ -23,52 +24,40 @@ class allHelpServices {
     }
 
     async handleUploadFile(file: Express.Multer.File, bucketId: string) {
-
         const connection = new dbConnection();
         const client: Client = connection.getAppWriteConnection();
-
         const storage = new Storage(client);
-        const fileBuffer = file.buffer;
+        const fileBuffer: any = file.buffer;
+        const fileObject = new InputFile(
+            Readable.from(file.buffer),
+            file.originalname,
+            Buffer.byteLength(file.buffer)
+        );
 
-        // const fileBlob = new Blob([fileBuffer as any], { type: file.mimetype });
-        // const fileObject = new File([fileBuffer], file.originalname, { type: file.mimetype });
-        const fileObject = InputFile.fromBuffer(fileBuffer, file.originalname);
 
         try {
-
             const result = await storage.createFile(
                 bucketId,
                 ID.unique(),
                 fileObject
             );
 
-            const url = storage.getFileView(bucketId, result.$id);
-            if (!url) {
-                return {
-                    message: "Failed to upload file",
-                    success: false
-                }
-            }
+
+            const fileUrl = `${globalConfig.appwriteEndPoint}/storage/buckets/${bucketId}/files/${result.$id}/view?project=${globalConfig.appwriteProjectId}`;
 
             return {
-                imageUrl: url.toString(),
-                fileId: result.$id.toString(),
+                imageUrl: fileUrl,
+                fileId: result.$id,
                 success: true
             };
-
-
         } catch (error) {
+            console.error("Upload error:", error);
             return {
                 message: "Failed to upload file",
-                success: true
+                success: false
             };
         }
-
-
-
-
-    };
-
+    }
     async sendOtpEmail(to: string, otp: string) {
 
         const transporter = nodemailer.createTransport({

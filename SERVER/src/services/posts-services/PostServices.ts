@@ -8,6 +8,7 @@ import StoryDoc from "../../models/StoryDoc";
 import NoteDoc from "../../models/NoteDoc";
 import allHelpServices from "../../utils/index";
 import globalConfig from "../../config";
+import { couldStartTrivia } from "typescript";
 
 @autoInjectable()
 class PostServices {
@@ -25,7 +26,7 @@ class PostServices {
         const parsedProfile = JSON.parse(profile);
 
         const data = await this.allHelp.handleUploadFile(postImage, globalConfig.talksGramBucketId);
-
+      
         if (!data) {
             return { status: 500, success: false, message: "Failed to upload post image" };
         }
