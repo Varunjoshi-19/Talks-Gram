@@ -5,7 +5,7 @@
     height: 100vh;
     width: 100vw;
     overflow: hidden;
-    z-index: 5;
+    z-index: 1000;
     left: 0px;
     background-color: black;
     opacity: 0.6;
@@ -18,10 +18,12 @@
     border-radius: 10px;
     position: fixed;
     width: 800px;
-    height: 90%;
+    max-width: 95vw;
+    height: 90vh;
     top: 50%;
     left: 50%;
-    z-index: 5;
+    z-index: 2000;
+    padding : 20px 0px;
     opacity: 1;
     background-color: #2f3136;
     transform: translate(-50%, -50%);
@@ -227,26 +229,25 @@
 
     .commentBox {
 
-        display: flex;
-        border-radius: 10px;
-        position: absolute;
-        width: 400px;
-        height: 700px;
-        top: 47%;
-        padding: 10px;
-        left: 50%;
-        z-index: 5;
-        opacity: 1;
-        background-color: #2f3136;
-        transform: translate(-50%, -50%);
-        animation: moveToleft 200ms forwards ease-in;
+    display: flex;
+    border-radius: 10px;
+    position: fixed;
+    width: 95vw;
+    max-width: 400px;
+    height: 90vh;
+    top: 50%;
+    left: 50%;
+    z-index: 2000;
+    opacity: 1;
+    background-color: #2f3136;
+    transform: translate(-50%, -50%);
+    animation: moveToleft 200ms forwards ease-in;
 
 
     }
 
 
     .commentBox .comments {
-        border: 1px solid rgba(78, 78, 78, 0.986);
         border-radius: 10px;
         width: 100%;
     }

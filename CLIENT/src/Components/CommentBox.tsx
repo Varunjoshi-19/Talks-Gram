@@ -221,7 +221,7 @@ const CommentBox: React.FC<PostIdProps> = ({ id, userImageUrl, postUrl, toogleBo
           <div id={styles.postedUserInfo} >
 
             <div id={styles.profileImage}>
-              <img src={userImageUrl} alt="" />
+              <img src={userImageUrl || defaultImage} alt="" />
             </div>
 
             <p>{userInfo?.username}</p>

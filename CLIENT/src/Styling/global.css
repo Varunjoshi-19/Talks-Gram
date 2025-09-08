@@ -22,7 +22,7 @@ body {
   scrollbar-width: none; 
   -ms-overflow-style: none; 
 }
-body::-webkit-scrollbar {
+body::-webkit-scrollbar-button {
   display: none; 
 }
 
