@@ -16,7 +16,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "start": "nodemon src/main/main.ts"
+    "start": "ts-node src/main/main.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.11.1",
