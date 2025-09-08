@@ -218,8 +218,8 @@ export interface ToMessageProps {
 
 export interface ShareThoughtProps {
   userId: string;
-  setNote : React.Dispatch<React.SetStateAction<{ noteMessage: string }>> ; 
-  closeDilogBox: React.Dispatch<React.SetStateAction<boolean>> ;
+  setNote: React.Dispatch<React.SetStateAction<any>>;
+  closeDilogBox: React.Dispatch<React.SetStateAction<boolean>>;
   imageSrc: string;
 
 }
@@ -247,26 +247,26 @@ export interface PlayStoryProps {
 
 
 interface StoryProps {
+  _id: string,
+  userId: {
     _id: string,
-    userId: {
-        _id: string,
-        profileImage: {
-            url: string,
-            contentType: string
-        }
-    },
-    username: string,
-    storyData: { duration: number, contentType: string }
+    profileImage: {
+      url: string,
+      contentType: string
+    }
+  },
+  username: string,
+  storyData: { duration: number, contentType: string }
 };
 
 
 export interface StoryCardProps {
-    setCurrentStory: React.Dispatch<React.SetStateAction<number>>;
-    index: number;
-    allStoriesLength: number;
-    currentStory: number;
-    closeDilogBox: React.Dispatch<React.SetStateAction<boolean>>;
-    story: StoryProps,
-    className: { name: string, positions: string };
-    logoIcon?: string;
+  setCurrentStory: React.Dispatch<React.SetStateAction<number>>;
+  index: number;
+  allStoriesLength: number;
+  currentStory: number;
+  closeDilogBox: React.Dispatch<React.SetStateAction<boolean>>;
+  story: StoryProps,
+  className: { name: string, positions: string };
+  logoIcon?: string;
 }
