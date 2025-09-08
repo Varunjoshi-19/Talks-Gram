@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { injectable } from "tsyringe";
-import { Client } from "appwrite";
+import { Client } from "node-appwrite";
 import globalConfig from "../config";
 @injectable()
 
