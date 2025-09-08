@@ -1,8 +1,10 @@
 import { autoInjectable } from "tsyringe";
 import dbConnection from "../database/connections";
-import { Client, Storage, ID } from "appwrite";
+import { Client, Storage, ID, InputFile } from "node-appwrite";
 import nodemailer from "nodemailer";
 import globalConfig from "../config";
+import "web-file-polyfill"; 
+
 
 @autoInjectable()
 class allHelpServices {
@@ -28,8 +30,9 @@ class allHelpServices {
         const storage = new Storage(client);
         const fileBuffer = file.buffer;
 
-        const fileBlob = new Blob([fileBuffer as any], { type: file.mimetype });
-        const fileObject = new File([fileBlob], file.originalname, { type: file.mimetype });
+        // const fileBlob = new Blob([fileBuffer as any], { type: file.mimetype });
+        // const fileObject = new File([fileBuffer], file.originalname, { type: file.mimetype });
+        const fileObject = InputFile.fromBuffer(fileBuffer, file.originalname);
 
         try {
 
