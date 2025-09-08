@@ -28,6 +28,7 @@ function Chatting() {
 
     const navigate = useNavigate();
     const { profile } = useUserAuthContext();
+    const { currentUserOnline, setCurrentUserOnline } = useSocketContext();
     const { newUserToogled } = useToogle();
 
     const videoExtension = ["mp4", "video/mp4", "webm", "ogg"];
@@ -93,6 +94,19 @@ function Chatting() {
 
 
     const chatContainerRef = useRef<HTMLDivElement>(null);
+
+
+    useEffect(() => {
+
+        if (currentUserOnline) {
+            console.log("this is triggered!!!")
+            if (currentUserOnline.userId == otherUserDetails._id) {
+                setUserOnlineStatus(currentUserOnline.status);
+                setCurrentUserOnline(null);
+            }
+        }
+
+    }, [currentUserOnline, otherUserDetails])
 
 
     useEffect(() => {
@@ -640,7 +654,7 @@ function Chatting() {
         const { postImage: { url: postUrl }, postLike, _id: postIdValue, createdAt } = postId;
         const { _id: userIdValue, profileImage: { url: userProfileUrl } } = userId;
 
-       
+
 
         handleOpenCommentBox(postIdValue, userProfileUrl, postUrl, userIdValue, "image/png", postLike, createdAt);
     }

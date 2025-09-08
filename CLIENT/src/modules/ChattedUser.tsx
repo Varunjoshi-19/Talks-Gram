@@ -20,8 +20,9 @@ function ChattedUser() {
     const [shareNote, setShareNote] = useState<boolean>(false);
     const [toogleButton, setToogleButton] = useState<boolean>(false);
     const { profile } = useUserAuthContext();
+
     const navigate = useNavigate();
-    const [note, setNote] = useState<{ noteMessage: string, _id: string, userId: string } | null>(null);
+    const [note, setNote] = useState<any>();
     const { setNewUserToogled } = useToogle();
 
     useEffect(() => {
@@ -29,7 +30,6 @@ function ChattedUser() {
         (async () => {
             if (profile) {
                 const note = await fetchUserNote(profile._id);
-            
                 setNote(note);
             }
         })();
@@ -37,7 +37,7 @@ function ChattedUser() {
     }, [profile]);
 
 
-async function handleEnableMessageTab(_: string, value: string) {
+    async function handleEnableMessageTab(_: string, value: string) {
         const user: any = JSON.parse(value);
 
         if (!profile) return;
@@ -97,7 +97,9 @@ async function handleEnableMessageTab(_: string, value: string) {
             {
                 shareNote &&
 
-                <ShareThoughtDilogBox userId={profile._id} closeDilogBox={setShareNote}
+                <ShareThoughtDilogBox
+                    setNote={setNote}
+                    userId={profile._id} closeDilogBox={setShareNote}
                     imageSrc={profile?.profileImage?.url || defaultImage} />
             }
 
