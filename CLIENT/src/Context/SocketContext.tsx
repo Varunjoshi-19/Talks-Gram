@@ -10,6 +10,8 @@ import { CountMessages } from "../Scripts/GetData";
 interface SocketContextPayload {
     socket: Socket;
     notification: any;
+    currentUserOnline: { userId: string, status: boolean } | null;
+    setCurrentUserOnline: React.Dispatch<React.SetStateAction<{ userId: string, status: boolean } | null>>;
     notificationCount: boolean,
     setNotificationCount: React.Dispatch<React.SetStateAction<boolean>>;
 
@@ -37,6 +39,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     const { profile } = useUserAuthContext();
 
     const [notification, setNotification] = useState<any>();
+    const [currentUserOnline, setCurrentUserOnline] = useState<{ userId: string, status: boolean } | null>(null);
     const { setChattedUsers, setMessageCount } = useChatContext();
     const [notificationCount, setNotificationCount] = useState<boolean>(false);
 
@@ -129,9 +132,16 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
         socket.on("user-follow-request", handlefollowRequest);
         socket.on("new-message", handleUpdateChattedUser);
+        socket.on("user-online", (userId) => {
+            console.log("user online again bro!!!!!")
+            setCurrentUserOnline({ userId: userId, status: true });
+
+        });
+
         return () => {
             socket.off("user-follow-request", handlefollowRequest);
             socket.off("new-message", handleUpdateChattedUser);
+            
         }
 
     }, [socket]);
@@ -148,7 +158,11 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
 
     return (
-        <socketContext.Provider value={{ socket, notification, notificationCount, setNotificationCount }} >
+        <socketContext.Provider value={{
+            currentUserOnline,
+            setCurrentUserOnline,
+            socket, notification, notificationCount, setNotificationCount
+        }} >
             {children}
         </socketContext.Provider>
     )

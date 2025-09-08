@@ -85,18 +85,20 @@ function Login() {
         const profile = result.data.profile;
         localStorage.setItem("profile-details", JSON.stringify(profile));
         dispatch({ type: ACTIONS.SET_PROFILE, payload: profile });
+        handleSendOnlineStatus(result.data.profile);
 
         setError(null);
         setMessage(result.message);
         navigate("/");
-        handleSendOnlineStatus(result.profile);
 
 
     }
 
-    async function handleSendOnlineStatus(profile: any) {
+    function handleSendOnlineStatus(profile: any) {
+        console.log(profile);
         const id = profile._id;
         const username = profile.username;
+        console.log("user online emitted when logged in !!");
         socket.emit("online", { userId: id, username: username });
     }
 
