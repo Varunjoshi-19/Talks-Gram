@@ -80,6 +80,7 @@ function Chatting() {
     const [userOnlineStatus, setUserOnlineStatus] = useState<boolean>(false);
     const [postType, setPostType] = useState<string>("");
     const [postUrl, setPostUrl] = useState<string | null>(null);
+    const [profileUrl, setProfileUrl] = useState<string>("null");
     const [showMain, setShowMain] = useState<boolean>(false);
     const recordedAudioRef = useRef<HTMLAudioElement>(null);
     let audioChunks: Blob[] = [];
@@ -470,7 +471,7 @@ function Chatting() {
         }
 
         if (response.ok) {
-
+            console.log(result);
             if (chatSkip > 0) {
 
                 setAllChats(prevChats => [...result, ...prevChats]);
@@ -650,18 +651,19 @@ function Chatting() {
 
         const { postId, userId } = chat.sharedContent!;
 
-        const { postImage, postLike, _id: postIdValue, createdAt } = postId;
-        const { _id: userIdValue, profileImage: { url } } = userId;
+        const { postImage: { url: postUrl }, postLike, _id: postIdValue, createdAt } = postId;
+        const { _id: userIdValue, profileImage: { url: userProfileUrl } } = userId;
 
-        console.log(postIdValue, userIdValue, url, postImage, postLike, createdAt);
+        console.log(postIdValue, userIdValue, postUrl, postLike, createdAt);
 
-        handleOpenCommentBox(postIdValue, url, userIdValue, "image/png", postLike, createdAt);
+        handleOpenCommentBox(postIdValue, userProfileUrl, postUrl, userIdValue, "image/png", postLike, createdAt);
     }
 
-    function handleOpenCommentBox(id: string, url: string, userId: string, type: string, totalLikes: number, date: string) {
+    function handleOpenCommentBox(id: string, userProfileUrl: string, postUrl: string, userId: string, type: string, totalLikes: number, date: string) {
 
         setPostId(id);
-        setPostUrl(url);
+        setProfileUrl(userProfileUrl);
+        setPostUrl(postUrl);
         setPostType(type);
         setCurrentPostLikes(totalLikes);
         setSelectedPostUsername(otherUserDetails.username);
@@ -700,6 +702,7 @@ function Chatting() {
 
                 {toogleCommentBox && postUrl && postType && currentPostDate && currentPostLikes &&
                     <CommentBox id={postId}
+                        userImageUrl={profileUrl}
                         postUrl={postUrl}
                         postType={postType}
                         toogleBox={closeCommentInfoBox}

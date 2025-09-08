@@ -38,15 +38,20 @@ class ChatMessageService {
         try {
             const parsedData = JSON.parse(allData);
 
-            const additionalData: any = files.map(async (file) => {
-                const data = await this.allHelp.handleUploadFile(file, globalConfig.talksGramBucketId);
-                if (data.success) {
-                    return {
-                        url: data.imageUrl,
-                        contentType: file.mimetype
+            const additionalData: any = await Promise.all(
+                files.map(async (file) => {
+                    const data = await this.allHelp.handleUploadFile(file, globalConfig.talksGramBucketId);
+                    if (data.success) {
+                        return {
+                            url: data.imageUrl,
+                            contentType: file.mimetype,
+                        };
                     }
-                }
-            });
+                    return null;
+                })
+            );
+
+            const filteredData = additionalData.filter((item: any) => item !== null);
 
             const dataToSave: MessageInfo = {
                 userId: parsedData.userId,
@@ -55,7 +60,7 @@ class ChatMessageService {
                 senderUsername: parsedData.senderUsername,
                 receiverUsername: parsedData.receiverUsername,
                 initateTime: parsedData.initateTime,
-                AdditionalData: additionalData,
+                AdditionalData: filteredData,
             };
 
             const savedData = await PersonalChatDoc.create(dataToSave);
