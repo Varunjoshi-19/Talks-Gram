@@ -16,14 +16,13 @@ interface SocketContextPayload {
 }
 
 const socketContext = createContext<SocketContextPayload | undefined>(undefined);
+
 export function useSocketContext() {
     const context = useContext(socketContext);
     if (!context) throw new Error("socket context not available!");
 
     return context;
 }
-
-
 
 
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
@@ -46,7 +45,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
     function handlefollowRequest(data: any) {
         setNotification(data);
-       
+
     }
 
     async function handleForwardDetails() {
@@ -67,6 +66,8 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     async function handleUpdateChattedUser(reelTimeData: any) {
         const { senderId, receiverId, chatId, userId, yourMessage, username, checkName, initateTime, seenStatus, recentChat, unseenCount } = reelTimeData;
 
+        if (senderId == receiverId) return;
+
         if (!(await validateAndProceed(senderId, receiverId))) return;
 
         const extractedData: any = {
@@ -86,7 +87,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
             }
 
             handleCountTotalMessages(newMap);
-            
+
             return newMap;
         });
     }
@@ -100,9 +101,9 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     async function validateAndProceed(senderId: string, receiverId: string): Promise<boolean> {
 
         const currentPath = window.location.pathname;
-       
+
         if (currentPath === `/accounts/inbox/messages/Personal-chat/${senderId}`) {
-           
+
             await seenAllChats(senderId, receiverId);
             return false;
         }
@@ -133,7 +134,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
             socket.off("new-message", handleUpdateChattedUser);
         }
 
-    }, []);
+    }, [socket]);
 
     useEffect(() => {
 

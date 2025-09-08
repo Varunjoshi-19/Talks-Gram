@@ -218,7 +218,8 @@ export interface ToMessageProps {
 
 export interface ShareThoughtProps {
   userId: string;
-  closeDilogBox: React.Dispatch<React.SetStateAction<boolean>>;
+  setNote : React.Dispatch<React.SetStateAction<{ noteMessage: string }>> ; 
+  closeDilogBox: React.Dispatch<React.SetStateAction<boolean>> ;
   imageSrc: string;
 
 }

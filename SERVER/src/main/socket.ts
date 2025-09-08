@@ -101,13 +101,12 @@ class SocketConnection {
 
         socket.on("new-message", (message) => {
             const { senderId, receiverId } = message;
-
-            const receiverSocket: any = this.userIdToSocketId?.get(receiverId);
-           
-
-            if (receiverSocket) {
-                this.socketModel?.to(receiverSocket.socketId).emit("new-message", message);
-            }
+                if (senderId !== receiverId) {
+                    const receiverSocket: any = this.userIdToSocketId?.get(receiverId);
+                    if (receiverSocket) {
+                        this.socketModel?.to(receiverSocket.socketId).emit("new-message", message);
+                    }
+                }
         });
 
         socket.on("follow-request", (userData) => {

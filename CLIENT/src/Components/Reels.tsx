@@ -88,8 +88,8 @@ function Reels() {
                     likeStatus: each.likeStatus
                 }))]);
             }
-        } catch (error : any) {
-          throw new Error(error);
+        } catch (error: any) {
+            throw new Error(error);
         } finally {
             setReelsFetching(false);
         }
@@ -319,19 +319,16 @@ function Reels() {
                         ))
                         :
 
-                        <div style={{
-                            width: "100vw", display: "flex", justifyContent: "center", alignItems: "center",
-                            height: "100vh"
-                        }}>
+                        <div className={styles.loaderContainer}>
                             {reelFetching ?
 
+
                                 <LineLoader />
-
                                 :
-
                                 <span>
                                     No Reels
                                 </span>
+
 
                             }
 

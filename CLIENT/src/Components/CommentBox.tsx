@@ -248,7 +248,7 @@ const CommentBox: React.FC<PostIdProps> = ({ id, userImageUrl, postUrl, toogleBo
 
                   <div id={styles.usernameAndTime}>
                     <p style={{ fontWeight: "bolder", fontSize: "13px", fontFamily: "Helvetica Neue , Helvetica, Arial, sans-serif" }} >{comment.username}</p>
-                    <p style={{ fontSize: "12px", marginTop: "5px", opacity: "0.7" }}>{handleTimeFormating(comment.initiateTime)}</p>
+                    <p style={{ fontSize: "12px", marginTop: "5px", opacity: "0.7" }}>{handleTimeFormating(comment.initiateTime - 2000)}</p>
                   </div>
 
                   <div id={styles.userComment}>

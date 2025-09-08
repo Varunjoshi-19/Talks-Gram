@@ -8,7 +8,7 @@ import { MAIN_BACKEND_URL } from "../Scripts/URL";
 import LineLoader from "./LineLoader";
 
 
-function ShareThoughtDilogBox({ userId, closeDilogBox, imageSrc }: ShareThoughtProps) {
+function ShareThoughtDilogBox({ userId, setNote, closeDilogBox, imageSrc }: ShareThoughtProps) {
 
     const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
     const [inputValue, setInputValue] = useState<string>("");
@@ -16,7 +16,7 @@ function ShareThoughtDilogBox({ userId, closeDilogBox, imageSrc }: ShareThoughtP
     const [showLimiter, setShowLimiter] = useState<boolean>(false);
     const [sharingLoader, setSharingLoader] = useState<boolean>(false);
     const [message, setMessage] = useState<string | null>(null);
-    
+
 
     function handleOnEmojiClick(emojiData: any) {
 
@@ -54,6 +54,7 @@ function ShareThoughtDilogBox({ userId, closeDilogBox, imageSrc }: ShareThoughtP
         const result = await response.json();
 
         if (response.ok) {
+            setNote({ noteMessage: stringValue });
             setTimeout(() => {
                 closeDilogBox(prev => !prev);
             }, 1500);
@@ -146,10 +147,10 @@ function ShareThoughtDilogBox({ userId, closeDilogBox, imageSrc }: ShareThoughtP
                     <span style={{ cursor: "pointer" }} onClick={() => setShowEmojiPicker(prev => !prev)}>
                         <Smile />
                     </span>
-                 
+
                     {showEmojiPicker &&
 
-                        <div style={{ position: "absolute", height: "200px", top : "-200px" }}>
+                        <div style={{ position: "absolute", height: "200px", top: "-200px" }}>
                             <EmojiPicker height={360}
                                 onEmojiClick={handleOnEmojiClick}
                                 style={{ overflow: "hidden" }} />

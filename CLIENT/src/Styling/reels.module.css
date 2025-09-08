@@ -118,6 +118,11 @@ hr {
         border-radius: 0;
         box-shadow: none;
     }
+    .loaderContainer {
+          position: absolute;
+          left: 0px;
+          width: 100vw;
+    }
 }
 
 @media (max-width: 600px) {
@@ -196,7 +201,15 @@ hr {
 }
 
 
-/* style={{ userSelect: "none", objectFit: "cover", marginTop: "10px", borderRadius: "5px " }} */
+
+.loaderContainer {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 
 .eachReels #eachReelVideo {
     user-select: none;
@@ -225,7 +238,6 @@ hr {
 
 @media (max-width : 764px) {
 
-    .reelsContainer {}
 
     .reelsLayout {
 
