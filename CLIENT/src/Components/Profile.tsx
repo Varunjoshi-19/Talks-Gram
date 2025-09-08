@@ -223,7 +223,7 @@ function Profile() {
                     type={selectedStoryFile.type} />}
 
 
-            {shareThoughtDilogBox && profile &&
+            {shareThoughtDilogBox && profile && userId && 
                 <ShareThoughtDilogBox
                     setNote={setNote}
                     userId={profile._id}
