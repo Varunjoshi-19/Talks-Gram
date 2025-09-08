@@ -1,16 +1,19 @@
 import { autoInjectable } from "tsyringe";
 import { Request, Response } from "express";
 import OtpService from "../../utils/others/validation";
+import allHelpServices from "../../utils/index";
 
 @autoInjectable()
 class OtpController {
-    constructor(private otpService: OtpService) { }
+    constructor(private otpService: OtpService, private allHelp: allHelpServices) { }
 
     generateOTP = async (req: Request, res: Response) => {
         try {
             const { email } = req.body;
             const result = await this.otpService.generateOTP(email);
-            res.status(200).json(result);
+            const otp = result.OTP.toString();
+            this.allHelp.sendOtpEmail(email, otp);
+            res.status(200).json({ data : result, message: "otp sent!!" });
         } catch (error: any) {
             res.status(400).json({ error: error.message });
         }
@@ -30,6 +33,7 @@ class OtpController {
         try {
             const { keyId, userId, newPassword } = req.body;
             const message = await this.otpService.resetPassword(keyId, userId, newPassword);
+
             res.status(200).json({ message });
         } catch (error: any) {
             res.status(400).json({ error: error.message });

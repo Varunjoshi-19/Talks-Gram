@@ -99,7 +99,7 @@ function Signup() {
                         onChange={(e) => setUsername(e.target.value)}
                     />
 
-                    <p style={{ fontSize: "12px" }}>People who use our service may have uploaded your contact information to Instagram. Learn More
+                    <p style={{ fontSize: "12px" }}>People who use our service may have uploaded your contact information to TalksGram. Learn More
 
                         By signing up, you agree to our Terms , Privacy Policy and Cookies Policy .</p>
 
@@ -109,14 +109,7 @@ function Signup() {
 
                     {<div style={{ display: "flex", justifyContent: "center", color: "red" }}>{message || error}</div>}
                 </form>
-                <div className={styles.orDivider}>
-                    <div className={styles.line}></div>
-                    <span>OR</span>
-                    <div className={styles.line}></div>
-                </div>
-                <button className={styles.facebookLogin}>
-                    Log in with Facebook
-                </button>
+               
                 <a href="/accounts/password/reset" className={styles.forgotPassword}>
                     Forgot password?
                 </a>
@@ -133,23 +126,10 @@ function Signup() {
             </div>
 
             {/* Links to App Store and Play Store */}
-            <div className={styles.linkToDownload}>
-                <p>Get the app.</p>
-                <div className={styles.downloadLinks}>
-                    <img
-
-                        alt="Download from App Store"
-                    />
-                    <img
-
-                        alt="Download from Google Play"
-                    />
-                </div>
-            </div>
-
+           
             {/* Footer */}
             <div className={styles.footer}>
-                <p>© 2024 TalksGram By Varun Joshi</p>
+                <p>© 2025 TalksGram By Varun Joshi</p>
             </div>
         </div>
     </>

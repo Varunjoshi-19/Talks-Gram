@@ -57,7 +57,7 @@ function ResetPassword() {
 
 
 
-        const response = await fetch(`${URL}/resetPassword`, {
+        const response = await fetch(`${URL}/accounts/resetPassword`, {
 
             method: "POST",
             headers: {
@@ -84,8 +84,6 @@ function ResetPassword() {
 
 
     }
-
-
 
     useEffect(() => {
 
@@ -155,7 +153,7 @@ function ResetPassword() {
 
                 {/* Footer */}
                 <div className={styles.footer}>
-                    <p>© 2024 TalksGram By Varun Joshi</p>
+                    <p>© 2025 TalksGram By Varun Joshi</p>
                 </div>
             </div>
         </>
