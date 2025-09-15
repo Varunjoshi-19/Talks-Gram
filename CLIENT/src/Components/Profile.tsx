@@ -205,7 +205,7 @@ function Profile() {
 
 
     if (!showMain || !profile) {
-        return <LoadingScreen/>
+        return <LoadingScreen />
     }
 
 
@@ -223,7 +223,7 @@ function Profile() {
                     type={selectedStoryFile.type} />}
 
 
-            {shareThoughtDilogBox && profile && userId && 
+            {shareThoughtDilogBox && profile &&
                 <ShareThoughtDilogBox
                     setNote={setNote}
                     userId={profile._id}
@@ -248,7 +248,7 @@ function Profile() {
 
                     <div className={styles.topBox} >
 
-                        <div className={styles.userImage}>
+                        <div className={`${styles.userImage} ${uploadedStory && styles.storyBox}`}>
 
                             {
                                 note ?
@@ -262,22 +262,12 @@ function Profile() {
                                     </div>
                             }
 
-                            {!uploadedStory ?
+                            {!uploadedStory &&
 
                                 <button className={styles.plusIcon} onClick={() => storyFileRef.current?.click()} >
                                     <Plus stroke="white" />
                                     <input hidden ref={storyFileRef} type="file" onChange={handleOnChangeStoryFile} />
                                 </button>
-
-                                :
-
-                                <div style={{
-                                    position: "absolute", width: `110%`, height: `110%`,
-                                    borderRadius: "50%", background: "linear-gradient(45deg, #fdf497, #fd5949, #d6249f, #285aeb)",
-                                    zIndex: "-1", cursor: "pointer"
-                                }}>
-                                </div>
-
                             }
 
 
