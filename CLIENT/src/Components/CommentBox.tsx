@@ -150,13 +150,19 @@ const CommentBox: React.FC<PostIdProps> = ({ id, userImageUrl, postUrl, toogleBo
   }
 
   async function handleClickLikePost() {
-    const currentLikeStatus = await handleLikePost(id, likeStatus);
-    setLikeStatus(currentLikeStatus);
-    if (currentLikeStatus) {
-      setTotalLikes(prev => prev + 1);
-    } else {
-      setTotalLikes(prev => prev - 1);
-    }
+    setLikeStatus(prev => {
+      if (!prev) {
+        setTotalLikes(prev => prev + 1);
+      }
+      else {
+        setTotalLikes(prev => prev - 1);
+      }
+
+      return !prev;
+    });
+
+    await handleLikePost(id, likeStatus);
+
   }
 
 

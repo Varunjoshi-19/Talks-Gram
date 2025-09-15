@@ -2,11 +2,10 @@
 
 # SCRIPT : 
 
-     "scripts": {
-        "build": "tsc", 
-        "start": "node ./src/dist/main/main.js"  
-                
-    },
+  "scripts": {
+    "build": "tsc",
+    "start": "ts-node src/main/main.ts"
+  },
 
 MONGODB_URI="mongodb+srv://varunjoshi426:jhux8l2uvv9Ifgz5@joshi-cluster.vcvph4o.mongodb.net/TalksGram?retryWrites=true&w=majority&appName=JOSHI-CLUSTER
 "

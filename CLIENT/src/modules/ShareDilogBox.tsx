@@ -82,9 +82,6 @@ function ShareDilogBox({ toogleOpenCloseButton, userRef, postRef }: ShareDilogBo
     return (
         <div className={styles.blackBehindContainer} >
 
-
-
-
             <div id={messageStyles.toMessage} >
 
                 <div className={styles.crossButton} >
