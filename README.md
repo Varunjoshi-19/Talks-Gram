@@ -1,6 +1,6 @@
 ## LIVE LINK 🔗  <a href="https://talksgram-client.vercel.app/">VISIT_HERE</a>
 
-## Description 📚
+## Description 📚. 
 It’s a fun and easy way to stay connected with friends. Chat in real time, share photos, videos, voice messages, and even documents. You can post your favorite moments, follow people you like, and join the conversation with likes and comments all in one place.
 
 
