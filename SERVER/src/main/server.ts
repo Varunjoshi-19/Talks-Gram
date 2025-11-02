@@ -95,6 +95,10 @@ export class Server {
 
     private setupRoutes() {
         const mainRoutes = this.router.getRoutes();
+
+        this.app.get("/health" ,  (req ,res) => {
+             res.status(200).json({ message : "Server is up and running" ,status : "Active ✅" });
+        })
         this.app.use("/", mainRoutes);
     }
 }
