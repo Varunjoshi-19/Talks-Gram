@@ -46,12 +46,15 @@ class SocketConnection {
 
         });
 
-
         this.socketModel.on("connection", (socket: Socket) => {
 
             this.socketModel?.to(socket.id).emit("connDetailsReq");
 
             this.initSocketHandler(socket);
+
+            socket.on("new-created-poll", (pollData) => {
+                this.socketModel?.emit("new-poll", pollData);
+            })
 
         })
 
