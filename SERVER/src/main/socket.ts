@@ -57,7 +57,7 @@ class SocketConnection {
             });
 
             socket.on("update-poll-state", (pollData) => {
-                this.socketModel?.emit("updated-poll", pollData);
+                socket.broadcast.emit("updated-poll", pollData);
             });
 
         })
