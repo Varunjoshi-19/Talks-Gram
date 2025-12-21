@@ -54,7 +54,11 @@ class SocketConnection {
 
             socket.on("new-created-poll", (pollData) => {
                 this.socketModel?.emit("new-poll", pollData);
-            })
+            });
+
+            socket.on("update-poll-state", (pollData) => {
+                this.socketModel?.emit("updated-poll", pollData);
+            });
 
         })
 
