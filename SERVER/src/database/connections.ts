@@ -16,7 +16,9 @@ class MongoDBConnection {
 
     async mongodbDatabaseConnection() {
         try {
-            const connection = await mongoose.connect(process.env.MONGODB_URI!);
+              const connection = await mongoose.connect(process.env.MONGODB_URI!, {
+                serverSelectionTimeoutMS: 15000,
+            });
             if (!connection) {
                 console.log('failed to connect with mongodb!')
                 return;
