@@ -1,16 +1,15 @@
-FROM node:20-alpine
-
+FROM node:20-alpine AS build
 WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
 
-# Install dependencies first (better build caching)
+FROM node:20-alpine
+WORKDIR /app
+ENV NODE_ENV=production
 COPY package*.json ./
 RUN npm install --omit=dev
-
-# Copy the rest of the server code
-COPY . .
-
-ENV NODE_ENV=production
-ENV PORT=3000
+COPY --from=build /app/dist ./dist
 EXPOSE 3000
-
-CMD ["npm", "start"]
+CMD ["node", "dist/main/main.js"]
